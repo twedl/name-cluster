@@ -181,16 +181,14 @@ fn py_candidate_pairs_lists(
     for name in names {
         b.add(name.as_deref());
     }
-    let r = b.candidate_pairs();
+    let r = b.candidate_pairs(min_score);
     let mut idx_a = Vec::with_capacity(r.scored_pairs.len());
     let mut idx_b = Vec::with_capacity(r.scored_pairs.len());
     let mut scores = Vec::with_capacity(r.scored_pairs.len());
     for (a, b, s) in r.scored_pairs {
-        if s >= min_score {
-            idx_a.push(a);
-            idx_b.push(b);
-            scores.push(s);
-        }
+        idx_a.push(a);
+        idx_b.push(b);
+        scores.push(s);
     }
     Ok((idx_a, idx_b, scores, r.unique_normalized, r.original_to_unique))
 }

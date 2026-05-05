@@ -90,17 +90,20 @@ def candidates(
     )
 
 
-def explain(result, cluster_id: int, ngram_size: int = 3) -> dict:
+def explain(result, cluster_id: int, name_col: str = "name", ngram_size: int = 3) -> dict:
     """Return diagnostic info for a single cluster from a `cluster()` result.
 
     Parameters
     ----------
     result : DataFrame
         The output of `nc.cluster(...)` with `cluster_id` and
-        `canonical_name` columns. Must include the original name column —
-        `explain` looks up the column whose values appear in `canonical_name`.
+        `canonical_name` columns appended.
     cluster_id : int
         The cluster to introspect.
+    name_col : str
+        The original input name column on `result` (same value passed to
+        `cluster()`). Required because `cluster()` doesn't carry the
+        column name as metadata.
     ngram_size : int
         Same as `cluster()`. Defaults to the lib default.
 
@@ -108,16 +111,16 @@ def explain(result, cluster_id: int, ngram_size: int = 3) -> dict:
     -------
     dict with keys:
         - canonical : str         — the cluster's canonical (hub) name
-        - members : list[str]     — RAW names belonging to this cluster
-                                    (deduplicated if duplicates were merged)
+        - members : list[str]     — RAW names belonging to this cluster,
+                                    deduplicated by their normalized form
         - edges : list[(str, str, float)]
-                                  — every pair (a, b, cosine) within the cluster
-        - hub_radius : int        — BFS eccentricity from hub at threshold=0
-                                    (largest hop distance to any member)
+                                  — every pair of unique members, scored by
+                                    n-gram-count cosine (no IDF — IDF on a
+                                    tiny corpus is degenerate)
+        - hub_radius : int        — BFS eccentricity from the hub treating
+                                    every pair as an edge (= 0 for singleton,
+                                    1 for fully connected)
         - size : int              — number of unique members
-
-    Edges include all pairwise scores — `candidates()` shows only LSH-blocked
-    pairs, but inside a cluster every member-vs-member score is computed.
     """
     nw_result = nw.from_native(result, eager_only=True)
     df = nw_result.filter(nw.col("cluster_id") == cluster_id)
@@ -125,7 +128,11 @@ def explain(result, cluster_id: int, ngram_size: int = 3) -> dict:
         raise ValueError(f"no rows with cluster_id={cluster_id}")
     canonical = df["canonical_name"].to_list()[0]
 
-    name_col = _infer_name_col(nw_result)
+    if name_col not in nw_result.columns:
+        raise ValueError(
+            f"name_col={name_col!r} not in result columns; pass the same "
+            f"column name you passed to cluster()"
+        )
     raw_names: list[str] = [n for n in df[name_col].to_list() if isinstance(n, str)]
     if not raw_names:
         return {
@@ -168,20 +175,6 @@ def explain(result, cluster_id: int, ngram_size: int = 3) -> dict:
         "hub_radius": hub_radius,
         "size": len(unique_raw),
     }
-
-
-def _infer_name_col(df) -> str:
-    """The original name column isn't carried as metadata, so guess: it's
-    the only string column whose values match canonical_name's normalized
-    form. Cheaper: any string column that isn't `cluster_id` or
-    `canonical_name`. Most callers pass through one column; pick that.
-    """
-    candidates_cols = [
-        c for c in df.columns if c not in ("cluster_id", "canonical_name")
-    ]
-    if not candidates_cols:
-        raise ValueError("result df has no input name column to introspect")
-    return candidates_cols[0]
 
 
 def _bfs_eccentricity_from_canonical(

@@ -169,6 +169,24 @@ def test_aliases_empty_dict_noop():
     assert a["cluster_id"].to_list() == b["cluster_id"].to_list()
 
 
+def test_aliases_duplicate_alias_resolution_is_deterministic():
+    """When the same alias appears under two canonicals, the lex-greater
+    canonical wins (build_alias_map sorts ascending and last-write wins)."""
+    df = pl.DataFrame({"name": ["XX Inc"]})
+    a = nc.cluster(
+        df, name_col="name",
+        aliases={"Alpha": ["XX"], "Bravo": ["XX"]},
+    )
+    b = nc.cluster(
+        df, name_col="name",
+        aliases={"Bravo": ["XX"], "Alpha": ["XX"]},
+    )
+    assert a["canonical_name"][0] == b["canonical_name"][0] == "bravo", (
+        "lex-greater canonical (bravo > alpha) should win regardless of dict order; "
+        f"got a={a['canonical_name'][0]!r} b={b['canonical_name'][0]!r}"
+    )
+
+
 def test_explain_returns_cluster_diagnostics():
     df = pl.DataFrame({
         "name": [

@@ -153,9 +153,10 @@ impl ClusterBuilder {
         }
     }
 
-    /// Run pipeline through TF-IDF rerank only — no clustering. Useful for
-    /// threshold tuning and debug introspection.
-    pub fn candidate_pairs(self) -> CandidatePairsResult {
+    /// Run pipeline through TF-IDF rerank only — no clustering. Pairs are
+    /// filtered to `score >= min_score` during scoring (no full Vec built
+    /// then re-filtered). Set `min_score = 0.0` to return everything.
+    pub fn candidate_pairs(self, min_score: f32) -> CandidatePairsResult {
         if self.unique_normalized.is_empty() {
             return CandidatePairsResult {
                 scored_pairs: Vec::new(),
@@ -167,6 +168,7 @@ impl ClusterBuilder {
             &self.unique_normalized,
             &self.lsh,
             self.opts.ngram_size,
+            min_score,
         );
         CandidatePairsResult {
             scored_pairs,
@@ -190,10 +192,10 @@ impl ClusterBuilder {
             &self.unique_normalized,
             &self.lsh,
             self.opts.ngram_size,
+            self.opts.threshold,
         );
         let edges: Vec<(u32, u32)> = scored_pairs
             .into_iter()
-            .filter(|(_, _, s)| *s >= self.opts.threshold)
             .map(|(a, b, _)| (a, b))
             .collect();
 
@@ -268,19 +270,22 @@ impl ClusterBuilder {
 }
 
 /// Build a TF-IDF vocabulary over `unique_normalized`, vectorize each, then
-/// score every LSH candidate pair via cosine. Shared by `finalize()` and
-/// `candidate_pairs()` since both stop here in the pipeline.
+/// score every LSH candidate pair via cosine, keeping only pairs at or above
+/// `min_score`. Shared by `finalize()` (threshold) and `candidate_pairs()`
+/// (debug min_score) — both stop here in the pipeline.
 fn score_lsh_candidates(
     unique_normalized: &[String],
     lsh: &LshIndex,
     ngram_size: usize,
+    min_score: f32,
 ) -> Vec<(u32, u32, f32)> {
     let vocab = Vocabulary::build(unique_normalized.iter(), ngram_size);
     let vectors: Vec<_> = unique_normalized.iter().map(|n| vocab.vectorize(n)).collect();
     lsh.candidate_pairs_distinct()
         .into_iter()
-        .map(|(a, b)| {
-            (a, b, cosine(&vectors[a as usize], &vectors[b as usize]))
+        .filter_map(|(a, b)| {
+            let score = cosine(&vectors[a as usize], &vectors[b as usize]);
+            (score >= min_score).then_some((a, b, score))
         })
         .collect()
 }
