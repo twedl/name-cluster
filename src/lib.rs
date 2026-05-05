@@ -93,10 +93,105 @@ fn py_cluster_lists(
     Ok((r.cluster_ids, canonical, r.flagged_cluster_ids))
 }
 
+/// Run the pipeline through TF-IDF rerank only. Returns scored candidate
+/// pairs over UNIQUE normalized names. Used by the public `candidates()`
+/// debug API for threshold tuning. No clustering, no canonical assignment.
+///
+/// Returns `(idx_a, idx_b, score, unique_normalized, original_to_unique)`
+/// where idx_{a,b} index into `unique_normalized`. Pairs are filtered to
+/// `score >= min_score` (default 0.0 = all candidates).
+#[pyfunction(name = "candidate_pairs_lists")]
+#[pyo3(signature = (
+    names,
+    *,
+    min_score = 0.0,
+    seed = 0,
+    ngram_size = 3,
+    lsh_bands = 32,
+    lsh_rows = 4,
+    max_name_length = 256,
+))]
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
+fn py_candidate_pairs_lists(
+    names: Vec<Option<String>>,
+    min_score: f32,
+    seed: u64,
+    ngram_size: usize,
+    lsh_bands: usize,
+    lsh_rows: usize,
+    max_name_length: usize,
+) -> PyResult<(Vec<u32>, Vec<u32>, Vec<f32>, Vec<String>, Vec<Option<u32>>)> {
+    if !(0.0..=1.0).contains(&min_score) {
+        return Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "min_score must be in [0.0, 1.0], got {}",
+            min_score
+        )));
+    }
+    if ngram_size == 0 || lsh_bands == 0 || lsh_rows == 0 {
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "ngram_size, lsh_bands, lsh_rows must all be >= 1",
+        ));
+    }
+    let opts = builder::ClusterOpts {
+        threshold: 0.0,
+        seed,
+        ngram_size,
+        lsh_bands,
+        lsh_rows,
+        hub_radius_max: 2,
+        diameter_check_min_size: 5,
+        max_name_length,
+    };
+    let mut b = builder::ClusterBuilder::new(opts);
+    for name in names {
+        b.add(name.as_deref());
+    }
+    let r = b.candidate_pairs();
+    let mut idx_a = Vec::with_capacity(r.scored_pairs.len());
+    let mut idx_b = Vec::with_capacity(r.scored_pairs.len());
+    let mut scores = Vec::with_capacity(r.scored_pairs.len());
+    for (a, b, s) in r.scored_pairs {
+        if s >= min_score {
+            idx_a.push(a);
+            idx_b.push(b);
+            scores.push(s);
+        }
+    }
+    Ok((idx_a, idx_b, scores, r.unique_normalized, r.original_to_unique))
+}
+
+/// Pairwise cosine over a small ad-hoc list of names. Used by `explain()`
+/// to score edges within a single cluster on demand. No LSH blocking — all
+/// O(n²) pairs returned.
+#[pyfunction(name = "pairwise_cosines_lists")]
+#[pyo3(signature = (names, *, ngram_size = 3))]
+fn py_pairwise_cosines_lists(
+    names: Vec<String>,
+    ngram_size: usize,
+) -> PyResult<(Vec<u32>, Vec<u32>, Vec<f32>)> {
+    if ngram_size == 0 {
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "ngram_size must be >= 1",
+        ));
+    }
+    let pairs = builder::pairwise_cosines(&names, ngram_size);
+    let mut a = Vec::with_capacity(pairs.len());
+    let mut b = Vec::with_capacity(pairs.len());
+    let mut s = Vec::with_capacity(pairs.len());
+    for (i, j, sc) in pairs {
+        a.push(i);
+        b.push(j);
+        s.push(sc);
+    }
+    Ok((a, b, s))
+}
+
 #[pymodule]
 fn _lowlevel(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(py_normalize, m)?)?;
     m.add_function(wrap_pyfunction!(py_cluster_lists, m)?)?;
+    m.add_function(wrap_pyfunction!(py_candidate_pairs_lists, m)?)?;
+    m.add_function(wrap_pyfunction!(py_pairwise_cosines_lists, m)?)?;
     Ok(())
 }
 

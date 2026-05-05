@@ -6,15 +6,18 @@ from __future__ import annotations
 
 from ._lowlevel import normalize  # rust binding
 from .cluster import cluster, cluster_names, lsh_calibrate
+from .debug import candidates, explain
 from .generator import generate_examples
 from .score import score_clusters
 
 __all__ = [
+    "candidates",
     "cluster",
     "cluster_names",
+    "explain",
+    "generate_examples",
     "lsh_calibrate",
     "normalize",
-    "generate_examples",
     "score_clusters",
 ]
 

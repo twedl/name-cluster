@@ -108,3 +108,56 @@ def test_invalid_threshold_raises():
         nc.cluster(df, name_col="name", threshold=1.5)
     with pytest.raises(ValueError):
         nc.cluster(df, name_col="name", threshold=-0.1)
+
+
+def test_candidates_returns_scored_pairs():
+    df = pl.DataFrame({
+        "name": [
+            "Foothill Industries",
+            "Foothill Inds Limited",
+            "Sherwin-Williams Co",
+            "Sherwin Williams Company",
+            "Apple Inc",
+        ],
+    })
+    cand = nc.candidates(df, name_col="name", min_score=0.0)
+    assert isinstance(cand, pl.DataFrame)
+    assert set(cand.columns) == {"name_a", "name_b", "normalized_a", "normalized_b", "score"}
+    assert cand.height >= 1
+    foothill = cand.filter(
+        pl.col("normalized_a").str.contains("foothill")
+        & pl.col("normalized_b").str.contains("foothill")
+    )
+    assert foothill.height == 1
+    assert foothill["score"][0] >= 0.7
+
+    high = nc.candidates(df, name_col="name", min_score=0.99)
+    assert high.height < cand.height
+
+
+def test_explain_returns_cluster_diagnostics():
+    df = pl.DataFrame({
+        "name": [
+            "Foothill Industries",
+            "Foothill Inds Limited",
+            "Apple Inc",
+        ],
+    })
+    result = nc.cluster(df, name_col="name", threshold=0.7)
+    fcid = result.filter(pl.col("name") == "Foothill Industries")["cluster_id"][0]
+    info = nc.explain(result, fcid)
+    assert info["canonical"].startswith("foothill")
+    assert info["size"] == 2
+    assert info["hub_radius"] >= 1
+    assert len(info["edges"]) == 1
+    edge = info["edges"][0]
+    assert edge[2] >= 0.7
+
+    apple_cid = result.filter(pl.col("name") == "Apple Inc")["cluster_id"][0]
+    info_singleton = nc.explain(result, apple_cid)
+    assert info_singleton["size"] == 1
+    assert info_singleton["edges"] == []
+    assert info_singleton["hub_radius"] == 0
+
+    with pytest.raises(ValueError):
+        nc.explain(result, 99999)

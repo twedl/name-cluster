@@ -75,6 +75,19 @@ pub struct ClusterResult {
     pub flagged_cluster_ids: Vec<u32>,
 }
 
+/// Output of [`ClusterBuilder::candidate_pairs`] — the post-LSH, post-rerank
+/// candidate pairs WITHOUT the cluster-stage (UF, hub split, sort/relabel).
+/// Used by the public `candidates()` debug API.
+#[derive(Debug, Clone)]
+pub struct CandidatePairsResult {
+    /// One row per pair: (unique_idx_a, unique_idx_b, cosine_score).
+    /// Sorted by (a, b) ascending. Pairs are over UNIQUE normalized names;
+    /// callers map unique idx → first original row via `original_to_unique`.
+    pub scored_pairs: Vec<(u32, u32, f32)>,
+    pub unique_normalized: Vec<String>,
+    pub original_to_unique: Vec<Option<u32>>,
+}
+
 impl ClusterBuilder {
     pub fn new(opts: ClusterOpts) -> Self {
         let num_perm = opts.lsh_bands * opts.lsh_rows;
@@ -131,6 +144,28 @@ impl ClusterBuilder {
         }
     }
 
+    /// Run pipeline through TF-IDF rerank only — no clustering. Useful for
+    /// threshold tuning and debug introspection.
+    pub fn candidate_pairs(self) -> CandidatePairsResult {
+        if self.unique_normalized.is_empty() {
+            return CandidatePairsResult {
+                scored_pairs: Vec::new(),
+                unique_normalized: Vec::new(),
+                original_to_unique: self.original_to_unique,
+            };
+        }
+        let scored_pairs = score_lsh_candidates(
+            &self.unique_normalized,
+            &self.lsh,
+            self.opts.ngram_size,
+        );
+        CandidatePairsResult {
+            scored_pairs,
+            unique_normalized: self.unique_normalized,
+            original_to_unique: self.original_to_unique,
+        }
+    }
+
     pub fn finalize(self) -> ClusterResult {
         let n_unique = self.unique_normalized.len();
         let n_rows = self.original_to_unique.len();
@@ -142,21 +177,15 @@ impl ClusterBuilder {
             };
         }
 
-        let vocab = Vocabulary::build(self.unique_normalized.iter(), self.opts.ngram_size);
-        let vectors: Vec<_> = self
-            .unique_normalized
-            .iter()
-            .map(|n| vocab.vectorize(n))
-            .collect();
-
-        // candidate_pairs_distinct() already returns sorted-distinct.
-        let edges: Vec<(u32, u32)> = self
-            .lsh
-            .candidate_pairs_distinct()
+        let scored_pairs = score_lsh_candidates(
+            &self.unique_normalized,
+            &self.lsh,
+            self.opts.ngram_size,
+        );
+        let edges: Vec<(u32, u32)> = scored_pairs
             .into_iter()
-            .filter(|&(a, b)| {
-                cosine(&vectors[a as usize], &vectors[b as usize]) >= self.opts.threshold
-            })
+            .filter(|(_, _, s)| *s >= self.opts.threshold)
+            .map(|(a, b, _)| (a, b))
             .collect();
 
         let (component_of, n_components) = connected_components(n_unique, &edges);
@@ -227,6 +256,64 @@ impl ClusterBuilder {
 
         ClusterResult { cluster_ids, canonical, flagged_cluster_ids }
     }
+}
+
+/// Build a TF-IDF vocabulary over `unique_normalized`, vectorize each, then
+/// score every LSH candidate pair via cosine. Shared by `finalize()` and
+/// `candidate_pairs()` since both stop here in the pipeline.
+fn score_lsh_candidates(
+    unique_normalized: &[String],
+    lsh: &LshIndex,
+    ngram_size: usize,
+) -> Vec<(u32, u32, f32)> {
+    let vocab = Vocabulary::build(unique_normalized.iter(), ngram_size);
+    let vectors: Vec<_> = unique_normalized.iter().map(|n| vocab.vectorize(n)).collect();
+    lsh.candidate_pairs_distinct()
+        .into_iter()
+        .map(|(a, b)| {
+            (a, b, cosine(&vectors[a as usize], &vectors[b as usize]))
+        })
+        .collect()
+}
+
+/// Pairwise n-gram-count cosine over a small set of names (no LSH, no IDF).
+/// For `explain()` on cluster members. Does NOT replicate cluster()'s
+/// IDF-weighted scores — those depend on the full corpus and are degenerate
+/// on tiny subsets (shared n-grams have IDF=0). Returns interpretable
+/// "how similar do these strings look" scores instead.
+pub fn pairwise_cosines(names: &[String], ngram_size: usize) -> Vec<(u32, u32, f32)> {
+    if names.len() < 2 {
+        return Vec::new();
+    }
+    use crate::ngram::ngrams;
+    use ahash::AHashMap;
+    let docs: Vec<AHashMap<Vec<u8>, u32>> = names
+        .iter()
+        .map(|n| {
+            let mut counts: AHashMap<Vec<u8>, u32> = AHashMap::new();
+            for g in ngrams(n, ngram_size) {
+                *counts.entry(g.to_vec()).or_insert(0) += 1;
+            }
+            counts
+        })
+        .collect();
+    let norms: Vec<f32> = docs
+        .iter()
+        .map(|d| d.values().map(|&c| (c as f32).powi(2)).sum::<f32>().sqrt())
+        .collect();
+    let mut out = Vec::with_capacity(names.len() * (names.len() - 1) / 2);
+    for i in 0..names.len() {
+        for j in (i + 1)..names.len() {
+            let dot: f32 = docs[i]
+                .iter()
+                .filter_map(|(g, &c)| docs[j].get(g).map(|&c2| (c as f32) * (c2 as f32)))
+                .sum();
+            let denom = norms[i] * norms[j];
+            let score = if denom > 0.0 { dot / denom } else { 0.0 };
+            out.push((i as u32, j as u32, score));
+        }
+    }
+    out
 }
 
 /// Walk back to the nearest UTF-8 char boundary at or below `max`. Returns

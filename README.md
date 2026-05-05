@@ -94,6 +94,15 @@ metrics = nc.score_clusters(predicted, true)  # ARI, F1, precision, recall
 # LSH config picker for a target Jaccard + recall
 nc.lsh_calibrate(target_jaccard=0.6, target_recall=0.95)
 # -> {"bands": ..., "rows": ..., "num_perm": ..., "p_at_target": ..., "p_at_fp": ...}
+
+# Debug: what pairs did LSH propose, and at what cosine score?
+nc.candidates(df, name_col="name", min_score=0.5)
+# -> df with name_a, name_b, normalized_a, normalized_b, score
+
+# Debug: what's inside one cluster — members, edges, hub eccentricity?
+nc.explain(result, cluster_id=42)
+# -> {"canonical": "...", "members": [...], "edges": [(a, b, score), ...],
+#     "hub_radius": int, "size": int}
 ```
 
 ## Common patterns
