@@ -35,6 +35,11 @@ pub struct ClusterOpts {
     pub hub_radius_max: usize,
     pub diameter_check_min_size: usize,
     pub max_name_length: usize,
+    /// Bidirectional alias map applied AFTER normalize(): if the post-normalize
+    /// string is a key, replace with the value. Lets users force-merge an
+    /// acronym with its expansion (e.g. "ibm" -> "intl business machines"),
+    /// where char-n-gram cosine alone never would. Empty by default.
+    pub aliases: AHashMap<String, String>,
 }
 
 impl Default for ClusterOpts {
@@ -48,6 +53,7 @@ impl Default for ClusterOpts {
             hub_radius_max: 2,
             diameter_check_min_size: 5,
             max_name_length: 256,
+            aliases: AHashMap::new(),
         }
     }
 }
@@ -113,7 +119,10 @@ impl ClusterBuilder {
             }
         };
         let truncated = truncate_utf8(raw, self.opts.max_name_length);
-        let norm = normalize(truncated);
+        let mut norm = normalize(truncated);
+        if let Some(canon) = self.opts.aliases.get(&norm) {
+            norm = canon.clone();
+        }
         if norm.is_empty() {
             self.original_to_unique.push(None);
             return;

@@ -5,7 +5,9 @@
 //!   - `cluster_lists(names, **opts)` — full pipeline; takes/returns Python
 //!     lists (the Python wrapper layer plugs this into narwhals/Arrow).
 
+use ahash::AHashMap;
 use pyo3::prelude::*;
+use std::collections::HashMap;
 
 mod builder;
 mod cluster;
@@ -18,6 +20,33 @@ mod tfidf;
 #[pyfunction(name = "normalize")]
 fn py_normalize(name: &str) -> String {
     normalize::normalize(name)
+}
+
+/// Normalize each (canonical, [alias]) pair and flatten to alias_norm ->
+/// canon_norm. Pairs whose normalized form is empty are dropped silently.
+/// Iteration is sorted by canonical so duplicate-alias behavior (last wins)
+/// is deterministic across runs regardless of input dict order.
+fn build_alias_map(
+    raw: Option<HashMap<String, Vec<String>>>,
+) -> AHashMap<String, String> {
+    let mut out = AHashMap::new();
+    let Some(d) = raw else { return out; };
+    let mut entries: Vec<(String, Vec<String>)> = d.into_iter().collect();
+    entries.sort_by(|a, b| a.0.cmp(&b.0));
+    for (canon_raw, alias_list) in entries {
+        let canon_norm = normalize::normalize(&canon_raw);
+        if canon_norm.is_empty() {
+            continue;
+        }
+        for alias_raw in alias_list {
+            let alias_norm = normalize::normalize(&alias_raw);
+            if alias_norm.is_empty() {
+                continue;
+            }
+            out.insert(alias_norm, canon_norm.clone());
+        }
+    }
+    out
 }
 
 /// Full clustering pipeline, list-based marshalling at the Py↔Rust boundary.
@@ -41,6 +70,7 @@ fn py_normalize(name: &str) -> String {
     hub_radius_max = 2,
     diameter_check_min_size = 5,
     max_name_length = 256,
+    aliases = None,
     return_canonical = true,
 ))]
 #[allow(clippy::too_many_arguments)]
@@ -54,6 +84,7 @@ fn py_cluster_lists(
     hub_radius_max: usize,
     diameter_check_min_size: usize,
     max_name_length: usize,
+    aliases: Option<HashMap<String, Vec<String>>>,
     return_canonical: bool,
 ) -> PyResult<(Vec<Option<u32>>, Vec<Option<String>>, Vec<u32>)> {
     if !(0.0..=1.0).contains(&threshold) {
@@ -81,6 +112,7 @@ fn py_cluster_lists(
         hub_radius_max,
         diameter_check_min_size,
         max_name_length,
+        aliases: build_alias_map(aliases),
     };
     let mut b = builder::ClusterBuilder::new(opts);
     // Consume `names` by value: the input Vec drops at end of loop scope,
@@ -110,6 +142,7 @@ fn py_cluster_lists(
     lsh_bands = 32,
     lsh_rows = 4,
     max_name_length = 256,
+    aliases = None,
 ))]
 #[allow(clippy::too_many_arguments, clippy::type_complexity)]
 fn py_candidate_pairs_lists(
@@ -120,6 +153,7 @@ fn py_candidate_pairs_lists(
     lsh_bands: usize,
     lsh_rows: usize,
     max_name_length: usize,
+    aliases: Option<HashMap<String, Vec<String>>>,
 ) -> PyResult<(Vec<u32>, Vec<u32>, Vec<f32>, Vec<String>, Vec<Option<u32>>)> {
     if !(0.0..=1.0).contains(&min_score) {
         return Err(pyo3::exceptions::PyValueError::new_err(format!(
@@ -141,6 +175,7 @@ fn py_candidate_pairs_lists(
         hub_radius_max: 2,
         diameter_check_min_size: 5,
         max_name_length,
+        aliases: build_alias_map(aliases),
     };
     let mut b = builder::ClusterBuilder::new(opts);
     for name in names {

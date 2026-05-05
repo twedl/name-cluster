@@ -135,6 +135,40 @@ def test_candidates_returns_scored_pairs():
     assert high.height < cand.height
 
 
+def test_aliases_force_merge_acronym_with_expansion():
+    df = pl.DataFrame({
+        "name": [
+            "IBM Corp",
+            "I.B.M. Inc",
+            "International Business Machines",
+            "International Business Machines Corporation",
+            "Apple Inc",
+        ],
+    })
+    r0 = nc.cluster(df, name_col="name")
+    cids0 = r0["cluster_id"].to_list()
+    assert cids0[0] != cids0[2], "without aliases, IBM and the expansion should NOT cluster"
+
+    r1 = nc.cluster(
+        df, name_col="name",
+        aliases={"International Business Machines": ["IBM", "I.B.M."]},
+    )
+    cids1 = r1["cluster_id"].to_list()
+    assert cids1[0] == cids1[1] == cids1[2] == cids1[3], (
+        "all 4 IBM/expansion variants should share a cluster: " + repr(cids1)
+    )
+    assert cids1[4] != cids1[0], "Apple should remain a separate cluster"
+    assert r1["canonical_name"][0] == "intl business machines"
+
+
+def test_aliases_empty_dict_noop():
+    """Passing aliases={} should be identical to passing aliases=None."""
+    df = pl.DataFrame({"name": ["Acme Corp", "ACME Inc", "Apple Inc"]})
+    a = nc.cluster(df, name_col="name", aliases=None)
+    b = nc.cluster(df, name_col="name", aliases={})
+    assert a["cluster_id"].to_list() == b["cluster_id"].to_list()
+
+
 def test_explain_returns_cluster_diagnostics():
     df = pl.DataFrame({
         "name": [

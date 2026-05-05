@@ -156,6 +156,26 @@ Difficulty levels (per `ARCHITECTURE.md`):
 | medium | + abbr expansion + leading garbage + accent + `THE` toggle     | ≥ 0.85         |
 | hard   | + char typos + word drop + geo suffix + spacing oddities       | ≥ 0.70         |
 
+### Acronym / expansion aliases
+
+Pass `aliases={canonical: [alias, ...]}` to force-merge an acronym with
+its expansion (or any other variant pair the lib's char-n-gram cosine
+won't bridge by itself):
+
+```python
+nc.cluster(
+    df, name_col="name",
+    aliases={"International Business Machines": ["IBM", "I.B.M."]},
+)
+# All four — "IBM Corp", "I.B.M. Inc", "International Business Machines",
+# "International Business Machines Inc" — collapse into one cluster with
+# canonical_name="intl business machines".
+```
+
+Each canonical and each alias is normalized; post-normalize, every alias
+form is rewritten to the canonical's form before MinHash/LSH/TF-IDF run.
+If two canonicals map the same alias, the last one wins.
+
 ### Custom suffix lists / abbreviations
 
 Pass `extra_suffixes=[...]` and `extra_canonical={...}` to extend the
@@ -178,9 +198,10 @@ All knobs are flat kwargs on `cluster()`:
 | `ngram_size` | 3 | char-n-gram window for vectors |
 | `lsh_bands` | 32 | LSH band count |
 | `lsh_rows` | 4 | LSH rows/band; `num_perm = bands × rows` |
-| `hub_radius_max` | 2 | per-cluster diameter check threshold (flag-only in v1) |
+| `hub_radius_max` | 2 | per-cluster diameter check threshold for the hub-radius split |
 | `diameter_check_min_size` | 5 | skip diameter check on small clusters |
 | `max_name_length` | 256 | truncate raw input names beyond this many bytes |
+| `aliases` | `None` | acronym/expansion override map: `{canonical: [alias, ...]}` |
 
 ## Scope
 

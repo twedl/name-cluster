@@ -28,6 +28,7 @@ def _run(
     hub_radius_max: int,
     diameter_check_min_size: int,
     max_name_length: int,
+    aliases: dict[str, list[str]] | None,
 ) -> tuple[list[int | None], list[str | None], list[int]]:
     # Coerce np.nan / non-str to None — pandas null repr differs from polars/pyarrow.
     coerced = [n if isinstance(n, str) else None for n in names]
@@ -41,6 +42,7 @@ def _run(
         hub_radius_max=hub_radius_max,
         diameter_check_min_size=diameter_check_min_size,
         max_name_length=max_name_length,
+        aliases=aliases,
         return_canonical=return_canonical,
     )
 
@@ -57,6 +59,7 @@ def cluster(
     hub_radius_max: int = 2,
     diameter_check_min_size: int = 5,
     max_name_length: int = 256,
+    aliases: dict[str, list[str]] | None = None,
 ):
     """Cluster business names into entity groups.
 
@@ -76,6 +79,14 @@ def cluster(
         Per-cluster diameter check thresholds (flag-only in v1).
     max_name_length : int
         Truncate raw input names beyond this many bytes (UTF-8 safe).
+    aliases : dict[str, list[str]] | None
+        Optional acronym/expansion alias map: ``{canonical: [alias, ...]}``.
+        Each canonical and each alias is normalized; post-normalize, every
+        alias-form is rewritten to the canonical's form. Used to bridge cases
+        like ``{"International Business Machines": ["IBM"]}`` where char-n-gram
+        cosine never connects acronym + expansion. If two canonicals map the
+        same alias, the lexicographically-greater canonical wins
+        (deterministic regardless of dict insertion order).
 
     Returns
     -------
@@ -95,6 +106,7 @@ def cluster(
         hub_radius_max=hub_radius_max,
         diameter_check_min_size=diameter_check_min_size,
         max_name_length=max_name_length,
+        aliases=aliases,
     )
     backend = data.implementation
     return data.with_columns(
@@ -113,6 +125,7 @@ def cluster_names(
     hub_radius_max: int = 2,
     diameter_check_min_size: int = 5,
     max_name_length: int = 256,
+    aliases: dict[str, list[str]] | None = None,
 ) -> list[int | None]:
     """REPL convenience: cluster a flat list, return cluster ids only.
 
@@ -130,6 +143,7 @@ def cluster_names(
         hub_radius_max=hub_radius_max,
         diameter_check_min_size=diameter_check_min_size,
         max_name_length=max_name_length,
+        aliases=aliases,
     )
     return cluster_ids
 
