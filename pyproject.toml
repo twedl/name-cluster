@@ -1,0 +1,35 @@
+[build-system]
+requires = ["maturin>=1.7"]
+build-backend = "maturin"
+
+[project]
+name = "name_cluster"
+version = "0.1.0"
+description = "Cluster business names into entity groups; Python + Rust"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [{ name = "jesse tweedle" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "narwhals>=1.20",
+    "pyarrow>=15",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "polars>=1.20",
+    "tqdm>=4.66",
+]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "python"
+module-name = "name_cluster._lowlevel"
+strip = true

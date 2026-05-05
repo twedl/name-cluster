@@ -1,0 +1,4256 @@
+{
+  "per_source": {
+    "ofac": {
+      "source": "ofac",
+      "n_input": 22795,
+      "n_normalized_empty": 0,
+      "n_normalized_one_char": 1,
+      "n_changed_substantively": 16086,
+      "char_length_describe": {
+        "count": 22795.0,
+        "null_count": 0.0,
+        "mean": 22.316516779995613,
+        "std": 16.78805753040332,
+        "min": 1.0,
+        "25%": 11.0,
+        "50%": 18.0,
+        "75%": 28.0,
+        "max": 188.0
+      },
+      "token_count_describe": {
+        "count": 22795.0,
+        "null_count": 0.0,
+        "mean": 3.159684141259048,
+        "std": 2.1325591719392634,
+        "min": 1.0,
+        "25%": 2.0,
+        "50%": 3.0,
+        "75%": 4.0,
+        "max": 25.0
+      },
+      "top_normalized_collisions": [
+        {
+          "normalized": "alaqsa",
+          "len": 10
+        },
+        {
+          "normalized": "alaqsa charitable foundation",
+          "len": 9
+        },
+        {
+          "normalized": "foreningen alaqsa",
+          "len": 9
+        },
+        {
+          "normalized": "mu assa sanabil alaqsa alkhayriyya",
+          "len": 9
+        },
+        {
+          "normalized": "islamic charitable society for alaqsa",
+          "len": 9
+        },
+        {
+          "normalized": "charitable alaqsa establishment",
+          "len": 9
+        },
+        {
+          "normalized": "alharamain foundation",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa islamic charitable society",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa foundation",
+          "len": 9
+        },
+        {
+          "normalized": "charitable society to help the noble alaqsa",
+          "len": 9
+        },
+        {
+          "normalized": "mu asa alaqsa alkhayriyya",
+          "len": 9
+        },
+        {
+          "normalized": "alharamain islamic foundation",
+          "len": 9
+        },
+        {
+          "normalized": "aqssa society yemen",
+          "len": 9
+        },
+        {
+          "normalized": "aqssa society",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa sinabil establishment",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa charitable organization",
+          "len": 9
+        },
+        {
+          "normalized": "sanabil alaqsa charitable foundation",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa spanmal stiftelse",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa intl foundation",
+          "len": 9
+        },
+        {
+          "normalized": "nusrat alaqsa alsharif",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa spanm i stiftelse",
+          "len": 9
+        },
+        {
+          "normalized": "swedish charitable aqsa est",
+          "len": 9
+        },
+        {
+          "normalized": "stichting alaqsa",
+          "len": 9
+        },
+        {
+          "normalized": "alharamayn islamic foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamayn",
+          "len": 8
+        },
+        {
+          "normalized": "alharamayn foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamein islamic foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamain humanitarian foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamein humanitarian foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamein",
+          "len": 8
+        },
+        {
+          "normalized": "alaqsa asbl",
+          "len": 8
+        },
+        {
+          "normalized": "alharamayn humanitarian foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamein foundation",
+          "len": 8
+        },
+        {
+          "normalized": "garantsv",
+          "len": 7
+        },
+        {
+          "normalized": "des intl",
+          "len": 7
+        },
+        {
+          "normalized": "scan",
+          "len": 7
+        },
+        {
+          "normalized": "vtb bank",
+          "len": 7
+        },
+        {
+          "normalized": "proma ind",
+          "len": 7
+        },
+        {
+          "normalized": "vad",
+          "len": 7
+        },
+        {
+          "normalized": "chadormalu mining and industrial",
+          "len": 6
+        },
+        {
+          "normalized": "stroytransgaz",
+          "len": 5
+        },
+        {
+          "normalized": "sberbank of russia",
+          "len": 5
+        },
+        {
+          "normalized": "bank zenit",
+          "len": 5
+        },
+        {
+          "normalized": "rnt",
+          "len": 5
+        },
+        {
+          "normalized": "mostotrest",
+          "len": 5
+        },
+        {
+          "normalized": "alfabank",
+          "len": 5
+        },
+        {
+          "normalized": "alharamain",
+          "len": 5
+        },
+        {
+          "normalized": "antares",
+          "len": 5
+        },
+        {
+          "normalized": "genbank",
+          "len": 5
+        },
+        {
+          "normalized": "naz tech",
+          "len": 5
+        },
+        {
+          "normalized": "ansar alsharia",
+          "len": 5
+        },
+        {
+          "normalized": "vtb registrar",
+          "len": 5
+        },
+        {
+          "normalized": "tajco",
+          "len": 5
+        },
+        {
+          "normalized": "investtradebank",
+          "len": 5
+        },
+        {
+          "normalized": "triliance petrochemical",
+          "len": 5
+        },
+        {
+          "normalized": "sky aviator",
+          "len": 5
+        },
+        {
+          "normalized": "uralelektromed",
+          "len": 5
+        },
+        {
+          "normalized": "surgutneftegas",
+          "len": 5
+        },
+        {
+          "normalized": "rafort",
+          "len": 5
+        },
+        {
+          "normalized": "stratim",
+          "len": 5
+        },
+        {
+          "normalized": "140 repair plant",
+          "len": 5
+        },
+        {
+          "normalized": "persian gulf petrochemical ind",
+          "len": 5
+        },
+        {
+          "normalized": "elitnye doma",
+          "len": 4
+        },
+        {
+          "normalized": "cimex",
+          "len": 4
+        },
+        {
+          "normalized": "a1",
+          "len": 4
+        },
+        {
+          "normalized": "home credit and finance bank",
+          "len": 4
+        },
+        {
+          "normalized": "rpp",
+          "len": 4
+        },
+        {
+          "normalized": "atlant s",
+          "len": 4
+        },
+        {
+          "normalized": "chilsong trd",
+          "len": 4
+        },
+        {
+          "normalized": "trubber",
+          "len": 4
+        },
+        {
+          "normalized": "novastream",
+          "len": 4
+        },
+        {
+          "normalized": "103 arsenal",
+          "len": 4
+        },
+        {
+          "normalized": "strela",
+          "len": 4
+        },
+        {
+          "normalized": "eniks",
+          "len": 4
+        },
+        {
+          "normalized": "smile property and travel",
+          "len": 4
+        },
+        {
+          "normalized": "gazprom invest",
+          "len": 4
+        },
+        {
+          "normalized": "stars communications",
+          "len": 4
+        },
+        {
+          "normalized": "kvtrus",
+          "len": 4
+        },
+        {
+          "normalized": "myanmar imperial jade gems and jewellery",
+          "len": 4
+        },
+        {
+          "normalized": "dandong zhongshong ind and trd",
+          "len": 4
+        },
+        {
+          "normalized": "aviastarsp",
+          "len": 4
+        },
+        {
+          "normalized": "a7",
+          "len": 4
+        },
+        {
+          "normalized": "vezir",
+          "len": 4
+        },
+        {
+          "normalized": "bm bank",
+          "len": 4
+        },
+        {
+          "normalized": "tribit",
+          "len": 4
+        },
+        {
+          "normalized": "vtb bank belarus",
+          "len": 4
+        },
+        {
+          "normalized": "vsk",
+          "len": 4
+        },
+        {
+          "normalized": "zvezda",
+          "len": 4
+        },
+        {
+          "normalized": "radiopribor",
+          "len": 4
+        },
+        {
+          "normalized": "myanmar ruby ent gems and jewellery",
+          "len": 4
+        },
+        {
+          "normalized": "ilyushin aviation complex",
+          "len": 4
+        },
+        {
+          "normalized": "shvabe",
+          "len": 4
+        },
+        {
+          "normalized": "haleel commodities",
+          "len": 4
+        },
+        {
+          "normalized": "abr management",
+          "len": 4
+        },
+        {
+          "normalized": "kavian petrochemical",
+          "len": 4
+        },
+        {
+          "normalized": "tyazhpressmash",
+          "len": 4
+        },
+        {
+          "normalized": "smp bank",
+          "len": 4
+        },
+        {
+          "normalized": "timer bank",
+          "len": 4
+        },
+        {
+          "normalized": "muassasat alharamain alkhayriyya",
+          "len": 4
+        },
+        {
+          "normalized": "tkkhinvest",
+          "len": 4
+        }
+      ],
+      "sample_empty_after_norm": [],
+      "sample_one_char_after_norm": [
+        [
+          "D COMPANY",
+          "d"
+        ]
+      ],
+      "sample_substantively_changed": [
+        [
+          "AERO-CARIBBEAN",
+          "aerocaribbean"
+        ],
+        [
+          "THE BENEVOLENT CHARITABLE ORGANIZATION",
+          "benevolent charitable organization"
+        ],
+        [
+          "ANSAR AL-MOJAHEDIN NO-INTEREST LOAN INSTITUTE",
+          "ansar almojahedin nointerest loan institute"
+        ],
+        [
+          "PEOPLE'S REPUBLIC OF LUHANSK",
+          "peoples republic of luhansk"
+        ],
+        [
+          "SMT TECNOLOGIA, C.A.",
+          "smt tecnologia ca"
+        ],
+        [
+          "FINANCIAL CORPORATION FINCORP, C.A.",
+          "financial corporation fincorp ca"
+        ],
+        [
+          "GACHSARAN POLYMER INDUSTRIES",
+          "gachsaran polymer ind"
+        ],
+        [
+          "PISHRO IRAN FINANCIAL AND INVESTMENT COMPANY",
+          "pishro iran financial and investment"
+        ],
+        [
+          "PUBLIC JOINT STOCK COMPANY INTEGRAL",
+          "integral"
+        ],
+        [
+          "VORONEZHSKI OOO",
+          "voronezhski"
+        ],
+        [
+          "ME ACCESS TECHNOLOGY GENERAL TRADING FZE",
+          "me access tech general trd"
+        ],
+        [
+          "LEDRA TRUSTEES LIMITED",
+          "ledra trustees"
+        ],
+        [
+          "EASTERN TRADE LLC",
+          "eastern trd"
+        ],
+        [
+          "SCIENTIFIC PRODUCTION UNITARY ENTERPRISE STC LEMT",
+          "scientific production unitary ent stc lemt"
+        ],
+        [
+          "PUBLIC JOINT STOCK COMPANY IZHNEFTEMASH",
+          "izhneftemash"
+        ],
+        [
+          "LIMITED LIABILITY COMPANY RAZREZ VERKHNETESHSKIY",
+          "razrez verkhneteshskiy"
+        ],
+        [
+          "OAO 766 UPTK",
+          "766 uptk"
+        ],
+        [
+          "TOOL COMPANY GUT LIMITED LIABILITY COMPANY",
+          "tool company gut"
+        ],
+        [
+          "OSONG SHIPPING COMPANY",
+          "osong shipping"
+        ],
+        [
+          "PT. ORIENTAL COMMERCE GARDEN",
+          "pt oriental commerce garden"
+        ]
+      ],
+      "top_trailing_tokens": [
+        [
+          "company",
+          1570
+        ],
+        [
+          "ltd",
+          1426
+        ],
+        [
+          "limited",
+          1184
+        ],
+        [
+          "llc",
+          626
+        ],
+        [
+          "c.v",
+          443
+        ],
+        [
+          "ooo",
+          389
+        ],
+        [
+          "co",
+          335
+        ],
+        [
+          "group",
+          255
+        ],
+        [
+          "s.a",
+          235
+        ],
+        [
+          "bank",
+          215
+        ],
+        [
+          "jsc",
+          209
+        ],
+        [
+          "corporation",
+          194
+        ],
+        [
+          "plant",
+          194
+        ],
+        [
+          "sirketi",
+          194
+        ],
+        [
+          "foundation",
+          183
+        ],
+        [
+          "ao",
+          177
+        ],
+        [
+          "inc",
+          144
+        ],
+        [
+          "l.l.c",
+          126
+        ],
+        [
+          "organization",
+          124
+        ],
+        [
+          "fze",
+          114
+        ],
+        [
+          "center",
+          99
+        ],
+        [
+          "exchange",
+          92
+        ],
+        [
+          "zavod",
+          85
+        ],
+        [
+          "institute",
+          83
+        ],
+        [
+          "trading",
+          81
+        ],
+        [
+          "pao",
+          76
+        ],
+        [
+          "technologies",
+          74
+        ],
+        [
+          "bureau",
+          73
+        ],
+        [
+          "ltda",
+          71
+        ],
+        [
+          "oao",
+          70
+        ],
+        [
+          "industries",
+          68
+        ],
+        [
+          "development",
+          66
+        ],
+        [
+          "dmcc",
+          66
+        ],
+        [
+          "gmbh",
+          64
+        ],
+        [
+          "association",
+          64
+        ],
+        [
+          "corp",
+          63
+        ],
+        [
+          "kg",
+          61
+        ],
+        [
+          "systems",
+          55
+        ],
+        [
+          "kompaniya",
+          54
+        ],
+        [
+          "services",
+          53
+        ],
+        [
+          "sarl",
+          52
+        ],
+        [
+          "sciences",
+          52
+        ],
+        [
+          "sal",
+          51
+        ],
+        [
+          "society",
+          50
+        ],
+        [
+          "brigade",
+          50
+        ],
+        [
+          "committee",
+          49
+        ],
+        [
+          "sa",
+          48
+        ],
+        [
+          "iran",
+          48
+        ],
+        [
+          "holding",
+          48
+        ],
+        [
+          "engineering",
+          48
+        ]
+      ],
+      "top_leading_tokens": [
+        [
+          "limited",
+          1096
+        ],
+        [
+          "joint",
+          721
+        ],
+        [
+          "jsc",
+          437
+        ],
+        [
+          "ao",
+          421
+        ],
+        [
+          "llc",
+          352
+        ],
+        [
+          "ooo",
+          335
+        ],
+        [
+          "aktsionernoe",
+          323
+        ],
+        [
+          "obshchestvo",
+          285
+        ],
+        [
+          "al",
+          148
+        ],
+        [
+          "the",
+          129
+        ],
+        [
+          "islamic",
+          128
+        ],
+        [
+          "korea",
+          107
+        ],
+        [
+          "public",
+          105
+        ],
+        [
+          "federal",
+          103
+        ],
+        [
+          "al-aqsa",
+          96
+        ],
+        [
+          "bank",
+          90
+        ],
+        [
+          "open",
+          75
+        ],
+        [
+          "iran",
+          72
+        ],
+        [
+          "ojsc",
+          72
+        ],
+        [
+          "oao",
+          62
+        ],
+        [
+          "pjsc",
+          60
+        ],
+        [
+          "national",
+          59
+        ],
+        [
+          "state",
+          58
+        ],
+        [
+          "grupo",
+          57
+        ],
+        [
+          "international",
+          56
+        ],
+        [
+          "shahid",
+          56
+        ],
+        [
+          "ansar",
+          51
+        ],
+        [
+          "new",
+          49
+        ],
+        [
+          "shenzhen",
+          49
+        ],
+        [
+          "golden",
+          48
+        ],
+        [
+          "vtb",
+          47
+        ],
+        [
+          "otkrytoe",
+          44
+        ],
+        [
+          "iranian",
+          42
+        ],
+        [
+          "publichnoe",
+          42
+        ],
+        [
+          "scientific",
+          41
+        ],
+        [
+          "shanghai",
+          41
+        ],
+        [
+          "closed",
+          40
+        ],
+        [
+          "rihs",
+          39
+        ],
+        [
+          "prince",
+          39
+        ],
+        [
+          "ministry",
+          35
+        ],
+        [
+          "russian",
+          34
+        ],
+        [
+          "zao",
+          34
+        ],
+        [
+          "comercializadora",
+          33
+        ],
+        [
+          "global",
+          33
+        ],
+        [
+          "pars",
+          33
+        ],
+        [
+          "joint-stock",
+          33
+        ],
+        [
+          "sberbank",
+          31
+        ],
+        [
+          "federalnoe",
+          31
+        ],
+        [
+          "united",
+          30
+        ],
+        [
+          "los",
+          30
+        ]
+      ]
+    },
+    "gleif": {
+      "source": "gleif",
+      "n_input": 3138985,
+      "n_normalized_empty": 0,
+      "n_normalized_one_char": 72,
+      "n_changed_substantively": 2527365,
+      "char_length_describe": {
+        "count": 3138985.0,
+        "null_count": 0.0,
+        "mean": 22.154625778715094,
+        "std": 14.710305445380945,
+        "min": 1.0,
+        "25%": 12.0,
+        "50%": 19.0,
+        "75%": 28.0,
+        "max": 303.0
+      },
+      "token_count_describe": {
+        "count": 3138985.0,
+        "null_count": 0.0,
+        "mean": 3.2717990050924106,
+        "std": 2.054136762677056,
+        "min": 1.0,
+        "25%": 2.0,
+        "50%": 3.0,
+        "75%": 4.0,
+        "max": 51.0
+      },
+      "top_normalized_collisions": [
+        {
+          "normalized": "hldg",
+          "len": 206
+        },
+        {
+          "normalized": "invest",
+          "len": 110
+        },
+        {
+          "normalized": "futura",
+          "len": 64
+        },
+        {
+          "normalized": "capital",
+          "len": 58
+        },
+        {
+          "normalized": "ent",
+          "len": 57
+        },
+        {
+          "normalized": "alba",
+          "len": 55
+        },
+        {
+          "normalized": "delta",
+          "len": 51
+        },
+        {
+          "normalized": "orion",
+          "len": 49
+        },
+        {
+          "normalized": "alma",
+          "len": 49
+        },
+        {
+          "normalized": "horizon",
+          "len": 47
+        },
+        {
+          "normalized": "aurora",
+          "len": 47
+        },
+        {
+          "normalized": "grp",
+          "len": 46
+        },
+        {
+          "normalized": "iris",
+          "len": 45
+        },
+        {
+          "normalized": "gaia",
+          "len": 44
+        },
+        {
+          "normalized": "balaji ent",
+          "len": 43
+        },
+        {
+          "normalized": "consulting",
+          "len": 43
+        },
+        {
+          "normalized": "hestia",
+          "len": 42
+        },
+        {
+          "normalized": "trd",
+          "len": 40
+        },
+        {
+          "normalized": "ashok kumar",
+          "len": 37
+        },
+        {
+          "normalized": "phoenix",
+          "len": 37
+        },
+        {
+          "normalized": "global",
+          "len": 37
+        },
+        {
+          "normalized": "vega",
+          "len": 36
+        },
+        {
+          "normalized": "rajesh kumar",
+          "len": 36
+        },
+        {
+          "normalized": "krishna ent",
+          "len": 35
+        },
+        {
+          "normalized": "helios",
+          "len": 35
+        },
+        {
+          "normalized": "dama",
+          "len": 34
+        },
+        {
+          "normalized": "athena",
+          "len": 34
+        },
+        {
+          "normalized": "investments",
+          "len": 33
+        },
+        {
+          "normalized": "om ent",
+          "len": 33
+        },
+        {
+          "normalized": "sunil kumar",
+          "len": 33
+        },
+        {
+          "normalized": "luna",
+          "len": 32
+        },
+        {
+          "normalized": "kairos",
+          "len": 31
+        },
+        {
+          "normalized": "albatros",
+          "len": 31
+        },
+        {
+          "normalized": "victoria",
+          "len": 31
+        },
+        {
+          "normalized": "first state bank",
+          "len": 31
+        },
+        {
+          "normalized": "caisse locale de credit agricole mutuel",
+          "len": 30
+        },
+        {
+          "normalized": "omega",
+          "len": 30
+        },
+        {
+          "normalized": "roma",
+          "len": 30
+        },
+        {
+          "normalized": "siemens energy",
+          "len": 30
+        },
+        {
+          "normalized": "sanjay kumar",
+          "len": 29
+        },
+        {
+          "normalized": "siemens",
+          "len": 29
+        },
+        {
+          "normalized": "alpha",
+          "len": 29
+        },
+        {
+          "normalized": "sirio",
+          "len": 29
+        },
+        {
+          "normalized": "mg hldg",
+          "len": 29
+        },
+        {
+          "normalized": "stella",
+          "len": 29
+        },
+        {
+          "normalized": "gea",
+          "len": 29
+        },
+        {
+          "normalized": "anil kumar",
+          "len": 28
+        },
+        {
+          "normalized": "istituto diocesano per il sostentamento del clero",
+          "len": 28
+        },
+        {
+          "normalized": "global equity fund",
+          "len": 28
+        },
+        {
+          "normalized": "immobiliare",
+          "len": 28
+        },
+        {
+          "normalized": "ares",
+          "len": 28
+        },
+        {
+          "normalized": "antares",
+          "len": 28
+        },
+        {
+          "normalized": "sama",
+          "len": 28
+        },
+        {
+          "normalized": "prima",
+          "len": 28
+        },
+        {
+          "normalized": "polaris",
+          "len": 28
+        },
+        {
+          "normalized": "vision",
+          "len": 28
+        },
+        {
+          "normalized": "alfa",
+          "len": 27
+        },
+        {
+          "normalized": "mb hldg",
+          "len": 27
+        },
+        {
+          "normalized": "mia",
+          "len": 27
+        },
+        {
+          "normalized": "manoj kumar",
+          "len": 27
+        },
+        {
+          "normalized": "sirius",
+          "len": 27
+        },
+        {
+          "normalized": "vijay kumar",
+          "len": 27
+        },
+        {
+          "normalized": "mm hldg",
+          "len": 27
+        },
+        {
+          "normalized": "eos",
+          "len": 27
+        },
+        {
+          "normalized": "gima",
+          "len": 26
+        },
+        {
+          "normalized": "pegaso",
+          "len": 26
+        },
+        {
+          "normalized": "oikos",
+          "len": 26
+        },
+        {
+          "normalized": "gm",
+          "len": 26
+        },
+        {
+          "normalized": "beheer",
+          "len": 26
+        },
+        {
+          "normalized": "abb",
+          "len": 26
+        },
+        {
+          "normalized": "emerging markets equity fund",
+          "len": 26
+        },
+        {
+          "normalized": "naresh kumar",
+          "len": 26
+        },
+        {
+          "normalized": "vesta",
+          "len": 26
+        },
+        {
+          "normalized": "atena",
+          "len": 25
+        },
+        {
+          "normalized": "nova",
+          "len": 25
+        },
+        {
+          "normalized": "horus",
+          "len": 25
+        },
+        {
+          "normalized": "mp hldg",
+          "len": 25
+        },
+        {
+          "normalized": "sea",
+          "len": 25
+        },
+        {
+          "normalized": "mas",
+          "len": 25
+        },
+        {
+          "normalized": "beta",
+          "len": 25
+        },
+        {
+          "normalized": "next",
+          "len": 25
+        },
+        {
+          "normalized": "sigma",
+          "len": 24
+        },
+        {
+          "normalized": "atlantis",
+          "len": 24
+        },
+        {
+          "normalized": "jb hldg",
+          "len": 24
+        },
+        {
+          "normalized": "mg",
+          "len": 24
+        },
+        {
+          "normalized": "argo",
+          "len": 24
+        },
+        {
+          "normalized": "raiffeisenbank",
+          "len": 24
+        },
+        {
+          "normalized": "idea",
+          "len": 24
+        },
+        {
+          "normalized": "arcadia",
+          "len": 24
+        },
+        {
+          "normalized": "itaca",
+          "len": 24
+        },
+        {
+          "normalized": "management",
+          "len": 24
+        },
+        {
+          "normalized": "sam",
+          "len": 24
+        },
+        {
+          "normalized": "arihant ent",
+          "len": 24
+        },
+        {
+          "normalized": "one",
+          "len": 23
+        },
+        {
+          "normalized": "volksbank",
+          "len": 23
+        },
+        {
+          "normalized": "vinod kumar",
+          "len": 23
+        },
+        {
+          "normalized": "balanced fund",
+          "len": 23
+        },
+        {
+          "normalized": "js hldg",
+          "len": 23
+        },
+        {
+          "normalized": "magnolia",
+          "len": 23
+        },
+        {
+          "normalized": "s s ent",
+          "len": 23
+        }
+      ],
+      "sample_empty_after_norm": [],
+      "sample_one_char_after_norm": [
+        [
+          "THE C COMPANY LIMITED",
+          "c"
+        ],
+        [
+          "O LIMITED",
+          "o"
+        ],
+        [
+          "M COMPANY LIMITED",
+          "m"
+        ],
+        [
+          "SL I Company",
+          "i"
+        ],
+        [
+          "J Corp Limited",
+          "j"
+        ],
+        [
+          "B S.R.L.",
+          "b"
+        ],
+        [
+          "7 LLC",
+          "7"
+        ],
+        [
+          "Q CORP",
+          "q"
+        ],
+        [
+          "CV I, L.P.",
+          "i"
+        ],
+        [
+          "6 LLC",
+          "6"
+        ],
+        [
+          "AB 4 B.V.",
+          "4"
+        ],
+        [
+          "J CORPORATION",
+          "j"
+        ],
+        [
+          "T LIMITED",
+          "t"
+        ],
+        [
+          "U AG",
+          "u"
+        ],
+        [
+          "P. COMPANY",
+          "p"
+        ],
+        [
+          "BV F LP",
+          "f"
+        ],
+        [
+          "BV K LP",
+          "k"
+        ],
+        [
+          "(A) ApS",
+          "a"
+        ],
+        [
+          "F Corp, LLC",
+          "f"
+        ],
+        [
+          "The T Company AS",
+          "t"
+        ]
+      ],
+      "sample_substantively_changed": [
+        [
+          "Hutchin Hill Capital, LP",
+          "hutchin hill capital"
+        ],
+        [
+          "THE DEAL 2012 DISCRETIONARY SETTLEMENT",
+          "deal 2012 discretionary settlement"
+        ],
+        [
+          "Waldenberg Investments Limited",
+          "waldenberg investments"
+        ],
+        [
+          "HARKESTAD HOLDING AS",
+          "harkestad hldg"
+        ],
+        [
+          "GENSYNTH LABORATORIES PRIVATE LIMITED",
+          "gensynth laboratories private"
+        ],
+        [
+          "Familie Knopf-Stiftung",
+          "familie knopfstiftung"
+        ],
+        [
+          "MMC HOLDING ApS",
+          "mmc hldg"
+        ],
+        [
+          "Rensbyn Invest AB",
+          "rensbyn invest"
+        ],
+        [
+          "INCYTE BIOSCIENCES INTERNATIONAL S\u00c0RL",
+          "incyte biosciences intl"
+        ],
+        [
+          "Lennart Peters Consulting AB",
+          "lennart peters consulting"
+        ],
+        [
+          "GCO FUND HOLDINGS I LLC",
+          "gco fund hldg i"
+        ],
+        [
+          "Adelis Equity Partners Fund IV AB",
+          "adelis equity partners fund iv"
+        ],
+        [
+          "Verdi Square Holding B.V.",
+          "verdi square hldg"
+        ],
+        [
+          "NUROL PORTF\u00d6Y \u0130K\u0130NC\u0130 SERBEST FON",
+          "nurol portfoy ikinci serbest fon"
+        ],
+        [
+          "VAZZANA ENERTEC S.R.L.",
+          "vazzana enertec"
+        ],
+        [
+          "Spectrade Limited",
+          "spectrade"
+        ],
+        [
+          "GROBELASTIC S.A.",
+          "grobelastic"
+        ],
+        [
+          "\"Rosenhof\"-Hochdahl Seniorenwohnanlage Betriebsgesellschaft mbH",
+          "rosenhof hochdahl seniorenwohnanlage betriebsgesellschaft"
+        ],
+        [
+          "M.V. S.R.L.",
+          "mv"
+        ],
+        [
+          "DEEP SUGAR INDUSTRIES LLP",
+          "deep sugar ind"
+        ]
+      ],
+      "top_trailing_tokens": [
+        [
+          "limited",
+          321332
+        ],
+        [
+          "llc",
+          183450
+        ],
+        [
+          "b.v",
+          154002
+        ],
+        [
+          "gmbh",
+          144643
+        ],
+        [
+          "ltd",
+          123424
+        ],
+        [
+          "s.r.l",
+          118918
+        ],
+        [
+          "ab",
+          90659
+        ],
+        [
+          "trust",
+          78612
+        ],
+        [
+          "aps",
+          76406
+        ],
+        [
+          "inc",
+          72378
+        ],
+        [
+          "sl",
+          70841
+        ],
+        [
+          "fund",
+          66902
+        ],
+        [
+          "as",
+          59967
+        ],
+        [
+          "s.l",
+          48601
+        ],
+        [
+          "oy",
+          43677
+        ],
+        [
+          "kg",
+          34568
+        ],
+        [
+          "s.a",
+          28912
+        ],
+        [
+          "srl",
+          26437
+        ],
+        [
+          "lp",
+          25567
+        ],
+        [
+          "l.p",
+          23585
+        ],
+        [
+          "llp",
+          23568
+        ],
+        [
+          "o\u00fc",
+          21981
+        ],
+        [
+          "s.r.o",
+          20591
+        ],
+        [
+          "sa",
+          20045
+        ],
+        [
+          "odpowiedzialno\u015bci\u0105",
+          18509
+        ],
+        [
+          "company",
+          17697
+        ],
+        [
+          "settlement",
+          16141
+        ],
+        [
+          "ag",
+          15286
+        ],
+        [
+          "s.p.a",
+          15051
+        ],
+        [
+          "t\u00e1rsas\u00e1g",
+          14474
+        ],
+        [
+          "aktiebolag",
+          14431
+        ],
+        [
+          "etf",
+          13501
+        ],
+        [
+          "limitada",
+          13379
+        ],
+        [
+          "r.l",
+          12989
+        ],
+        [
+          "corporation",
+          10947
+        ],
+        [
+          "lda",
+          10894
+        ],
+        [
+          "a/s",
+          10547
+        ],
+        [
+          "scheme",
+          10091
+        ],
+        [
+          "l.l.c",
+          9653
+        ],
+        [
+          "industries",
+          9237
+        ],
+        [
+          "foundation",
+          8848
+        ],
+        [
+          "mbh",
+          8498
+        ],
+        [
+          "corp",
+          8478
+        ],
+        [
+          "stiftung",
+          7992
+        ],
+        [
+          "a.s",
+          7954
+        ],
+        [
+          "c",
+          7822
+        ],
+        [
+          "limitata",
+          7449
+        ],
+        [
+          "(haftungsbeschr\u00e4nkt)",
+          7268
+        ],
+        [
+          "partnership",
+          6684
+        ],
+        [
+          "liquidazione",
+          6682
+        ]
+      ],
+      "top_leading_tokens": [
+        [
+          "the",
+          65496
+        ],
+        [
+          "stichting",
+          9760
+        ],
+        [
+          "sci",
+          7403
+        ],
+        [
+          "global",
+          7123
+        ],
+        [
+          "mrs",
+          6705
+        ],
+        [
+          "la",
+          5682
+        ],
+        [
+          "shree",
+          5237
+        ],
+        [
+          "sri",
+          4934
+        ],
+        [
+          "de",
+          4583
+        ],
+        [
+          "van",
+          4490
+        ],
+        [
+          "dr.",
+          4242
+        ],
+        [
+          "m/s",
+          4202
+        ],
+        [
+          "new",
+          4129
+        ],
+        [
+          "j",
+          3820
+        ],
+        [
+          "societe",
+          3808
+        ],
+        [
+          "a",
+          3707
+        ],
+        [
+          "societa'",
+          3562
+        ],
+        [
+          "immobiliare",
+          3476
+        ],
+        [
+          "stiftung",
+          3399
+        ],
+        [
+          "m",
+          3382
+        ],
+        [
+          "holding",
+          3363
+        ],
+        [
+          "shri",
+          3352
+        ],
+        [
+          "s",
+          3312
+        ],
+        [
+          "r",
+          3279
+        ],
+        [
+          "o\u00fc",
+          3161
+        ],
+        [
+          "blue",
+          2865
+        ],
+        [
+          "blackrock",
+          2839
+        ],
+        [
+          "first",
+          2779
+        ],
+        [
+          "fondazione",
+          2634
+        ],
+        [
+          "inversiones",
+          2598
+        ],
+        [
+          "green",
+          2575
+        ],
+        [
+          "hotel",
+          2441
+        ],
+        [
+          "john",
+          2437
+        ],
+        [
+          "j.",
+          2432
+        ],
+        [
+          "k",
+          2373
+        ],
+        [
+          "uab",
+          2339
+        ],
+        [
+          "mr",
+          2236
+        ],
+        [
+          "les",
+          2210
+        ],
+        [
+          "studio",
+          2183
+        ],
+        [
+          "b",
+          2166
+        ],
+        [
+          "stiftelsen",
+          2141
+        ],
+        [
+          "g",
+          2136
+        ],
+        [
+          "ab",
+          2118
+        ],
+        [
+          "sarl",
+          2093
+        ],
+        [
+          "c",
+          2045
+        ],
+        [
+          "fidelity",
+          2031
+        ],
+        [
+          "amundi",
+          1974
+        ],
+        [
+          "international",
+          1948
+        ],
+        [
+          "p",
+          1917
+        ],
+        [
+          "trust",
+          1905
+        ]
+      ]
+    },
+    "ukch": {
+      "source": "ukch",
+      "n_input": 5692844,
+      "n_normalized_empty": 0,
+      "n_normalized_one_char": 79,
+      "n_changed_substantively": 5596905,
+      "char_length_describe": {
+        "count": 5692844.0,
+        "null_count": 0.0,
+        "mean": 16.543299974494296,
+        "std": 7.533730187341366,
+        "min": 1.0,
+        "25%": 11.0,
+        "50%": 15.0,
+        "75%": 21.0,
+        "max": 160.0
+      },
+      "token_count_describe": {
+        "count": 5692844.0,
+        "null_count": 0.0,
+        "mean": 2.5299437328688437,
+        "std": 1.0907937124263838,
+        "min": 1.0,
+        "25%": 2.0,
+        "50%": 2.0,
+        "75%": 3.0,
+        "max": 27.0
+      },
+      "top_normalized_collisions": [
+        {
+          "normalized": "property",
+          "len": 46
+        },
+        {
+          "normalized": "tech",
+          "len": 40
+        },
+        {
+          "normalized": "grp",
+          "len": 37
+        },
+        {
+          "normalized": "investments",
+          "len": 37
+        },
+        {
+          "normalized": "hldg",
+          "len": 34
+        },
+        {
+          "normalized": "trd",
+          "len": 34
+        },
+        {
+          "normalized": "properties",
+          "len": 33
+        },
+        {
+          "normalized": "consulting",
+          "len": 32
+        },
+        {
+          "normalized": "sln",
+          "len": 31
+        },
+        {
+          "normalized": "ent",
+          "len": 29
+        },
+        {
+          "normalized": "management",
+          "len": 28
+        },
+        {
+          "normalized": "construction",
+          "len": 28
+        },
+        {
+          "normalized": "estates",
+          "len": 28
+        },
+        {
+          "normalized": "transport",
+          "len": 27
+        },
+        {
+          "normalized": "and",
+          "len": 27
+        },
+        {
+          "normalized": "svc",
+          "len": 27
+        },
+        {
+          "normalized": "consultancy",
+          "len": 26
+        },
+        {
+          "normalized": "developments",
+          "len": 25
+        },
+        {
+          "normalized": "global",
+          "len": 25
+        },
+        {
+          "normalized": "grp hldg",
+          "len": 24
+        },
+        {
+          "normalized": "electrical",
+          "len": 23
+        },
+        {
+          "normalized": "property hldg",
+          "len": 23
+        },
+        {
+          "normalized": "assoc",
+          "len": 23
+        },
+        {
+          "normalized": "homes",
+          "len": 22
+        },
+        {
+          "normalized": "property grp",
+          "len": 22
+        },
+        {
+          "normalized": "engineering",
+          "len": 21
+        },
+        {
+          "normalized": "building svc",
+          "len": 21
+        },
+        {
+          "normalized": "motors",
+          "len": 21
+        },
+        {
+          "normalized": "ventures",
+          "len": 21
+        },
+        {
+          "normalized": "partners",
+          "len": 20
+        },
+        {
+          "normalized": "electrical svc",
+          "len": 20
+        },
+        {
+          "normalized": "uk",
+          "len": 20
+        },
+        {
+          "normalized": "logistics",
+          "len": 20
+        },
+        {
+          "normalized": "london",
+          "len": 20
+        },
+        {
+          "normalized": "media",
+          "len": 20
+        },
+        {
+          "normalized": "productions",
+          "len": 20
+        },
+        {
+          "normalized": "medical",
+          "len": 19
+        },
+        {
+          "normalized": "builders",
+          "len": 19
+        },
+        {
+          "normalized": "property investments",
+          "len": 19
+        },
+        {
+          "normalized": "contracts",
+          "len": 19
+        },
+        {
+          "normalized": "intl",
+          "len": 19
+        },
+        {
+          "normalized": "capital",
+          "len": 18
+        },
+        {
+          "normalized": "studio",
+          "len": 18
+        },
+        {
+          "normalized": "property management",
+          "len": 18
+        },
+        {
+          "normalized": "care",
+          "len": 18
+        },
+        {
+          "normalized": "events",
+          "len": 18
+        },
+        {
+          "normalized": "plumbing and heating",
+          "len": 17
+        },
+        {
+          "normalized": "property svc",
+          "len": 17
+        },
+        {
+          "normalized": "health",
+          "len": 17
+        },
+        {
+          "normalized": "retail",
+          "len": 17
+        },
+        {
+          "normalized": "drylining",
+          "len": 17
+        },
+        {
+          "normalized": "aesthetics",
+          "len": 17
+        },
+        {
+          "normalized": "holdco",
+          "len": 16
+        },
+        {
+          "normalized": "beauty",
+          "len": 16
+        },
+        {
+          "normalized": "accountancy",
+          "len": 16
+        },
+        {
+          "normalized": "accountants",
+          "len": 16
+        },
+        {
+          "normalized": "advisory",
+          "len": 16
+        },
+        {
+          "normalized": "scaffolding",
+          "len": 16
+        },
+        {
+          "normalized": "building",
+          "len": 16
+        },
+        {
+          "normalized": "projects",
+          "len": 16
+        },
+        {
+          "normalized": "consultants",
+          "len": 16
+        },
+        {
+          "normalized": "business",
+          "len": 16
+        },
+        {
+          "normalized": "hospitality",
+          "len": 16
+        },
+        {
+          "normalized": "recruitment",
+          "len": 16
+        },
+        {
+          "normalized": "collective",
+          "len": 15
+        },
+        {
+          "normalized": "realty",
+          "len": 15
+        },
+        {
+          "normalized": "automotive",
+          "len": 15
+        },
+        {
+          "normalized": "cars",
+          "len": 15
+        },
+        {
+          "normalized": "carpentry",
+          "len": 15
+        },
+        {
+          "normalized": "energy",
+          "len": 15
+        },
+        {
+          "normalized": "housing",
+          "len": 15
+        },
+        {
+          "normalized": "lettings",
+          "len": 15
+        },
+        {
+          "normalized": "healthcare",
+          "len": 15
+        },
+        {
+          "normalized": "business svc",
+          "len": 15
+        },
+        {
+          "normalized": "tech sln",
+          "len": 14
+        },
+        {
+          "normalized": "interiors",
+          "len": 14
+        },
+        {
+          "normalized": "property maintenance",
+          "len": 14
+        },
+        {
+          "normalized": "accounting",
+          "len": 14
+        },
+        {
+          "normalized": "dental",
+          "len": 14
+        },
+        {
+          "normalized": "traders",
+          "len": 14
+        },
+        {
+          "normalized": "contractors",
+          "len": 14
+        },
+        {
+          "normalized": "sales",
+          "len": 14
+        },
+        {
+          "normalized": "fitness",
+          "len": 14
+        },
+        {
+          "normalized": "pharma",
+          "len": 14
+        },
+        {
+          "normalized": "property developments",
+          "len": 14
+        },
+        {
+          "normalized": "express",
+          "len": 14
+        },
+        {
+          "normalized": "management svc",
+          "len": 14
+        },
+        {
+          "normalized": "cleaning svc",
+          "len": 14
+        },
+        {
+          "normalized": "private",
+          "len": 13
+        },
+        {
+          "normalized": "consult",
+          "len": 13
+        },
+        {
+          "normalized": "consulting svc",
+          "len": 13
+        },
+        {
+          "normalized": "travel",
+          "len": 13
+        },
+        {
+          "normalized": "real estate",
+          "len": 13
+        },
+        {
+          "normalized": "consultancy svc",
+          "len": 13
+        },
+        {
+          "normalized": "joinery",
+          "len": 13
+        },
+        {
+          "normalized": "build",
+          "len": 13
+        },
+        {
+          "normalized": "digital",
+          "len": 13
+        },
+        {
+          "normalized": "manchester",
+          "len": 13
+        },
+        {
+          "normalized": "vision",
+          "len": 13
+        },
+        {
+          "normalized": "systems",
+          "len": 13
+        }
+      ],
+      "sample_empty_after_norm": [],
+      "sample_one_char_after_norm": [
+        [
+          "+A COMPANY LIMITED",
+          "a"
+        ],
+        [
+          "1 LP LIMITED",
+          "1"
+        ],
+        [
+          "3 LIMITED",
+          "3"
+        ],
+        [
+          "5 CORPORATION LIMITED",
+          "5"
+        ],
+        [
+          "5 LIMITED",
+          "5"
+        ],
+        [
+          "6 EV LIMITED",
+          "6"
+        ],
+        [
+          "6 LTD",
+          "6"
+        ],
+        [
+          "7 AG LTD",
+          "7"
+        ],
+        [
+          "8 CORPORATION LIMITED",
+          "8"
+        ],
+        [
+          "8 LTD",
+          "8"
+        ],
+        [
+          "@A COMPANY LIMITED",
+          "a"
+        ],
+        [
+          "A CORPORATION LIMITED",
+          "a"
+        ],
+        [
+          "A LIMITED",
+          "a"
+        ],
+        [
+          "A$ LTD",
+          "a"
+        ],
+        [
+          "A. CORP LTD",
+          "a"
+        ],
+        [
+          "AG. 1 LIMITED",
+          "1"
+        ],
+        [
+          "APS 1 LTD",
+          "1"
+        ],
+        [
+          "AS@H LIMITED",
+          "h"
+        ],
+        [
+          "ASA 1 LIMITED",
+          "1"
+        ],
+        [
+          "C CORPORATION LTD",
+          "c"
+        ]
+      ],
+      "sample_substantively_changed": [
+        [
+          "! LTD",
+          "ltd"
+        ],
+        [
+          "ALGOSPARK HOLDINGS LIMITED",
+          "algospark hldg"
+        ],
+        [
+          "BAHIRAH STITCHED LTD",
+          "bahirah stitched"
+        ],
+        [
+          "BSC SILVERBURN LTD",
+          "bsc silverburn"
+        ],
+        [
+          "CMC TRAINING LTD",
+          "cmc training"
+        ],
+        [
+          "DEVIATION EVENTS LIMITED",
+          "deviation events"
+        ],
+        [
+          "ERCETIN YACHTING LTD",
+          "ercetin yachting"
+        ],
+        [
+          "GARFORTH MOBILES & LAPTOPS REPAIRS LIMITED",
+          "garforth mobiles and laptops repairs"
+        ],
+        [
+          "HEAD HAIR & BEAUTY LIMITED",
+          "head hair and beauty"
+        ],
+        [
+          "IXL PRODUCTIONS LTD",
+          "ixl productions"
+        ],
+        [
+          "KNOWLEDGE RESULTS LTD",
+          "knowledge results"
+        ],
+        [
+          "M&S MOTORS TRADING LIMITED",
+          "m and s motors trd"
+        ],
+        [
+          "MONOLE LP",
+          "monole"
+        ],
+        [
+          "OGB CONSULTING LTD",
+          "ogb consulting"
+        ],
+        [
+          "POSEIDON SUP LTD",
+          "poseidon sup"
+        ],
+        [
+          "RIGHT RECRUIT LIMITED",
+          "right recruit"
+        ],
+        [
+          "SHIELD HEALTH & SAFETY LIMITED",
+          "shield health and safety"
+        ],
+        [
+          "SUBFRAMES (HOLDINGS) LIMITED",
+          "subframes hldg"
+        ],
+        [
+          "THE WOODLANDS (SEATON) MANAGEMENT COMPANY LIMITED",
+          "woodlands seaton management"
+        ],
+        [
+          "VILLAGE WALK LTD",
+          "village walk"
+        ]
+      ],
+      "top_trailing_tokens": [
+        [
+          "ltd",
+          2766115
+        ],
+        [
+          "limited",
+          2653195
+        ],
+        [
+          "llp",
+          50475
+        ],
+        [
+          "cic",
+          30522
+        ],
+        [
+          "lp",
+          26948
+        ],
+        [
+          "l.p",
+          13635
+        ],
+        [
+          "trust",
+          8679
+        ],
+        [
+          "c.i.c",
+          8120
+        ],
+        [
+          "foundation",
+          7164
+        ],
+        [
+          "partnership",
+          6764
+        ],
+        [
+          "company",
+          6420
+        ],
+        [
+          "plc",
+          4387
+        ],
+        [
+          "association",
+          3071
+        ],
+        [
+          "limited(the)",
+          2779
+        ],
+        [
+          "club",
+          2516
+        ],
+        [
+          "cio",
+          2370
+        ],
+        [
+          "inc",
+          2350
+        ],
+        [
+          "centre",
+          2328
+        ],
+        [
+          "uk",
+          2313
+        ],
+        [
+          "cyf",
+          1941
+        ],
+        [
+          "church",
+          1805
+        ],
+        [
+          "scio",
+          1734
+        ],
+        [
+          "society",
+          1376
+        ],
+        [
+          "group",
+          1196
+        ],
+        [
+          "charity",
+          998
+        ],
+        [
+          "llc",
+          949
+        ],
+        [
+          "fund",
+          948
+        ],
+        [
+          "project",
+          940
+        ],
+        [
+          "co",
+          902
+        ],
+        [
+          "school",
+          869
+        ],
+        [
+          "(scio)",
+          795
+        ],
+        [
+          "international",
+          764
+        ],
+        [
+          "(the)",
+          737
+        ],
+        [
+          "b.v",
+          721
+        ],
+        [
+          "s.a",
+          672
+        ],
+        [
+          "hall",
+          638
+        ],
+        [
+          "corporation",
+          629
+        ],
+        [
+          "co.limited",
+          625
+        ],
+        [
+          "ministries",
+          603
+        ],
+        [
+          "gmbh",
+          547
+        ],
+        [
+          "investments",
+          545
+        ],
+        [
+          "farms",
+          525
+        ],
+        [
+          "network",
+          522
+        ],
+        [
+          "r.l",
+          519
+        ],
+        [
+          "services",
+          508
+        ],
+        [
+          "sp",
+          497
+        ],
+        [
+          "farm",
+          483
+        ],
+        [
+          "academy",
+          482
+        ],
+        [
+          "unlimited",
+          452
+        ],
+        [
+          "scotland",
+          426
+        ]
+      ],
+      "top_leading_tokens": [
+        [
+          "the",
+          133126
+        ],
+        [
+          "a",
+          18810
+        ],
+        [
+          "j",
+          15396
+        ],
+        [
+          "m",
+          12554
+        ],
+        [
+          "s",
+          11264
+        ],
+        [
+          "uk",
+          11162
+        ],
+        [
+          "r",
+          10242
+        ],
+        [
+          "new",
+          10183
+        ],
+        [
+          "london",
+          9891
+        ],
+        [
+          "d",
+          9631
+        ],
+        [
+          "global",
+          8492
+        ],
+        [
+          "c",
+          8257
+        ],
+        [
+          "blue",
+          8053
+        ],
+        [
+          "green",
+          7357
+        ],
+        [
+          "g",
+          7118
+        ],
+        [
+          "north",
+          6516
+        ],
+        [
+          "red",
+          6288
+        ],
+        [
+          "p",
+          6034
+        ],
+        [
+          "st",
+          6032
+        ],
+        [
+          "k",
+          5943
+        ],
+        [
+          "elite",
+          5884
+        ],
+        [
+          "west",
+          5860
+        ],
+        [
+          "little",
+          5698
+        ],
+        [
+          "south",
+          5655
+        ],
+        [
+          "t",
+          5613
+        ],
+        [
+          "my",
+          5563
+        ],
+        [
+          "john",
+          5499
+        ],
+        [
+          "all",
+          5357
+        ],
+        [
+          "b",
+          5283
+        ],
+        [
+          "smart",
+          5266
+        ],
+        [
+          "one",
+          5193
+        ],
+        [
+          "first",
+          5124
+        ],
+        [
+          "black",
+          4944
+        ],
+        [
+          "l",
+          4826
+        ],
+        [
+          "h",
+          4617
+        ],
+        [
+          "david",
+          4614
+        ],
+        [
+          "james",
+          4518
+        ],
+        [
+          "east",
+          4428
+        ],
+        [
+          "prime",
+          4316
+        ],
+        [
+          "white",
+          4081
+        ],
+        [
+          "dr",
+          4080
+        ],
+        [
+          "studio",
+          4058
+        ],
+        [
+          "golden",
+          4038
+        ],
+        [
+          "premier",
+          3908
+        ],
+        [
+          "city",
+          3904
+        ],
+        [
+          "paul",
+          3864
+        ],
+        [
+          "digital",
+          3700
+        ],
+        [
+          "i",
+          3681
+        ],
+        [
+          "home",
+          3673
+        ],
+        [
+          "property",
+          3669
+        ]
+      ]
+    },
+    "sam": {
+      "source": "sam",
+      "n_input": 934698,
+      "n_normalized_empty": 0,
+      "n_normalized_one_char": 24,
+      "n_changed_substantively": 710354,
+      "char_length_describe": {
+        "count": 934698.0,
+        "null_count": 0.0,
+        "mean": 20.500935061378115,
+        "std": 10.264518913339689,
+        "min": 1.0,
+        "25%": 13.0,
+        "50%": 19.0,
+        "75%": 26.0,
+        "max": 127.0
+      },
+      "token_count_describe": {
+        "count": 934698.0,
+        "null_count": 0.0,
+        "mean": 3.0195999135549663,
+        "std": 1.4272070314074927,
+        "min": 1.0,
+        "25%": 2.0,
+        "50%": 3.0,
+        "75%": 4.0,
+        "max": 27.0
+      },
+      "top_normalized_collisions": [
+        {
+          "normalized": "the sherwinwilliams",
+          "len": 2003
+        },
+        {
+          "normalized": "sherwin williams",
+          "len": 1997
+        },
+        {
+          "normalized": "total renal care",
+          "len": 652
+        },
+        {
+          "normalized": "sherwinwilliams company the",
+          "len": 528
+        },
+        {
+          "normalized": "hanger clinic",
+          "len": 527
+        },
+        {
+          "normalized": "united refrigeration",
+          "len": 342
+        },
+        {
+          "normalized": "graybar electric",
+          "len": 341
+        },
+        {
+          "normalized": "hanger prosthetics and orthotics",
+          "len": 334
+        },
+        {
+          "normalized": "the salvation army",
+          "len": 223
+        },
+        {
+          "normalized": "esa p portfolio operating lessee",
+          "len": 208
+        },
+        {
+          "normalized": "hanger prosthetics and orthotics east",
+          "len": 192
+        },
+        {
+          "normalized": "stantec consulting svc",
+          "len": 191
+        },
+        {
+          "normalized": "dva healthcare renal care",
+          "len": 181
+        },
+        {
+          "normalized": "raytheon",
+          "len": 164
+        },
+        {
+          "normalized": "dva renal healthcare",
+          "len": 162
+        },
+        {
+          "normalized": "hanger prosthetics and orthotics west",
+          "len": 155
+        },
+        {
+          "normalized": "drury hotels",
+          "len": 131
+        },
+        {
+          "normalized": "blue bell creameries",
+          "len": 117
+        },
+        {
+          "normalized": "waste management of american canyon",
+          "len": 107
+        },
+        {
+          "normalized": "tetra tech",
+          "len": 106
+        },
+        {
+          "normalized": "us post office",
+          "len": 104
+        },
+        {
+          "normalized": "united states postal service",
+          "len": 104
+        },
+        {
+          "normalized": "northrop grumman systems",
+          "len": 102
+        },
+        {
+          "normalized": "terracon consultants",
+          "len": 100
+        },
+        {
+          "normalized": "applied industrial tech",
+          "len": 97
+        },
+        {
+          "normalized": "renal treatment centers southeast",
+          "len": 93
+        },
+        {
+          "normalized": "veterans health administration",
+          "len": 92
+        },
+        {
+          "normalized": "city electric supply",
+          "len": 88
+        },
+        {
+          "normalized": "united access",
+          "len": 86
+        },
+        {
+          "normalized": "evangelical lutheran good samaritan society",
+          "len": 84
+        },
+        {
+          "normalized": "salvation army",
+          "len": 83
+        },
+        {
+          "normalized": "hyatt",
+          "len": 79
+        },
+        {
+          "normalized": "honeywell intl",
+          "len": 79
+        },
+        {
+          "normalized": "leidos",
+          "len": 77
+        },
+        {
+          "normalized": "mobilityworks",
+          "len": 76
+        },
+        {
+          "normalized": "crescent electric supply",
+          "len": 75
+        },
+        {
+          "normalized": "apple nine hospitality management",
+          "len": 73
+        },
+        {
+          "normalized": "department of state health svc",
+          "len": 73
+        },
+        {
+          "normalized": "isd renal",
+          "len": 72
+        },
+        {
+          "normalized": "city hall",
+          "len": 71
+        },
+        {
+          "normalized": "police department",
+          "len": 70
+        },
+        {
+          "normalized": "coburn supply",
+          "len": 67
+        },
+        {
+          "normalized": "michael baker intl",
+          "len": 66
+        },
+        {
+          "normalized": "us foods",
+          "len": 65
+        },
+        {
+          "normalized": "motion ind",
+          "len": 63
+        },
+        {
+          "normalized": "air force united states department of the",
+          "len": 59
+        },
+        {
+          "normalized": "pape material handling",
+          "len": 58
+        },
+        {
+          "normalized": "kleinfelder",
+          "len": 57
+        },
+        {
+          "normalized": "knickerbocker dialysis",
+          "len": 57
+        },
+        {
+          "normalized": "u s foodservice",
+          "len": 56
+        },
+        {
+          "normalized": "western oilfields supply",
+          "len": 56
+        },
+        {
+          "normalized": "lockheed martin",
+          "len": 55
+        },
+        {
+          "normalized": "bisco ind",
+          "len": 55
+        },
+        {
+          "normalized": "total renal care of north carolina",
+          "len": 54
+        },
+        {
+          "normalized": "live oak banking",
+          "len": 53
+        },
+        {
+          "normalized": "booz allen hamilton",
+          "len": 53
+        },
+        {
+          "normalized": "stantec architecture",
+          "len": 52
+        },
+        {
+          "normalized": "coleman american moving svc",
+          "len": 51
+        },
+        {
+          "normalized": "stantec consulting",
+          "len": 51
+        },
+        {
+          "normalized": "jacobs engineering grp",
+          "len": 49
+        },
+        {
+          "normalized": "federal prison ind",
+          "len": 49
+        },
+        {
+          "normalized": "renal treatment centers illinois",
+          "len": 49
+        },
+        {
+          "normalized": "general dynamics information tech",
+          "len": 48
+        },
+        {
+          "normalized": "the boeing",
+          "len": 47
+        },
+        {
+          "normalized": "county of starr",
+          "len": 46
+        },
+        {
+          "normalized": "wmk",
+          "len": 46
+        },
+        {
+          "normalized": "hpt trs ihg2",
+          "len": 45
+        },
+        {
+          "normalized": "performance contracting",
+          "len": 45
+        },
+        {
+          "normalized": "h c nutting",
+          "len": 44
+        },
+        {
+          "normalized": "ross education hldg",
+          "len": 43
+        },
+        {
+          "normalized": "gray local media",
+          "len": 43
+        },
+        {
+          "normalized": "renal treatment centersmidatlantic",
+          "len": 43
+        },
+        {
+          "normalized": "unifirst",
+          "len": 43
+        },
+        {
+          "normalized": "biomedical applications of michigan",
+          "len": 43
+        },
+        {
+          "normalized": "dfa dairy brands fluid",
+          "len": 42
+        },
+        {
+          "normalized": "volkert",
+          "len": 41
+        },
+        {
+          "normalized": "eaton",
+          "len": 41
+        },
+        {
+          "normalized": "option care ent",
+          "len": 40
+        },
+        {
+          "normalized": "herc rentals",
+          "len": 40
+        },
+        {
+          "normalized": "biomedical applications of florida",
+          "len": 40
+        },
+        {
+          "normalized": "rest easy",
+          "len": 40
+        },
+        {
+          "normalized": "science applications intl",
+          "len": 39
+        },
+        {
+          "normalized": "biomedical applications of texas",
+          "len": 39
+        },
+        {
+          "normalized": "osf healthcare system",
+          "len": 39
+        },
+        {
+          "normalized": "pape machinery",
+          "len": 38
+        },
+        {
+          "normalized": "biomedical applications of virginia",
+          "len": 37
+        },
+        {
+          "normalized": "crowe",
+          "len": 36
+        },
+        {
+          "normalized": "rain for rent",
+          "len": 36
+        },
+        {
+          "normalized": "harrington industrial plastics",
+          "len": 36
+        },
+        {
+          "normalized": "general dynamics mission systems",
+          "len": 36
+        },
+        {
+          "normalized": "nutrien ag sln",
+          "len": 36
+        },
+        {
+          "normalized": "apple ten hospitality management",
+          "len": 35
+        },
+        {
+          "normalized": "parkerhannifin",
+          "len": 35
+        },
+        {
+          "normalized": "alro steel",
+          "len": 34
+        },
+        {
+          "normalized": "morrison",
+          "len": 34
+        },
+        {
+          "normalized": "renal treatment centers midatlantic",
+          "len": 33
+        },
+        {
+          "normalized": "county of los angeles",
+          "len": 33
+        },
+        {
+          "normalized": "applied research assoc",
+          "len": 33
+        },
+        {
+          "normalized": "bearing distributors",
+          "len": 33
+        },
+        {
+          "normalized": "cni thl ops",
+          "len": 32
+        }
+      ],
+      "sample_empty_after_norm": [],
+      "sample_one_char_after_norm": [
+        [
+          "E CORP",
+          "e"
+        ],
+        [
+          "+P, LLC",
+          "p"
+        ],
+        [
+          "D LLC.",
+          "d"
+        ],
+        [
+          "M CORP",
+          "m"
+        ],
+        [
+          "K CO INC",
+          "k"
+        ],
+        [
+          "COMPANY A, LLC",
+          "a"
+        ],
+        [
+          "J CORP",
+          "j"
+        ],
+        [
+          "Q COMPANY, LLC",
+          "q"
+        ],
+        [
+          "G CORP",
+          "g"
+        ],
+        [
+          "Z COMPANIES, INC.",
+          "z"
+        ],
+        [
+          "L- APS, INC.",
+          "l"
+        ],
+        [
+          "THE U COMPANY L.L.C.",
+          "u"
+        ],
+        [
+          "COMPANY K INC",
+          "k"
+        ],
+        [
+          "X, LLC",
+          "x"
+        ],
+        [
+          "X LIMITED LIABILITY CO",
+          "x"
+        ],
+        [
+          "COMPANY E",
+          "e"
+        ],
+        [
+          "COMPANY D",
+          "d"
+        ],
+        [
+          "Q LLC",
+          "q"
+        ],
+        [
+          "R LLC",
+          "r"
+        ],
+        [
+          "D LLC",
+          "d"
+        ]
+      ],
+      "sample_substantively_changed": [
+        [
+          "K & K CONSTRUCTION SUPPLY INC",
+          "k and k construction supply"
+        ],
+        [
+          "MVL-AL OTHMAN AL ZAMEL JV LLC",
+          "mvlal othman al zamel jv"
+        ],
+        [
+          "ALL POINTS HOLDING COMPANY LLC",
+          "all points hldg"
+        ],
+        [
+          "THE YOUNG MEN`S CHRISTIAN ASSOCIATION OF MARION COUNTY, OHIO",
+          "young men s christian association of marion county ohio"
+        ],
+        [
+          "BOOTH MANOR INC",
+          "booth manor"
+        ],
+        [
+          "ACTIVE HEALTH SCIENCE LLC",
+          "active health science"
+        ],
+        [
+          "GUARDIAN CONTRACT MANAGERS INC",
+          "guardian contract managers"
+        ],
+        [
+          "SPECTRA ANALYSIS INSTRUMENTS INC",
+          "spectra analysis instruments"
+        ],
+        [
+          "CATALYST DIVING, INC.",
+          "catalyst diving"
+        ],
+        [
+          "SE SISTA II SISTER INC",
+          "se sista ii sister"
+        ],
+        [
+          "ISD RENAL, INC.",
+          "isd renal"
+        ],
+        [
+          "TORIAN TECHNOLOGY LLC",
+          "torian tech"
+        ],
+        [
+          "THUNDER BAY HOTELS LLC",
+          "thunder bay hotels"
+        ],
+        [
+          "AFRICA GLOBAL LOGISTICS MOCAMBIQUE, S.A",
+          "africa global logistics mocambique"
+        ],
+        [
+          "SOLA VIOLINS LLC",
+          "sola violins"
+        ],
+        [
+          "ALLIANCE PROFESSIONAL SOLUTIONS, LLC",
+          "alliance professional sln"
+        ],
+        [
+          "KAM TECHNOLOGIES, LLC",
+          "kam tech"
+        ],
+        [
+          "ALAMGIR RESEARCH INC",
+          "alamgir research"
+        ],
+        [
+          "DUBOIS CONSTRUCTION CO INC",
+          "dubois construction"
+        ],
+        [
+          "DIVERSIFIED RESIDENTIAL SERVICES LLC",
+          "diversified residential svc"
+        ]
+      ],
+      "top_trailing_tokens": [
+        [
+          "llc",
+          291903
+        ],
+        [
+          "inc",
+          255163
+        ],
+        [
+          "corp",
+          17353
+        ],
+        [
+          "district",
+          11601
+        ],
+        [
+          "corporation",
+          11259
+        ],
+        [
+          "co",
+          11027
+        ],
+        [
+          "company",
+          8728
+        ],
+        [
+          "l.l.c",
+          8180
+        ],
+        [
+          "ltd",
+          7929
+        ],
+        [
+          "center",
+          7468
+        ],
+        [
+          "lp",
+          6372
+        ],
+        [
+          "incorporated",
+          5873
+        ],
+        [
+          "foundation",
+          5447
+        ],
+        [
+          "services",
+          4647
+        ],
+        [
+          "authority",
+          4393
+        ],
+        [
+          "of",
+          4188
+        ],
+        [
+          "limited",
+          4041
+        ],
+        [
+          "department",
+          3790
+        ],
+        [
+          "school",
+          3607
+        ],
+        [
+          "association",
+          3433
+        ],
+        [
+          "pllc",
+          3208
+        ],
+        [
+          "partnership",
+          3045
+        ],
+        [
+          "county",
+          2619
+        ],
+        [
+          "solutions",
+          2325
+        ],
+        [
+          "group",
+          2173
+        ],
+        [
+          "township",
+          1953
+        ],
+        [
+          "l.p",
+          1922
+        ],
+        [
+          "apartments",
+          1847
+        ],
+        [
+          "the",
+          1817
+        ],
+        [
+          "academy",
+          1676
+        ],
+        [
+          "dialysis",
+          1605
+        ],
+        [
+          "hall",
+          1547
+        ],
+        [
+          "schools",
+          1516
+        ],
+        [
+          "service",
+          1463
+        ],
+        [
+          "college",
+          1439
+        ],
+        [
+          "church",
+          1439
+        ],
+        [
+          "library",
+          1391
+        ],
+        [
+          "education",
+          1384
+        ],
+        [
+          "bank",
+          1384
+        ],
+        [
+          "institute",
+          1350
+        ],
+        [
+          "hospital",
+          1336
+        ],
+        [
+          "p.c",
+          1330
+        ],
+        [
+          "university",
+          1297
+        ],
+        [
+          "llp",
+          1287
+        ],
+        [
+          "consulting",
+          1274
+        ],
+        [
+          "pc",
+          1269
+        ],
+        [
+          "associates",
+          1223
+        ],
+        [
+          "union",
+          1204
+        ],
+        [
+          "construction",
+          1192
+        ],
+        [
+          "council",
+          1186
+        ]
+      ],
+      "top_leading_tokens": [
+        [
+          "the",
+          23278
+        ],
+        [
+          "city",
+          10428
+        ],
+        [
+          "town",
+          4849
+        ],
+        [
+          "new",
+          3798
+        ],
+        [
+          "american",
+          3348
+        ],
+        [
+          "county",
+          3092
+        ],
+        [
+          "north",
+          2674
+        ],
+        [
+          "united",
+          2580
+        ],
+        [
+          "community",
+          2288
+        ],
+        [
+          "national",
+          2273
+        ],
+        [
+          "a",
+          1986
+        ],
+        [
+          "village",
+          1949
+        ],
+        [
+          "west",
+          1853
+        ],
+        [
+          "south",
+          1829
+        ],
+        [
+          "global",
+          1775
+        ],
+        [
+          "advanced",
+          1721
+        ],
+        [
+          "blue",
+          1651
+        ],
+        [
+          "first",
+          1626
+        ],
+        [
+          "central",
+          1558
+        ],
+        [
+          "st",
+          1504
+        ],
+        [
+          "southern",
+          1449
+        ],
+        [
+          "all",
+          1416
+        ],
+        [
+          "east",
+          1285
+        ],
+        [
+          "housing",
+          1277
+        ],
+        [
+          "total",
+          1262
+        ],
+        [
+          "hanger",
+          1239
+        ],
+        [
+          "j",
+          1192
+        ],
+        [
+          "international",
+          1179
+        ],
+        [
+          "st.",
+          1157
+        ],
+        [
+          "green",
+          1150
+        ],
+        [
+          "black",
+          1118
+        ],
+        [
+          "pacific",
+          1101
+        ],
+        [
+          "big",
+          1100
+        ],
+        [
+          "fresenius",
+          1075
+        ],
+        [
+          "western",
+          1071
+        ],
+        [
+          "san",
+          1040
+        ],
+        [
+          "red",
+          1018
+        ],
+        [
+          "university",
+          995
+        ],
+        [
+          "center",
+          959
+        ],
+        [
+          "precision",
+          940
+        ],
+        [
+          "family",
+          936
+        ],
+        [
+          "c",
+          908
+        ],
+        [
+          "john",
+          885
+        ],
+        [
+          "quality",
+          840
+        ],
+        [
+          "lake",
+          823
+        ],
+        [
+          "northwest",
+          822
+        ],
+        [
+          "texas",
+          816
+        ],
+        [
+          "friends",
+          810
+        ],
+        [
+          "little",
+          791
+        ],
+        [
+          "northern",
+          789
+        ]
+      ]
+    }
+  },
+  "recalls": {
+    "ofac": {
+      "n_entities_with_aliases": 5374,
+      "total_pairs": 46939,
+      "matching_pairs": 2770,
+      "pair_recall_pct": 5.901276124331579,
+      "entities_collapsed_fully": 579,
+      "samples_not_collapsing": [
+        {
+          "entity_id": "12733",
+          "names": [
+            {
+              "name": "ARMY OF ISLAM",
+              "normalized": "army of islam"
+            },
+            {
+              "name": "JAISH AL-ISLAM",
+              "normalized": "jaish alislam"
+            },
+            {
+              "name": "JAYSH AL-ISLAM",
+              "normalized": "jaysh alislam"
+            }
+          ]
+        },
+        {
+          "entity_id": "33882",
+          "names": [
+            {
+              "name": "DOO MM KOM INTER BLUE DONJI JASENOVIK",
+              "normalized": "doo mm kom inter blue donji jasenovik"
+            },
+            {
+              "name": "PREDUZECE ZA PROIZVODNJU PROMET TRGOVINU I USLUGE MM KOM INTER BLUE DOO DONJI JASENOVIK",
+              "normalized": "preduzece za proizvodnju promet trgovinu i usluge mm kom inter blue doo donji jasenovik"
+            }
+          ]
+        },
+        {
+          "entity_id": "49951",
+          "names": [
+            {
+              "name": "LIMITED LIABILITY COMPANY UMNYI SKLAD",
+              "normalized": "umnyi sklad"
+            },
+            {
+              "name": "IQSKLAD",
+              "normalized": "iqsklad"
+            },
+            {
+              "name": "SMART WAREHOUSE GROUP OF COMPANIES - IQSKLAD",
+              "normalized": "smart warehouse grp of companies iqsklad"
+            }
+          ]
+        },
+        {
+          "entity_id": "29522",
+          "names": [
+            {
+              "name": "ABADAN OIL REFINING COMPANY",
+              "normalized": "abadan oil refining"
+            },
+            {
+              "name": "PALAYESH NAFT ABADAN",
+              "normalized": "palayesh naft abadan"
+            },
+            {
+              "name": "AORC",
+              "normalized": "aorc"
+            },
+            {
+              "name": "ABADAN OIL REFINING COMPANY PRIVATE JOINT STOCK",
+              "normalized": "abadan oil refining company private joint stock"
+            }
+          ]
+        },
+        {
+          "entity_id": "36424",
+          "names": [
+            {
+              "name": "SBER LEGAL LIMITED LIABILITY COMPANY",
+              "normalized": "sber legal"
+            },
+            {
+              "name": "SBER LEGAL LLC",
+              "normalized": "sber legal"
+            },
+            {
+              "name": "SBER LIGAL",
+              "normalized": "sber ligal"
+            }
+          ]
+        },
+        {
+          "entity_id": "11644",
+          "names": [
+            {
+              "name": "MACHINE SAZI ARAK CO. LTD.",
+              "normalized": "machine sazi arak"
+            },
+            {
+              "name": "MSA",
+              "normalized": "msa"
+            },
+            {
+              "name": "MASHIN SAZI ARAK",
+              "normalized": "mashin sazi arak"
+            },
+            {
+              "name": "MACHINE SAZI ARAK SSA",
+              "normalized": "machine sazi arak ssa"
+            },
+            {
+              "name": "MACHINE SAZI ARAK COMPANY P J S C",
+              "normalized": "machine sazi arak company p j s c"
+            }
+          ]
+        },
+        {
+          "entity_id": "43196",
+          "names": [
+            {
+              "name": "RUSATOM ADDITIVE TECHNOLOGIES",
+              "normalized": "rusatom additive tech"
+            },
+            {
+              "name": "RUSAT",
+              "normalized": "rusat"
+            }
+          ]
+        },
+        {
+          "entity_id": "18784",
+          "names": [
+            {
+              "name": "JOINT STOCK COMMERCIAL BANK NOVIKOMBANK",
+              "normalized": "joint stock commercial bank novikombank"
+            },
+            {
+              "name": "AKTSIONERNY KOMMERCHESKI BANK NOVIKOMBANK AKTSIONERNOE OBSHCHESTVO",
+              "normalized": "aktsionerny kommercheski bank novikombank"
+            },
+            {
+              "name": "AO AKB NOVIKOMBANK",
+              "normalized": "akb novikombank"
+            },
+            {
+              "name": "JOINT STOCK COMMERCIAL BANK NOVIKOMBANK JOINT STOCK COMPANY",
+              "normalized": "joint stock commercial bank novikombank"
+            },
+            {
+              "name": "NOVIKOMBANK JCSB",
+              "normalized": "novikombank jcsb"
+            },
+            {
+              "name": "NOVIKOMBANK AO",
+              "normalized": "novikombank"
+            }
+          ]
+        },
+        {
+          "entity_id": "47840",
+          "names": [
+            {
+              "name": "PUBLIC JOINT STOCK COMPANY PIK SPECIALIZED HOMEBUILDER",
+              "normalized": "pik specialized homebuilder"
+            },
+            {
+              "name": "PJSC PIK SHB",
+              "normalized": "pik shb"
+            }
+          ]
+        },
+        {
+          "entity_id": "40880",
+          "names": [
+            {
+              "name": "BUSHEHR PETROCHEMICAL COMPANY",
+              "normalized": "bushehr petrochemical"
+            },
+            {
+              "name": "BUPC",
+              "normalized": "bupc"
+            }
+          ]
+        }
+      ]
+    },
+    "sam": {
+      "n_entities_with_aliases": 148635,
+      "total_pairs": 178588,
+      "matching_pairs": 82874,
+      "pair_recall_pct": 46.405133603601584,
+      "entities_collapsed_fully": 62952,
+      "samples_not_collapsing": [
+        {
+          "entity_id": "DX5CENRQW8F7",
+          "names": [
+            {
+              "name": "FIVE K HOLDINGS, INC.",
+              "normalized": "five k hldg"
+            },
+            {
+              "name": "NELBERT KRAUSE'S COLLISION",
+              "normalized": "nelbert krauses collision"
+            }
+          ]
+        },
+        {
+          "entity_id": "J3XKU6UJ4DU3",
+          "names": [
+            {
+              "name": "AMY JANET COTTON",
+              "normalized": "amy janet cotton"
+            },
+            {
+              "name": "COTTON LURES WILDLAND FIRE SERVICES",
+              "normalized": "cotton lures wildland fire svc"
+            }
+          ]
+        },
+        {
+          "entity_id": "HUL5JSJLVUM8",
+          "names": [
+            {
+              "name": "THE GRAND RAPIDS URBAN LEAGUE",
+              "normalized": "grand rapids urban league"
+            },
+            {
+              "name": "URBAN LEAGUE OF WEST MICHIGAN",
+              "normalized": "urban league of west michigan"
+            }
+          ]
+        },
+        {
+          "entity_id": "WKT4PHB9WH73",
+          "names": [
+            {
+              "name": "THE IDA AND ASSET-BUILDING COLLABORATIVE OF NORTH CAROLINA, INC.",
+              "normalized": "ida and assetbuilding collaborative of north carolina"
+            },
+            {
+              "name": "THE COLLABORATIVE",
+              "normalized": "the collaborative"
+            }
+          ]
+        },
+        {
+          "entity_id": "MLQAZN79NQT7",
+          "names": [
+            {
+              "name": "LM APARTMENTS, LLC",
+              "normalized": "lm apartments"
+            },
+            {
+              "name": "LIVINGSTON MEADOWS APARTMENTS",
+              "normalized": "livingston meadows apartments"
+            }
+          ]
+        },
+        {
+          "entity_id": "H86ZNGYKFVV4",
+          "names": [
+            {
+              "name": "LESTER E. COX MEDICAL CENTERS",
+              "normalized": "lester e cox medical centers"
+            },
+            {
+              "name": "COXHEALTH",
+              "normalized": "coxhealth"
+            }
+          ]
+        },
+        {
+          "entity_id": "JAJBTPUWACG6",
+          "names": [
+            {
+              "name": "ATHENEON ILLINOIS INC",
+              "normalized": "atheneon illinois"
+            },
+            {
+              "name": "MOTEL 6 #4658",
+              "normalized": "motel 6 4658"
+            }
+          ]
+        },
+        {
+          "entity_id": "REPDWLGWGBP4",
+          "names": [
+            {
+              "name": "JLMG ENTERPRISES LLC",
+              "normalized": "jlmg ent"
+            },
+            {
+              "name": "RED LEAF IT ASSET RECOVERY",
+              "normalized": "red leaf it asset recovery"
+            }
+          ]
+        },
+        {
+          "entity_id": "SAA6Q5R1HNN5",
+          "names": [
+            {
+              "name": "GULF OF MEXICO ALLIANCE",
+              "normalized": "gulf of mexico alliance"
+            },
+            {
+              "name": "GULF OF AMERICA ALLIANCE",
+              "normalized": "gulf of america alliance"
+            }
+          ]
+        },
+        {
+          "entity_id": "NSQZAJXTLWK1",
+          "names": [
+            {
+              "name": "INTERNATIONAL CENTER FOR ARTISTIC DEVELOPMENT INC",
+              "normalized": "intl center for artistic dev"
+            },
+            {
+              "name": "CAMP CAMELLIA TREE FARM",
+              "normalized": "camp camellia tree farm"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
