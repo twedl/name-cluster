@@ -34,23 +34,7 @@
           "len": 10
         },
         {
-          "normalized": "alaqsa islamic charitable society",
-          "len": 9
-        },
-        {
-          "normalized": "charitable society to help the noble alaqsa",
-          "len": 9
-        },
-        {
-          "normalized": "alaqsa sinabil establishment",
-          "len": 9
-        },
-        {
-          "normalized": "alaqsa charitable organization",
-          "len": 9
-        },
-        {
-          "normalized": "alaqsa spanm i stiftelse",
+          "normalized": "mu assa sanabil alaqsa alkhayriyya",
           "len": 9
         },
         {
@@ -58,19 +42,15 @@
           "len": 9
         },
         {
-          "normalized": "mu asa alaqsa alkhayriyya",
+          "normalized": "alaqsa sinabil establishment",
           "len": 9
         },
         {
-          "normalized": "swedish charitable aqsa est",
+          "normalized": "alharamain islamic foundation",
           "len": 9
         },
         {
-          "normalized": "alaqsa spanmal stiftelse",
-          "len": 9
-        },
-        {
-          "normalized": "mu assa sanabil alaqsa alkhayriyya",
+          "normalized": "aqssa society",
           "len": 9
         },
         {
@@ -82,11 +62,7 @@
           "len": 9
         },
         {
-          "normalized": "alharamain islamic foundation",
-          "len": 9
-        },
-        {
-          "normalized": "charitable alaqsa establishment",
+          "normalized": "swedish charitable aqsa est",
           "len": 9
         },
         {
@@ -94,19 +70,7 @@
           "len": 9
         },
         {
-          "normalized": "alaqsa intl foundation",
-          "len": 9
-        },
-        {
           "normalized": "nusrat alaqsa alsharif",
-          "len": 9
-        },
-        {
-          "normalized": "stichting alaqsa",
-          "len": 9
-        },
-        {
-          "normalized": "alharamain foundation",
           "len": 9
         },
         {
@@ -114,7 +78,7 @@
           "len": 9
         },
         {
-          "normalized": "aqssa society",
+          "normalized": "charitable society to help the noble alaqsa",
           "len": 9
         },
         {
@@ -122,28 +86,40 @@
           "len": 9
         },
         {
-          "normalized": "alharamain humanitarian foundation",
-          "len": 8
+          "normalized": "alaqsa islamic charitable society",
+          "len": 9
         },
         {
-          "normalized": "alharamein islamic foundation",
-          "len": 8
+          "normalized": "alharamain foundation",
+          "len": 9
         },
         {
-          "normalized": "alharamein",
-          "len": 8
+          "normalized": "charitable alaqsa establishment",
+          "len": 9
         },
         {
-          "normalized": "alaqsa asbl",
-          "len": 8
+          "normalized": "alaqsa intl foundation",
+          "len": 9
         },
         {
-          "normalized": "alharamayn",
-          "len": 8
+          "normalized": "alaqsa spanm i stiftelse",
+          "len": 9
         },
         {
-          "normalized": "alharamayn humanitarian foundation",
-          "len": 8
+          "normalized": "mu asa alaqsa alkhayriyya",
+          "len": 9
+        },
+        {
+          "normalized": "stichting alaqsa",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa charitable organization",
+          "len": 9
+        },
+        {
+          "normalized": "alaqsa spanmal stiftelse",
+          "len": 9
         },
         {
           "normalized": "alharamayn islamic foundation",
@@ -154,7 +130,23 @@
           "len": 8
         },
         {
-          "normalized": "alharamein foundation",
+          "normalized": "alharamayn humanitarian foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alaqsa asbl",
+          "len": 8
+        },
+        {
+          "normalized": "alharamein",
+          "len": 8
+        },
+        {
+          "normalized": "alharamein islamic foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamayn",
           "len": 8
         },
         {
@@ -162,7 +154,27 @@
           "len": 8
         },
         {
+          "normalized": "alharamein foundation",
+          "len": 8
+        },
+        {
+          "normalized": "alharamain humanitarian foundation",
+          "len": 8
+        },
+        {
+          "normalized": "vtb bank",
+          "len": 7
+        },
+        {
           "normalized": "vad",
+          "len": 7
+        },
+        {
+          "normalized": "scan",
+          "len": 7
+        },
+        {
+          "normalized": "garantsv",
           "len": 7
         },
         {
@@ -174,51 +186,15 @@
           "len": 7
         },
         {
-          "normalized": "garantsv",
-          "len": 7
-        },
-        {
-          "normalized": "vtb bank",
-          "len": 7
-        },
-        {
-          "normalized": "scan",
-          "len": 7
+          "normalized": "tyazhpressmash",
+          "len": 6
         },
         {
           "normalized": "chadormalu mining and industrial",
           "len": 6
         },
         {
-          "normalized": "tyazhpressmash",
-          "len": 6
-        },
-        {
-          "normalized": "investtradebank",
-          "len": 5
-        },
-        {
-          "normalized": "rnt",
-          "len": 5
-        },
-        {
-          "normalized": "promsvyazbank",
-          "len": 5
-        },
-        {
-          "normalized": "stratim",
-          "len": 5
-        },
-        {
           "normalized": "sberbank of russia",
-          "len": 5
-        },
-        {
-          "normalized": "alfabank",
-          "len": 5
-        },
-        {
-          "normalized": "uralelektromed",
           "len": 5
         },
         {
@@ -226,75 +202,7 @@
           "len": 5
         },
         {
-          "normalized": "stroytransgaz",
-          "len": 5
-        },
-        {
-          "normalized": "naz tech",
-          "len": 5
-        },
-        {
-          "normalized": "timer bank",
-          "len": 5
-        },
-        {
           "normalized": "antares",
-          "len": 5
-        },
-        {
-          "normalized": "mostotrest",
-          "len": 5
-        },
-        {
-          "normalized": "alharamain",
-          "len": 5
-        },
-        {
-          "normalized": "surgutneftegas",
-          "len": 5
-        },
-        {
-          "normalized": "bank vtb",
-          "len": 5
-        },
-        {
-          "normalized": "zvezda",
-          "len": 5
-        },
-        {
-          "normalized": "bank zenit",
-          "len": 5
-        },
-        {
-          "normalized": "genbank",
-          "len": 5
-        },
-        {
-          "normalized": "gazprom neft",
-          "len": 5
-        },
-        {
-          "normalized": "140 repair plant",
-          "len": 5
-        },
-        {
-          "normalized": "triliance petrochemical",
-          "len": 5
-        },
-        {
-          "normalized": "rafort",
-          "len": 5
-        },
-        {
-          "normalized": "ansar alsharia",
-          "len": 5
-        },
-        {
-          "normalized": "tajco",
-          "len": 5
-        },
-        {
-          "normalized": "persian gulf petrochemical ind",
           "len": 5
         },
         {
@@ -302,55 +210,99 @@
           "len": 5
         },
         {
-          "normalized": "a7",
-          "len": 4
+          "normalized": "rafort",
+          "len": 5
         },
         {
-          "normalized": "atlant s",
-          "len": 4
+          "normalized": "naz tech",
+          "len": 5
         },
         {
-          "normalized": "russian helicopters",
-          "len": 4
+          "normalized": "bank zenit",
+          "len": 5
         },
         {
-          "normalized": "raspadskaya",
-          "len": 4
+          "normalized": "tajco",
+          "len": 5
         },
         {
-          "normalized": "kvtrus",
-          "len": 4
+          "normalized": "bank vtb",
+          "len": 5
         },
         {
-          "normalized": "vtb dev",
-          "len": 4
+          "normalized": "ansar alsharia",
+          "len": 5
         },
         {
-          "normalized": "bm bank",
-          "len": 4
+          "normalized": "alharamain",
+          "len": 5
         },
         {
-          "normalized": "tkkhinvest",
-          "len": 4
+          "normalized": "140 repair plant",
+          "len": 5
         },
         {
-          "normalized": "muassasat alharamayn alkhayriyya",
-          "len": 4
+          "normalized": "alfabank",
+          "len": 5
         },
         {
-          "normalized": "abr management",
-          "len": 4
+          "normalized": "persian gulf petrochemical ind",
+          "len": 5
         },
         {
-          "normalized": "sberbank leasing",
-          "len": 4
+          "normalized": "investtradebank",
+          "len": 5
         },
         {
-          "normalized": "vtb bank belarus",
-          "len": 4
+          "normalized": "stratim",
+          "len": 5
         },
         {
-          "normalized": "cimex",
+          "normalized": "zvezda",
+          "len": 5
+        },
+        {
+          "normalized": "genbank",
+          "len": 5
+        },
+        {
+          "normalized": "surgutneftegas",
+          "len": 5
+        },
+        {
+          "normalized": "mostotrest",
+          "len": 5
+        },
+        {
+          "normalized": "stroytransgaz",
+          "len": 5
+        },
+        {
+          "normalized": "triliance petrochemical",
+          "len": 5
+        },
+        {
+          "normalized": "promsvyazbank",
+          "len": 5
+        },
+        {
+          "normalized": "rnt",
+          "len": 5
+        },
+        {
+          "normalized": "uralelektromed",
+          "len": 5
+        },
+        {
+          "normalized": "gazprom neft",
+          "len": 5
+        },
+        {
+          "normalized": "timer bank",
+          "len": 5
+        },
+        {
+          "normalized": "home credit and finance bank",
           "len": 4
         },
         {
@@ -358,59 +310,31 @@
           "len": 4
         },
         {
+          "normalized": "abr management",
+          "len": 4
+        },
+        {
+          "normalized": "rpp",
+          "len": 4
+        },
+        {
           "normalized": "kinoatis",
           "len": 4
         },
         {
-          "normalized": "chlodwig ent",
+          "normalized": "adorabella",
           "len": 4
         },
         {
-          "normalized": "fertoing",
+          "normalized": "muassasat alharamain alkhayriyya",
           "len": 4
         },
         {
-          "normalized": "zawaya grp for dev and investment",
+          "normalized": "guilin alpha rubber and plastics tech",
           "len": 4
         },
         {
-          "normalized": "vezir",
-          "len": 4
-        },
-        {
-          "normalized": "kvarta vk",
-          "len": 4
-        },
-        {
-          "normalized": "elitnye doma",
-          "len": 4
-        },
-        {
-          "normalized": "apolo informatica",
-          "len": 4
-        },
-        {
-          "normalized": "trans kapital",
-          "len": 4
-        },
-        {
-          "normalized": "shipyard zaliv",
-          "len": 4
-        },
-        {
-          "normalized": "beltechexport",
-          "len": 4
-        },
-        {
-          "normalized": "vsk",
-          "len": 4
-        },
-        {
-          "normalized": "naftiran intertrade",
-          "len": 4
-        },
-        {
-          "normalized": "vtb dc",
+          "normalized": "strela",
           "len": 4
         },
         {
@@ -418,15 +342,91 @@
           "len": 4
         },
         {
-          "normalized": "alevkurp",
-          "len": 4
-        },
-        {
-          "normalized": "myanmar imperial jade gems and jewellery",
-          "len": 4
-        },
-        {
           "normalized": "research and production corporation istok named after ai shokin",
+          "len": 4
+        },
+        {
+          "normalized": "energooil",
+          "len": 4
+        },
+        {
+          "normalized": "smp bank",
+          "len": 4
+        },
+        {
+          "normalized": "tribit",
+          "len": 4
+        },
+        {
+          "normalized": "ilyushin aviation complex",
+          "len": 4
+        },
+        {
+          "normalized": "bm bank",
+          "len": 4
+        },
+        {
+          "normalized": "bandar imam petrochemical",
+          "len": 4
+        },
+        {
+          "normalized": "gmcs management",
+          "len": 4
+        },
+        {
+          "normalized": "beltechexport",
+          "len": 4
+        },
+        {
+          "normalized": "vezir",
+          "len": 4
+        },
+        {
+          "normalized": "ostozhenka 19",
+          "len": 4
+        },
+        {
+          "normalized": "spetstekhnika",
+          "len": 4
+        },
+        {
+          "normalized": "a1",
+          "len": 4
+        },
+        {
+          "normalized": "103 arsenal",
+          "len": 4
+        },
+        {
+          "normalized": "vsk",
+          "len": 4
+        },
+        {
+          "normalized": "cimex",
+          "len": 4
+        },
+        {
+          "normalized": "s and c trd",
+          "len": 4
+        },
+        {
+          "normalized": "muassasat alharamayn alkhayriyya",
+          "len": 4
+        },
+        {
+          "normalized": "fintender",
+          "len": 4
+        },
+        {
+          "normalized": "eniks",
+          "len": 4
+        },
+        {
+          "normalized": "shipyard zaliv",
+          "len": 4
+        },
+        {
+          "normalized": "kavian petrochemical",
           "len": 4
         }
       ],
@@ -978,10 +978,6 @@
           "len": 55
         },
         {
-          "normalized": "delta",
-          "len": 52
-        },
-        {
           "normalized": "grp",
           "len": 52
         },
@@ -990,11 +986,15 @@
           "len": 52
         },
         {
-          "normalized": "alma",
-          "len": 50
+          "normalized": "delta",
+          "len": 52
         },
         {
           "normalized": "consulting",
+          "len": 50
+        },
+        {
+          "normalized": "alma",
           "len": 50
         },
         {
@@ -1018,11 +1018,11 @@
           "len": 44
         },
         {
-          "normalized": "balaji ent",
+          "normalized": "hestia",
           "len": 43
         },
         {
-          "normalized": "hestia",
+          "normalized": "balaji ent",
           "len": 43
         },
         {
@@ -1054,12 +1054,16 @@
           "len": 36
         },
         {
+          "normalized": "krishna ent",
+          "len": 35
+        },
+        {
           "normalized": "athena",
           "len": 35
         },
         {
-          "normalized": "krishna ent",
-          "len": 35
+          "normalized": "dama",
+          "len": 34
         },
         {
           "normalized": "siemens energy",
@@ -1070,11 +1074,7 @@
           "len": 34
         },
         {
-          "normalized": "dama",
-          "len": 34
-        },
-        {
-          "normalized": "omega",
+          "normalized": "siemens",
           "len": 33
         },
         {
@@ -1082,7 +1082,7 @@
           "len": 33
         },
         {
-          "normalized": "siemens",
+          "normalized": "omega",
           "len": 33
         },
         {
@@ -1094,15 +1094,15 @@
           "len": 32
         },
         {
-          "normalized": "luna",
-          "len": 32
-        },
-        {
           "normalized": "albatros",
           "len": 32
         },
         {
           "normalized": "victoria",
+          "len": 32
+        },
+        {
+          "normalized": "luna",
           "len": 32
         },
         {
@@ -1114,11 +1114,11 @@
           "len": 31
         },
         {
-          "normalized": "gea",
+          "normalized": "kairos",
           "len": 31
         },
         {
-          "normalized": "kairos",
+          "normalized": "gea",
           "len": 31
         },
         {
@@ -1126,27 +1126,15 @@
           "len": 31
         },
         {
-          "normalized": "alfa",
-          "len": 30
-        },
-        {
-          "normalized": "stella",
-          "len": 30
-        },
-        {
-          "normalized": "mas",
-          "len": 30
-        },
-        {
-          "normalized": "gm",
-          "len": 30
-        },
-        {
           "normalized": "caisse locale de credit agricole mutuel",
           "len": 30
         },
         {
-          "normalized": "prima",
+          "normalized": "alfa",
+          "len": 30
+        },
+        {
+          "normalized": "gm",
           "len": 30
         },
         {
@@ -1158,24 +1146,16 @@
           "len": 30
         },
         {
-          "normalized": "mb hldg",
-          "len": 29
+          "normalized": "prima",
+          "len": 30
         },
         {
-          "normalized": "ares",
-          "len": 29
+          "normalized": "mas",
+          "len": 30
         },
         {
-          "normalized": "vision",
-          "len": 29
-        },
-        {
-          "normalized": "sirio",
-          "len": 29
-        },
-        {
-          "normalized": "polaris",
-          "len": 29
+          "normalized": "stella",
+          "len": 30
         },
         {
           "normalized": "sanjay kumar",
@@ -1186,23 +1166,35 @@
           "len": 29
         },
         {
+          "normalized": "sirio",
+          "len": 29
+        },
+        {
+          "normalized": "mb hldg",
+          "len": 29
+        },
+        {
           "normalized": "abb",
           "len": 29
         },
         {
-          "normalized": "mia",
-          "len": 28
+          "normalized": "polaris",
+          "len": 29
         },
         {
-          "normalized": "istituto diocesano per il sostentamento del clero",
-          "len": 28
+          "normalized": "vision",
+          "len": 29
         },
         {
-          "normalized": "sama",
-          "len": 28
+          "normalized": "ares",
+          "len": 29
         },
         {
           "normalized": "antares",
+          "len": 28
+        },
+        {
+          "normalized": "mia",
           "len": 28
         },
         {
@@ -1210,19 +1202,7 @@
           "len": 28
         },
         {
-          "normalized": "mm hldg",
-          "len": 28
-        },
-        {
           "normalized": "anil kumar",
-          "len": 28
-        },
-        {
-          "normalized": "mg hldg",
-          "len": 28
-        },
-        {
-          "normalized": "investment",
           "len": 28
         },
         {
@@ -1230,11 +1210,27 @@
           "len": 28
         },
         {
-          "normalized": "argo",
-          "len": 27
+          "normalized": "sama",
+          "len": 28
         },
         {
-          "normalized": "manoj kumar",
+          "normalized": "investment",
+          "len": 28
+        },
+        {
+          "normalized": "mg hldg",
+          "len": 28
+        },
+        {
+          "normalized": "istituto diocesano per il sostentamento del clero",
+          "len": 28
+        },
+        {
+          "normalized": "mm hldg",
+          "len": 28
+        },
+        {
+          "normalized": "eos",
           "len": 27
         },
         {
@@ -1242,7 +1238,7 @@
           "len": 27
         },
         {
-          "normalized": "beta",
+          "normalized": "manoj kumar",
           "len": 27
         },
         {
@@ -1250,11 +1246,15 @@
           "len": 27
         },
         {
-          "normalized": "eos",
+          "normalized": "beta",
           "len": 27
         },
         {
-          "normalized": "oikos",
+          "normalized": "argo",
+          "len": 27
+        },
+        {
+          "normalized": "gima",
           "len": 26
         },
         {
@@ -1262,43 +1262,7 @@
           "len": 26
         },
         {
-          "normalized": "naresh kumar",
-          "len": 26
-        },
-        {
-          "normalized": "emerging markets equity fund",
-          "len": 26
-        },
-        {
-          "normalized": "vesta",
-          "len": 26
-        },
-        {
-          "normalized": "next",
-          "len": 26
-        },
-        {
           "normalized": "mp hldg",
-          "len": 26
-        },
-        {
-          "normalized": "cm",
-          "len": 26
-        },
-        {
-          "normalized": "horus",
-          "len": 26
-        },
-        {
-          "normalized": "gima",
-          "len": 26
-        },
-        {
-          "normalized": "ventures",
-          "len": 26
-        },
-        {
-          "normalized": "siemens healthcare",
           "len": 26
         },
         {
@@ -1306,35 +1270,51 @@
           "len": 26
         },
         {
+          "normalized": "cm",
+          "len": 26
+        },
+        {
+          "normalized": "siemens healthcare",
+          "len": 26
+        },
+        {
+          "normalized": "vesta",
+          "len": 26
+        },
+        {
+          "normalized": "emerging markets equity fund",
+          "len": 26
+        },
+        {
           "normalized": "jb hldg",
           "len": 26
         },
         {
-          "normalized": "rs hldg",
-          "len": 25
+          "normalized": "horus",
+          "len": 26
         },
         {
-          "normalized": "sigma",
-          "len": 25
+          "normalized": "ventures",
+          "len": 26
         },
         {
-          "normalized": "energy",
-          "len": 25
+          "normalized": "naresh kumar",
+          "len": 26
         },
         {
-          "normalized": "sea",
-          "len": 25
+          "normalized": "oikos",
+          "len": 26
+        },
+        {
+          "normalized": "next",
+          "len": 26
         },
         {
           "normalized": "siemens mobility",
           "len": 25
         },
         {
-          "normalized": "cmc",
-          "len": 25
-        },
-        {
-          "normalized": "atena",
+          "normalized": "sigma",
           "len": 25
         },
         {
@@ -1346,11 +1326,31 @@
           "len": 25
         },
         {
+          "normalized": "cmc",
+          "len": 25
+        },
+        {
+          "normalized": "atena",
+          "len": 25
+        },
+        {
+          "normalized": "energy",
+          "len": 25
+        },
+        {
+          "normalized": "rs hldg",
+          "len": 25
+        },
+        {
           "normalized": "one",
           "len": 25
         },
         {
-          "normalized": "js hldg",
+          "normalized": "sea",
+          "len": 25
+        },
+        {
+          "normalized": "mk hldg",
           "len": 24
         }
       ],
@@ -1958,11 +1958,11 @@
           "len": 54
         },
         {
-          "normalized": "grp",
+          "normalized": "tech",
           "len": 46
         },
         {
-          "normalized": "tech",
+          "normalized": "grp",
           "len": 46
         },
         {
@@ -1994,10 +1994,6 @@
           "len": 34
         },
         {
-          "normalized": "estates",
-          "len": 33
-        },
-        {
           "normalized": "construction",
           "len": 33
         },
@@ -2006,11 +2002,15 @@
           "len": 33
         },
         {
-          "normalized": "developments",
-          "len": 31
+          "normalized": "estates",
+          "len": 33
         },
         {
           "normalized": "transport",
+          "len": 31
+        },
+        {
+          "normalized": "developments",
           "len": 31
         },
         {
@@ -2022,16 +2022,12 @@
           "len": 29
         },
         {
-          "normalized": "global",
-          "len": 28
-        },
-        {
           "normalized": "and",
           "len": 28
         },
         {
-          "normalized": "electrical",
-          "len": 27
+          "normalized": "global",
+          "len": 28
         },
         {
           "normalized": "assoc",
@@ -2042,15 +2038,19 @@
           "len": 27
         },
         {
+          "normalized": "electrical",
+          "len": 27
+        },
+        {
+          "normalized": "property hldg",
+          "len": 26
+        },
+        {
           "normalized": "grp hldg",
           "len": 26
         },
         {
           "normalized": "engineering",
-          "len": 26
-        },
-        {
-          "normalized": "property hldg",
           "len": 26
         },
         {
@@ -2078,7 +2078,7 @@
           "len": 23
         },
         {
-          "normalized": "uk",
+          "normalized": "productions",
           "len": 22
         },
         {
@@ -2086,11 +2086,7 @@
           "len": 22
         },
         {
-          "normalized": "motors",
-          "len": 22
-        },
-        {
-          "normalized": "builders",
+          "normalized": "uk",
           "len": 22
         },
         {
@@ -2102,23 +2098,15 @@
           "len": 22
         },
         {
-          "normalized": "productions",
+          "normalized": "motors",
           "len": 22
         },
         {
-          "normalized": "events",
-          "len": 21
+          "normalized": "builders",
+          "len": 22
         },
         {
           "normalized": "london",
-          "len": 21
-        },
-        {
-          "normalized": "care",
-          "len": 21
-        },
-        {
-          "normalized": "intl",
           "len": 21
         },
         {
@@ -2130,8 +2118,16 @@
           "len": 21
         },
         {
-          "normalized": "healthcare",
-          "len": 20
+          "normalized": "care",
+          "len": 21
+        },
+        {
+          "normalized": "events",
+          "len": 21
+        },
+        {
+          "normalized": "intl",
+          "len": 21
         },
         {
           "normalized": "consultants",
@@ -2142,27 +2138,19 @@
           "len": 20
         },
         {
-          "normalized": "contracts",
-          "len": 19
+          "normalized": "healthcare",
+          "len": 20
         },
         {
           "normalized": "lettings",
           "len": 19
         },
         {
-          "normalized": "hospitality",
-          "len": 18
+          "normalized": "contracts",
+          "len": 19
         },
         {
-          "normalized": "health",
-          "len": 18
-        },
-        {
-          "normalized": "interiors",
-          "len": 18
-        },
-        {
-          "normalized": "property svc",
+          "normalized": "accountancy",
           "len": 18
         },
         {
@@ -2170,11 +2158,7 @@
           "len": 18
         },
         {
-          "normalized": "retail",
-          "len": 18
-        },
-        {
-          "normalized": "accountancy",
+          "normalized": "drylining",
           "len": 18
         },
         {
@@ -2182,11 +2166,11 @@
           "len": 18
         },
         {
-          "normalized": "scaffolding",
+          "normalized": "interiors",
           "len": 18
         },
         {
-          "normalized": "drylining",
+          "normalized": "health",
           "len": 18
         },
         {
@@ -2194,7 +2178,11 @@
           "len": 18
         },
         {
-          "normalized": "housing",
+          "normalized": "hospitality",
+          "len": 18
+        },
+        {
+          "normalized": "property svc",
           "len": 18
         },
         {
@@ -2202,20 +2190,16 @@
           "len": 18
         },
         {
-          "normalized": "energy",
-          "len": 17
+          "normalized": "scaffolding",
+          "len": 18
         },
         {
-          "normalized": "traders",
-          "len": 17
+          "normalized": "housing",
+          "len": 18
         },
         {
-          "normalized": "travel",
-          "len": 17
-        },
-        {
-          "normalized": "express",
-          "len": 17
+          "normalized": "retail",
+          "len": 18
         },
         {
           "normalized": "building",
@@ -2226,7 +2210,7 @@
           "len": 17
         },
         {
-          "normalized": "accountants",
+          "normalized": "travel",
           "len": 17
         },
         {
@@ -2234,11 +2218,11 @@
           "len": 17
         },
         {
-          "normalized": "holdco",
+          "normalized": "recruitment",
           "len": 17
         },
         {
-          "normalized": "recruitment",
+          "normalized": "express",
           "len": 17
         },
         {
@@ -2246,15 +2230,31 @@
           "len": 17
         },
         {
+          "normalized": "traders",
+          "len": 17
+        },
+        {
+          "normalized": "holdco",
+          "len": 17
+        },
+        {
+          "normalized": "accountants",
+          "len": 17
+        },
+        {
+          "normalized": "energy",
+          "len": 17
+        },
+        {
           "normalized": "beauty",
           "len": 17
         },
         {
-          "normalized": "real estate",
+          "normalized": "contractors",
           "len": 16
         },
         {
-          "normalized": "business svc",
+          "normalized": "automotive",
           "len": 16
         },
         {
@@ -2266,15 +2266,15 @@
           "len": 16
         },
         {
-          "normalized": "automotive",
+          "normalized": "real estate",
           "len": 16
         },
         {
-          "normalized": "contractors",
+          "normalized": "business svc",
           "len": 16
         },
         {
-          "normalized": "fitness",
+          "normalized": "collective",
           "len": 15
         },
         {
@@ -2282,15 +2282,11 @@
           "len": 15
         },
         {
-          "normalized": "consulting svc",
+          "normalized": "finance",
           "len": 15
         },
         {
-          "normalized": "roofing",
-          "len": 15
-        },
-        {
-          "normalized": "systems",
+          "normalized": "digital",
           "len": 15
         },
         {
@@ -2302,15 +2298,7 @@
           "len": 15
         },
         {
-          "normalized": "vision",
-          "len": 15
-        },
-        {
-          "normalized": "finance",
-          "len": 15
-        },
-        {
-          "normalized": "property maintenance",
+          "normalized": "systems",
           "len": 15
         },
         {
@@ -2318,15 +2306,11 @@
           "len": 15
         },
         {
-          "normalized": "collective",
+          "normalized": "fitness",
           "len": 15
         },
         {
-          "normalized": "property developments",
-          "len": 15
-        },
-        {
-          "normalized": "digital",
+          "normalized": "roofing",
           "len": 15
         },
         {
@@ -2334,7 +2318,31 @@
           "len": 15
         },
         {
-          "normalized": "dental",
+          "normalized": "property developments",
+          "len": 15
+        },
+        {
+          "normalized": "vision",
+          "len": 15
+        },
+        {
+          "normalized": "consulting svc",
+          "len": 15
+        },
+        {
+          "normalized": "property maintenance",
+          "len": 15
+        },
+        {
+          "normalized": "construction svc",
+          "len": 14
+        },
+        {
+          "normalized": "global trd",
+          "len": 14
+        },
+        {
+          "normalized": "build",
           "len": 14
         },
         {
@@ -2342,15 +2350,7 @@
           "len": 14
         },
         {
-          "normalized": "wholesale",
-          "len": 14
-        },
-        {
-          "normalized": "maintenance",
-          "len": 14
-        },
-        {
-          "normalized": "tech sln",
+          "normalized": "distribution",
           "len": 14
         }
       ],
@@ -3034,11 +3034,11 @@
           "len": 106
         },
         {
-          "normalized": "united states postal service",
+          "normalized": "us post office",
           "len": 104
         },
         {
-          "normalized": "us post office",
+          "normalized": "united states postal service",
           "len": 104
         },
         {
@@ -3142,11 +3142,11 @@
           "len": 58
         },
         {
-          "normalized": "knickerbocker dialysis",
+          "normalized": "kleinfelder",
           "len": 57
         },
         {
-          "normalized": "kleinfelder",
+          "normalized": "knickerbocker dialysis",
           "len": 57
         },
         {
@@ -3158,11 +3158,11 @@
           "len": 56
         },
         {
-          "normalized": "lockheed martin",
+          "normalized": "bisco ind",
           "len": 55
         },
         {
-          "normalized": "bisco ind",
+          "normalized": "lockheed martin",
           "len": 55
         },
         {
@@ -3210,11 +3210,11 @@
           "len": 47
         },
         {
-          "normalized": "county of starr",
+          "normalized": "wmk",
           "len": 46
         },
         {
-          "normalized": "wmk",
+          "normalized": "county of starr",
           "len": 46
         },
         {
@@ -3230,11 +3230,7 @@
           "len": 44
         },
         {
-          "normalized": "renal treatment centersmidatlantic",
-          "len": 43
-        },
-        {
-          "normalized": "unifirst",
+          "normalized": "biomedical applications of michigan",
           "len": 43
         },
         {
@@ -3242,11 +3238,15 @@
           "len": 43
         },
         {
-          "normalized": "biomedical applications of michigan",
+          "normalized": "ross education hldg",
           "len": 43
         },
         {
-          "normalized": "ross education hldg",
+          "normalized": "unifirst",
+          "len": 43
+        },
+        {
+          "normalized": "renal treatment centersmidatlantic",
           "len": 43
         },
         {
@@ -3254,23 +3254,15 @@
           "len": 42
         },
         {
-          "normalized": "volkert",
-          "len": 41
-        },
-        {
           "normalized": "eaton",
           "len": 41
         },
         {
-          "normalized": "option care ent",
-          "len": 40
+          "normalized": "volkert",
+          "len": 41
         },
         {
           "normalized": "biomedical applications of florida",
-          "len": 40
-        },
-        {
-          "normalized": "rest easy",
           "len": 40
         },
         {
@@ -3278,15 +3270,23 @@
           "len": 40
         },
         {
+          "normalized": "rest easy",
+          "len": 40
+        },
+        {
+          "normalized": "option care ent",
+          "len": 40
+        },
+        {
+          "normalized": "biomedical applications of texas",
+          "len": 39
+        },
+        {
           "normalized": "science applications intl",
           "len": 39
         },
         {
           "normalized": "osf healthcare system",
-          "len": 39
-        },
-        {
-          "normalized": "biomedical applications of texas",
           "len": 39
         },
         {
@@ -3298,7 +3298,7 @@
           "len": 37
         },
         {
-          "normalized": "harrington industrial plastics",
+          "normalized": "rain for rent",
           "len": 36
         },
         {
@@ -3310,19 +3310,19 @@
           "len": 36
         },
         {
-          "normalized": "rain for rent",
-          "len": 36
-        },
-        {
           "normalized": "crowe",
           "len": 36
         },
         {
-          "normalized": "parkerhannifin",
-          "len": 35
+          "normalized": "harrington industrial plastics",
+          "len": 36
         },
         {
           "normalized": "apple ten hospitality management",
+          "len": 35
+        },
+        {
+          "normalized": "parkerhannifin",
           "len": 35
         },
         {
@@ -3334,19 +3334,19 @@
           "len": 34
         },
         {
-          "normalized": "county of los angeles",
-          "len": 33
-        },
-        {
-          "normalized": "applied research assoc",
-          "len": 33
-        },
-        {
           "normalized": "bearing distributors",
           "len": 33
         },
         {
+          "normalized": "county of los angeles",
+          "len": 33
+        },
+        {
           "normalized": "renal treatment centers midatlantic",
+          "len": 33
+        },
+        {
+          "normalized": "applied research assoc",
           "len": 33
         },
         {
@@ -3948,207 +3948,197 @@
       "entities_collapsed_fully": 602,
       "samples_not_collapsing": [
         {
-          "entity_id": "43379",
+          "entity_id": "19429",
           "names": [
             {
-              "name": "CHINYONG INFORMATION TECHNOLOGY COOPERATION COMPANY",
-              "audit_name": "CHINYONG INFORMATION TECHNOLOGY COOPERATION COMPANY",
-              "normalized": "chinyong information tech cooperation"
+              "name": "HASSAN DRUG TRAFFICKING ORGANIZATION",
+              "audit_name": "HASSAN DRUG TRAFFICKING ORGANIZATION",
+              "normalized": "hassan drug trafficking organization"
             },
             {
-              "name": "JINYONG IT COOPERATION COMPANY",
-              "audit_name": "JINYONG IT COOPERATION COMPANY",
-              "normalized": "jinyong it cooperation"
+              "name": "HASSAN DTO",
+              "audit_name": "HASSAN DTO",
+              "normalized": "hassan dto"
+            },
+            {
+              "name": "SHKUBA DTO",
+              "audit_name": "SHKUBA DTO",
+              "normalized": "shkuba dto"
             }
           ]
         },
         {
-          "entity_id": "45855",
+          "entity_id": "47528",
           "names": [
             {
-              "name": "OBSHCHESTVO S OGRANICHENNOI OTVETSTVENNOSTYU FAM KHOLDING",
-              "audit_name": "OBSHCHESTVO S OGRANICHENNOI OTVETSTVENNOSTYU FAM KHOLDING",
-              "normalized": "fam kholding"
+              "name": "RANGEVISION",
+              "audit_name": "RANGEVISION",
+              "normalized": "rangevision"
             },
             {
-              "name": "FAM HOLDING LIMITED LIABILITY COMPANY",
-              "audit_name": "FAM HOLDING LIMITED LIABILITY COMPANY",
-              "normalized": "fam hldg"
+              "name": "RENDZHVIZHN",
+              "audit_name": "RENDZHVIZHN",
+              "normalized": "rendzhvizhn"
             }
           ]
         },
         {
-          "entity_id": "51438",
+          "entity_id": "48544",
           "names": [
             {
-              "name": "AKTSIONERNOE OBSHCHESTVO SPETSIALIZIROVANNYI REGISTRATOR KOMPAS",
-              "audit_name": "AKTSIONERNOE OBSHCHESTVO SPETSIALIZIROVANNYI REGISTRATOR KOMPAS",
-              "normalized": "spetsializirovannyi registrator kompas"
+              "name": "JSC BIOGRAD",
+              "audit_name": "JSC BIOGRAD",
+              "normalized": "biograd"
             },
             {
-              "name": "AO SRK",
-              "audit_name": "AO SRK",
-              "normalized": "srk"
+              "name": "BIOGRAD LLC",
+              "audit_name": "BIOGRAD LLC",
+              "normalized": "biograd"
+            },
+            {
+              "name": "BIOGRADE LTD",
+              "audit_name": "BIOGRADE LTD",
+              "normalized": "biograde"
+            },
+            {
+              "name": "ZAO BIOGRAD",
+              "audit_name": "ZAO BIOGRAD",
+              "normalized": "biograd"
             }
           ]
         },
         {
-          "entity_id": "22526",
+          "entity_id": "50342",
           "names": [
             {
-              "name": "LIMITED LIABILITY COMPANY CONCORD MANAGEMENT AND CONSULTING",
-              "audit_name": "LIMITED LIABILITY COMPANY CONCORD MANAGEMENT AND CONSULTING",
-              "normalized": "concord management and consulting"
+              "name": "LIMITED LIABILITY COMPANY LIQUIFIED NATURAL GAS YAKUTIA",
+              "audit_name": "LIMITED LIABILITY COMPANY LIQUIFIED NATURAL GAS YAKUTIA",
+              "normalized": "liquified natural gas yakutia"
             },
             {
-              "name": "LLC CONCORD MANAGEMENT AND CONSULTING",
-              "audit_name": "LLC CONCORD MANAGEMENT AND CONSULTING",
-              "normalized": "concord management and consulting"
+              "name": "LIMITED LIABILITY COMPANY SZHIZHENNYI PRIRODNYI GAZ YAKUTIA",
+              "audit_name": "LIMITED LIABILITY COMPANY SZHIZHENNYI PRIRODNYI GAZ YAKUTIA",
+              "normalized": "szhizhennyi prirodnyi gaz yakutia"
             },
             {
-              "name": "KONKORD MENEDZHMENT I KONSALTING, OOO",
-              "audit_name": "KONKORD MENEDZHMENT I KONSALTING, OOO",
-              "normalized": "konkord menedzhment i konsalting"
-            },
-            {
-              "name": "OBSHCHESTVO S OGRANNICHENNOI OTVETSTVENNOSTYU KONKORD MENEDZHMENT I KONSALTING",
-              "audit_name": "OBSHCHESTVO S OGRANNICHENNOI OTVETSTVENNOSTYU KONKORD MENEDZHMENT I KONSALTING",
-              "normalized": "obshchestvo s ogrannichennoi otvetstvennostyu konkord menedzhment i konsalting"
+              "name": "LNG YAKUTIA LLC",
+              "audit_name": "LNG YAKUTIA LLC",
+              "normalized": "lng yakutia"
             }
           ]
         },
         {
-          "entity_id": "18714",
+          "entity_id": "12466",
           "names": [
             {
-              "name": "OPEN JOINT STOCK COMPANY BPS-SBERBANK",
-              "audit_name": "OPEN JOINT STOCK COMPANY BPS-SBERBANK",
-              "normalized": "bpssberbank"
+              "name": "ELLISSA GROUP SA",
+              "audit_name": "ELLISSA GROUP SA",
+              "normalized": "ellissa grp"
             },
             {
-              "name": "BPS SBERBANK OJSC",
-              "audit_name": "BPS SBERBANK OJSC",
-              "normalized": "bps sberbank"
-            },
-            {
-              "name": "BPS-SBERBANK OAO",
-              "audit_name": "BPS-SBERBANK OAO",
-              "normalized": "bpssberbank"
-            },
-            {
-              "name": "SBER BANK",
-              "audit_name": "SBER BANK",
-              "normalized": "sber bank"
+              "name": "ELESSA GROUP",
+              "audit_name": "ELESSA GROUP",
+              "normalized": "elessa grp"
             }
           ]
         },
         {
-          "entity_id": "45211",
+          "entity_id": "30849",
           "names": [
             {
-              "name": "ORKA FAJNANS SKOPJE DOOEL",
-              "audit_name": "ORKA FAJNANS SKOPJE DOOEL",
-              "normalized": "orka fajnans skopje dooel"
+              "name": "RAZAVI OIL AND GAS DEVELOPMENT CO.",
+              "audit_name": "RAZAVI OIL AND GAS DEVELOPMENT CO.",
+              "normalized": "razavi oil and gas dev"
             },
             {
-              "name": "ORKA FINANCE",
-              "audit_name": "ORKA FINANCE",
-              "normalized": "orka finance"
+              "name": "RAZAVI OIL AND GAS SECURITY CO.",
+              "audit_name": "RAZAVI OIL AND GAS SECURITY CO.",
+              "normalized": "razavi oil and gas security"
             }
           ]
         },
         {
-          "entity_id": "35340",
+          "entity_id": "47480",
           "names": [
             {
-              "name": "NIZHNIY NOVGOROD SOKOL AIRCRAFT MANUFACTURING PLANT",
-              "audit_name": "NIZHNIY NOVGOROD SOKOL AIRCRAFT MANUFACTURING PLANT",
-              "normalized": "nizhniy novgorod sokol aircraft mfg plant"
+              "name": "CLOSED JOINT STOCK COMPANY TECHNOLOGICAL COSMONAUTIKA PARK LINKOS",
+              "audit_name": "CLOSED JOINT STOCK COMPANY TECHNOLOGICAL COSMONAUTIKA PARK LINKOS",
+              "normalized": "technological cosmonautika park linkos"
             },
             {
-              "name": "NIZHNIY NOVGOROD AVIATION PLANT SOKOL",
-              "audit_name": "NIZHNIY NOVGOROD AVIATION PLANT SOKOL",
-              "normalized": "nizhniy novgorod aviation plant sokol"
+              "name": "CLOSED JOINT STOCK COMPANY TECHNOLOGICAL PARK OF COSMONAUTICS LINKOS",
+              "audit_name": "CLOSED JOINT STOCK COMPANY TECHNOLOGICAL PARK OF COSMONAUTICS LINKOS",
+              "normalized": "technological park of cosmonautics linkos"
             },
             {
-              "name": "NAZ SOKOL",
-              "audit_name": "NAZ SOKOL",
-              "normalized": "naz sokol"
-            },
-            {
-              "name": "SOKOL AIRCRAFT PLANT",
-              "audit_name": "SOKOL AIRCRAFT PLANT",
-              "normalized": "sokol aircraft plant"
-            },
-            {
-              "name": "PJSC NAZ SOKOL",
-              "audit_name": "PJSC NAZ SOKOL",
-              "normalized": "naz sokol"
+              "name": "ZAKRYTOE AKTSIONERNOE OBSHCHESTVO TEKHNOLOGICHESKII PARK KOSMONAVTIKI LINKOS",
+              "audit_name": "ZAKRYTOE AKTSIONERNOE OBSHCHESTVO TEKHNOLOGICHESKII PARK KOSMONAVTIKI LINKOS",
+              "normalized": "tekhnologicheskii park kosmonavtiki linkos"
             }
           ]
         },
         {
-          "entity_id": "20211",
+          "entity_id": "8213",
           "names": [
             {
-              "name": "FAU 'GLAVGOSEKSPERTIZA ROSSII'",
-              "audit_name": "FAU 'GLAVGOSEKSPERTIZA ROSSII'",
-              "normalized": "fau glavgosekspertiza rossii"
+              "name": "AVIATRANS ANSTALT",
+              "audit_name": "AVIATRANS ANSTALT",
+              "normalized": "aviatrans anstalt"
             },
             {
-              "name": "FEDERAL AUTONOMOUS INSTITUTION 'MAIN DIRECTORATE OF STATE EXAMINATION'",
-              "audit_name": "FEDERAL AUTONOMOUS INSTITUTION 'MAIN DIRECTORATE OF STATE EXAMINATION'",
-              "normalized": "federal autonomous institution main directorate of state examination"
-            },
-            {
-              "name": "GLAVGOSEKSPERTIZA",
-              "audit_name": "GLAVGOSEKSPERTIZA",
-              "normalized": "glavgosekspertiza"
-            },
-            {
-              "name": "GENERAL BOARD OF STATE EXPERT REVIEW",
-              "audit_name": "GENERAL BOARD OF STATE EXPERT REVIEW",
-              "normalized": "general board of state expert review"
+              "name": "AVIATRANS ESTABLISHMENT",
+              "audit_name": "AVIATRANS ESTABLISHMENT",
+              "normalized": "aviatrans establishment"
             }
           ]
         },
         {
-          "entity_id": "52617",
+          "entity_id": "29797",
           "names": [
             {
-              "name": "SHENZHEN YISHENGDA INTERNATIONAL TECHNOLOGY CO LTD",
-              "audit_name": "SHENZHEN YISHENGDA INTERNATIONAL TECHNOLOGY CO LTD",
-              "normalized": "shenzhen yishengda intl tech"
+              "name": "IMAM KHOMEINI SHAZAND OIL REFINING COMPANY",
+              "audit_name": "IMAM KHOMEINI SHAZAND OIL REFINING COMPANY",
+              "normalized": "imam khomeini shazand oil refining"
             },
             {
-              "name": "SHENZHEN YSD GLOBAL TECHNOLOGY CO LTD",
-              "audit_name": "SHENZHEN YSD GLOBAL TECHNOLOGY CO LTD",
-              "normalized": "shenzhen ysd global tech"
+              "name": "IMAM KHOMEINI ZHAZAND OIL REFINING",
+              "audit_name": "IMAM KHOMEINI ZHAZAND OIL REFINING",
+              "normalized": "imam khomeini zhazand oil refining"
+            },
+            {
+              "name": "IKORC",
+              "audit_name": "IKORC",
+              "normalized": "ikorc"
             }
           ]
         },
         {
-          "entity_id": "53920",
+          "entity_id": "43069",
           "names": [
             {
-              "name": "ADDAMEER PRISONER SUPPORT AND HUMAN RIGHTS ASSOCIATION",
-              "audit_name": "ADDAMEER PRISONER SUPPORT AND HUMAN RIGHTS ASSOCIATION",
-              "normalized": "addameer prisoner support and human rights association"
+              "name": "PUBLIC JOINT STOCK COMPANY SCIENTIFIC AND PRODUCTION ASSOCIATION ALMAZ NAMED AFTER ACADEMICIAN A.A. RASPLETIN",
+              "audit_name": "PUBLIC JOINT STOCK COMPANY SCIENTIFIC AND PRODUCTION ASSOCIATION ALMAZ NAMED AFTER ACADEMICIAN A.A. RASPLETIN",
+              "normalized": "scientific and production association almaz named after academician aa raspletin"
             },
             {
-              "name": "ADDAMEER PRISONER'S SUPPORT ASSOCIATION",
-              "audit_name": "ADDAMEER PRISONER'S SUPPORT ASSOCIATION",
-              "normalized": "addameer prisoners support association"
+              "name": "JSC NPO ALMAZ NAMED AFTER A.A. RASPLETIN",
+              "audit_name": "JSC NPO ALMAZ NAMED AFTER A.A. RASPLETIN",
+              "normalized": "npo almaz named after aa raspletin"
             },
             {
-              "name": "ADDAMEER",
-              "audit_name": "ADDAMEER",
-              "normalized": "addameer"
+              "name": "PJSC NPO ALMAZ",
+              "audit_name": "PJSC NPO ALMAZ",
+              "normalized": "npo almaz"
             },
             {
-              "name": "ADDAMEER FOUNDATION",
-              "audit_name": "ADDAMEER FOUNDATION",
-              "normalized": "addameer foundation"
+              "name": "ALMAZ SCIENTIFIC PRODUCTION ASSOCIATION",
+              "audit_name": "ALMAZ SCIENTIFIC PRODUCTION ASSOCIATION",
+              "normalized": "almaz scientific production association"
+            },
+            {
+              "name": "PUBLICHNOE AKTCIONERNOE OBSHESTVO NAUCHNO-PROIZVODSTVENNOE OBEDINENIE ALMAZ IMENI AKADEMIKA A.A. RASPLETINA",
+              "audit_name": "PUBLICHNOE AKTCIONERNOE OBSHESTVO NAUCHNO-PROIZVODSTVENNOE OBEDINENIE ALMAZ IMENI AKADEMIKA A.A. RASPLETINA",
+              "normalized": "publichnoe aktcionernoe obshestvo nauchnoproizvodstvennoe obedinenie almaz imeni akademika aa raspletina"
             }
           ]
         }
@@ -4162,152 +4152,152 @@
       "entities_collapsed_fully": 62964,
       "samples_not_collapsing": [
         {
-          "entity_id": "U9M7K974F9V3",
+          "entity_id": "KNTYNHPFUEV7",
           "names": [
             {
-              "name": "KAANAIYA LLC",
-              "audit_name": "KAANAIYA LLC",
-              "normalized": "kaanaiya"
+              "name": "HANGER PROSTHETICS & ORTHOTICS EAST, INC.",
+              "audit_name": "HANGER PROSTHETICS & ORTHOTICS EAST, INC.",
+              "normalized": "hanger prosthetics and orthotics east"
             },
             {
-              "name": "US SUPPLIES",
-              "audit_name": "US SUPPLIES",
-              "normalized": "us supplies"
+              "name": "HANGER CLINIC",
+              "audit_name": "HANGER CLINIC",
+              "normalized": "hanger clinic"
             }
           ]
         },
         {
-          "entity_id": "Z6UFJKVR55K9",
+          "entity_id": "UHTQJ5GQGMG1",
           "names": [
             {
-              "name": "ELITE LOGISTICS BROKERS LLC",
-              "audit_name": "ELITE LOGISTICS BROKERS LLC",
-              "normalized": "elite logistics brokers"
+              "name": "TOTAL RENAL CARE INC",
+              "audit_name": "TOTAL RENAL CARE INC",
+              "normalized": "total renal care"
             },
             {
-              "name": "VETERANS LOGISTICS & IT SOLUTIONS",
-              "audit_name": "VETERANS LOGISTICS & IT SOLUTIONS",
-              "normalized": "veterans logistics and it sln"
+              "name": "DELAWARE VALLEY DIALYSIS CENTER",
+              "audit_name": "DELAWARE VALLEY DIALYSIS CENTER",
+              "normalized": "delaware valley dialysis center"
             }
           ]
         },
         {
-          "entity_id": "NQ67JMN6RNR7",
+          "entity_id": "VAG3JLLBNSJ3",
           "names": [
             {
-              "name": "LEGACY PREPARATORY ACADEMY",
-              "audit_name": "LEGACY PREPARATORY ACADEMY",
-              "normalized": "legacy preparatory academy"
+              "name": "STEFANI HAVEL LLC",
+              "audit_name": "STEFANI HAVEL LLC",
+              "normalized": "stefani havel"
             },
             {
-              "name": "LEGAY PREPARATORY ACADEMY",
-              "audit_name": "LEGAY PREPARATORY ACADEMY",
-              "normalized": "legay preparatory academy"
+              "name": "SALES STRATEGY NETWORK",
+              "audit_name": "SALES STRATEGY NETWORK",
+              "normalized": "sales strategy network"
             }
           ]
         },
         {
-          "entity_id": "VFYJMD5KAGV5",
+          "entity_id": "FYGSEDCNJ6Q6",
           "names": [
             {
-              "name": "MEDFORD NURSING & REHAB CENTER LLC",
-              "audit_name": "MEDFORD NURSING & REHAB CENTER LLC",
-              "normalized": "medford nursing and rehab center"
+              "name": "RED DIRT RECON AERIAL SERVICES LLC",
+              "audit_name": "RED DIRT RECON AERIAL SERVICES LLC",
+              "normalized": "red dirt recon aerial svc"
             },
             {
-              "name": "HEARTHSTONE NURSING & REHABILITATION CENTER",
-              "audit_name": "HEARTHSTONE NURSING & REHABILITATION CENTER",
-              "normalized": "hearthstone nursing and rehabilitation center"
+              "name": "RED DIRT RECON",
+              "audit_name": "RED DIRT RECON",
+              "normalized": "red dirt recon"
             }
           ]
         },
         {
-          "entity_id": "ML2URFQDW8Y7",
+          "entity_id": "KSVLST89LBH6",
           "names": [
             {
-              "name": "SKIN PERFECTIONS PLLC",
-              "audit_name": "SKIN PERFECTIONS PLLC",
-              "normalized": "skin perfections pllc"
+              "name": "TERRY MEMORIAL HOSPITAL DISTRICT",
+              "audit_name": "TERRY MEMORIAL HOSPITAL DISTRICT",
+              "normalized": "terry memorial hospital district"
             },
             {
-              "name": "THE NEIGHBORHOOD CLINIC",
-              "audit_name": "THE NEIGHBORHOOD CLINIC",
-              "normalized": "the neighborhood clinic"
+              "name": "BROWNFIELD REGIONAL MEDICAL CENTER",
+              "audit_name": "BROWNFIELD REGIONAL MEDICAL CENTER",
+              "normalized": "brownfield regional medical center"
             }
           ]
         },
         {
-          "entity_id": "R9THQ138T3K7",
+          "entity_id": "VU7BW5DE5BN7",
           "names": [
             {
-              "name": "SPRINGS AMBULANCE SERVICE, INC.",
-              "audit_name": "SPRINGS AMBULANCE SERVICE, INC.",
-              "normalized": "springs ambulance service"
+              "name": "EM CREATIVE LLC",
+              "audit_name": "EM CREATIVE LLC",
+              "normalized": "em creative"
             },
             {
-              "name": "AMR",
-              "audit_name": "AMR",
-              "normalized": "amr"
+              "name": "NADA CREATIVE COLLABORATIVE",
+              "audit_name": "NADA CREATIVE COLLABORATIVE",
+              "normalized": "nada creative collaborative"
             }
           ]
         },
         {
-          "entity_id": "G5F6BEFYGAQ1",
+          "entity_id": "K2ETADS1FMS7",
           "names": [
             {
-              "name": "MASSEY'S SOCCER ACADAMEY, INC.",
-              "audit_name": "MASSEY'S SOCCER ACADAMEY, INC.",
-              "normalized": "masseys soccer acadamey"
+              "name": "FIDELITY NATIONAL TITLE COMPANY OF WASHINGTON, INC.",
+              "audit_name": "FIDELITY NATIONAL TITLE COMPANY OF WASHINGTON, INC.",
+              "normalized": "fidelity national title company of washington"
             },
             {
-              "name": "MASSEY SOCCER ACADEMY",
-              "audit_name": "MASSEY SOCCER ACADEMY",
-              "normalized": "massey soccer academy"
+              "name": "FIDELITY NATIONAL TITLE CO",
+              "audit_name": "FIDELITY NATIONAL TITLE CO",
+              "normalized": "fidelity national title"
             }
           ]
         },
         {
-          "entity_id": "VJG1HBEA8WA6",
+          "entity_id": "EJFRW8QY5J83",
           "names": [
             {
-              "name": "MICHAEL BROOKS",
-              "audit_name": "MICHAEL BROOKS",
-              "normalized": "michael brooks"
+              "name": "ANSWER-THE-CALL LLC",
+              "audit_name": "ANSWER-THE-CALL LLC",
+              "normalized": "answerthecall"
             },
             {
-              "name": "BROOKS ENTERPRISES",
-              "audit_name": "BROOKS ENTERPRISES",
-              "normalized": "brooks ent"
+              "name": "ATC LLC",
+              "audit_name": "ATC LLC",
+              "normalized": "atc"
             }
           ]
         },
         {
-          "entity_id": "VD5ZJ5PSXH63",
+          "entity_id": "K14XAYFNPLJ9",
           "names": [
             {
-              "name": "TINY TLC FAMILY CHILD CARE",
-              "audit_name": "TINY TLC FAMILY CHILD CARE",
-              "normalized": "tiny tlc family child care"
+              "name": "ESPRE HOLDINGS, INC.",
+              "audit_name": "ESPRE HOLDINGS, INC.",
+              "normalized": "espre hldg"
             },
             {
-              "name": "TINY TLC CHILD CARE",
-              "audit_name": "TINY TLC CHILD CARE",
-              "normalized": "tiny tlc child care"
+              "name": "ESPRE TECHNOLOGIES",
+              "audit_name": "ESPRE TECHNOLOGIES",
+              "normalized": "espre tech"
             }
           ]
         },
         {
-          "entity_id": "YCT6UFF1NYW7",
+          "entity_id": "L8RLPWB9KUN6",
           "names": [
             {
-              "name": "OMNIS FUEL TECHNOLOGIES, LLC",
-              "audit_name": "OMNIS FUEL TECHNOLOGIES, LLC",
-              "normalized": "omnis fuel tech"
+              "name": "PAINT BY TEACH, INC",
+              "audit_name": "PAINT BY TEACH, INC",
+              "normalized": "paint by teach"
             },
             {
-              "name": "OMNIS ENERGY",
-              "audit_name": "OMNIS ENERGY",
-              "normalized": "omnis energy"
+              "name": "3 GUNS CUSTOMS",
+              "audit_name": "3 GUNS CUSTOMS",
+              "normalized": "3 guns customs"
             }
           ]
         }

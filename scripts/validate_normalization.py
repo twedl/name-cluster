@@ -39,6 +39,7 @@ import json
 import os
 import sys
 from collections import Counter
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Iterable
@@ -66,6 +67,51 @@ def latest_parquet(source: str, glob: str) -> Path | None:
     return files[-1] if files else None
 
 
+@dataclass(frozen=True)
+class SourceSpec:
+    """Per-source schema differences for the audit pipeline."""
+    glob: str            # parquet filename glob in <cache>/<source>/parquet/
+    src_col: str         # raw name column
+    translit_col: str    # transliterated name column (added by download_corpora.py)
+    entity_col: str      # column to use as entity_id
+    has_aliases: bool    # True if the parquet has is_primary/alias_type rows
+    entity_type_filter: str | None = None  # filter pl.col("entity_type") == this if set
+
+
+SOURCE_SPECS: dict[str, SourceSpec] = {
+    "ofac": SourceSpec(
+        glob="sdn-aliases-*.parquet",
+        src_col="name",
+        translit_col="name_translit",
+        entity_col="entity_id",
+        has_aliases=True,
+        entity_type_filter="Entity",
+    ),
+    # Date-prefixed only; excludes derived files like lei2-cn-latin-*.parquet
+    "gleif": SourceSpec(
+        glob="lei2-2*.parquet",
+        src_col="legal_name",
+        translit_col="legal_name_translit",
+        entity_col="lei",
+        has_aliases=False,
+    ),
+    "ukch": SourceSpec(
+        glob="basic-*.parquet",
+        src_col="legal_name",
+        translit_col="legal_name_translit",
+        entity_col="company_number",
+        has_aliases=False,
+    ),
+    "sam": SourceSpec(
+        glob="sam-aliases-*.parquet",
+        src_col="name",
+        translit_col="name_translit",
+        entity_col="entity_id",
+        has_aliases=True,
+    ),
+}
+
+
 def _select_audit_name(df: pl.DataFrame, src: str, translit: str) -> pl.Series:
     """Pick `translit` if column present, else compute unidecode on the fly.
 
@@ -88,60 +134,30 @@ def load_names(source: str, sample: int | None) -> pl.DataFrame:
 
     role:
       - "primary": canonical/legal name
-      - "alias": known-same-entity alias (OFAC only)
+      - "alias": known-same-entity alias (OFAC/SAM only)
     """
-    if source == "ofac":
-        path = latest_parquet("ofac", "sdn-aliases-*.parquet")
-        if path is None:
-            raise FileNotFoundError("OFAC parquet not found; run download_corpora.py ofac")
-        raw = pl.read_parquet(path).filter(pl.col("entity_type") == "Entity")
-        df = raw.with_columns(
-            _select_audit_name(raw, "name", "name_translit").alias("audit_name"),
-        ).select(
-            entity_id=pl.col("entity_id"),
-            name=pl.col("audit_name"),
-            role=pl.when(pl.col("is_primary")).then(pl.lit("primary")).otherwise(pl.lit("alias")),
-        )
-    elif source == "gleif":
-        # Date-prefixed only; excludes derived files like lei2-cn-latin-*.parquet
-        path = latest_parquet("gleif", "lei2-2*.parquet")
-        if path is None:
-            raise FileNotFoundError("GLEIF parquet not found; run download_corpora.py gleif")
-        raw = pl.read_parquet(path)
-        df = raw.with_columns(
-            _select_audit_name(raw, "legal_name", "legal_name_translit").alias("audit_name"),
-        ).select(
-            entity_id=pl.col("lei"),
-            name=pl.col("audit_name"),
-            role=pl.lit("primary"),
-        )
-    elif source == "ukch":
-        path = latest_parquet("ukch", "basic-*.parquet")
-        if path is None:
-            raise FileNotFoundError("UKCH parquet not found; run download_corpora.py ukch")
-        raw = pl.read_parquet(path)
-        df = raw.with_columns(
-            _select_audit_name(raw, "legal_name", "legal_name_translit").alias("audit_name"),
-        ).select(
-            entity_id=pl.col("company_number"),
-            name=pl.col("audit_name"),
-            role=pl.lit("primary"),
-        )
-    elif source == "sam":
-        # SAM uses the OFAC-shape aliases parquet (entity_id, name, is_primary, ...)
-        path = latest_parquet("sam", "sam-aliases-*.parquet")
-        if path is None:
-            raise FileNotFoundError("SAM parquet not found; run download_sam.py")
-        raw = pl.read_parquet(path)
-        df = raw.with_columns(
-            _select_audit_name(raw, "name", "name_translit").alias("audit_name"),
-        ).select(
-            entity_id=pl.col("entity_id"),
-            name=pl.col("audit_name"),
-            role=pl.when(pl.col("is_primary")).then(pl.lit("primary")).otherwise(pl.lit("alias")),
-        )
-    else:
+    spec = SOURCE_SPECS.get(source)
+    if spec is None:
         raise ValueError(f"unknown source: {source}")
+    path = latest_parquet(source, spec.glob)
+    if path is None:
+        raise FileNotFoundError(
+            f"{source.upper()} parquet not found; run download_corpora.py {source}"
+        )
+    raw = pl.read_parquet(path)
+    if spec.entity_type_filter is not None:
+        raw = raw.filter(pl.col("entity_type") == spec.entity_type_filter)
+    audit_name = _select_audit_name(raw, spec.src_col, spec.translit_col)
+    role_expr = (
+        pl.when(pl.col("is_primary")).then(pl.lit("primary")).otherwise(pl.lit("alias"))
+        if spec.has_aliases
+        else pl.lit("primary")
+    )
+    df = raw.with_columns(audit_name=audit_name).select(
+        entity_id=pl.col(spec.entity_col),
+        name=pl.col("audit_name"),
+        role=role_expr,
+    )
     df = df.filter(pl.col("name").is_not_null() & (pl.col("name").str.len_chars() > 0))
     if sample and df.height > sample:
         df = df.sample(n=sample, seed=42)
@@ -247,18 +263,18 @@ def audit_alias_recall(source: str) -> dict:
     Works for any source whose aliases parquet has the OFAC-shape schema
     (entity_id, entity_type, is_primary, alias_type, name).
     """
-    if source == "ofac":
-        path = latest_parquet("ofac", "sdn-aliases-*.parquet")
-    elif source == "sam":
-        path = latest_parquet("sam", "sam-aliases-*.parquet")
-    else:
+    spec = SOURCE_SPECS.get(source)
+    if spec is None or not spec.has_aliases:
         return {}
+    path = latest_parquet(source, spec.glob)
     if path is None:
         print(f"[{source}-recall] skip: no parquet")
         return {}
     print(f"\n=== {source.upper()} alias-recall proxy ===")
-    df = pl.read_parquet(path).filter(pl.col("entity_type") == "Entity")
-    audit_name = _select_audit_name(df, "name", "name_translit")
+    df = pl.read_parquet(path)
+    if spec.entity_type_filter is not None:
+        df = df.filter(pl.col("entity_type") == spec.entity_type_filter)
+    audit_name = _select_audit_name(df, spec.src_col, spec.translit_col)
     df = df.with_columns(
         audit_name=audit_name,
         normalized=pl.Series([normalize(n) for n in audit_name.to_list()]),

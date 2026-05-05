@@ -70,9 +70,8 @@ pub struct ClusterResult {
     /// Hub-name canonical for each row (`None` when cluster_id is `None`).
     pub canonical: Vec<Option<String>>,
     /// Cluster IDs whose ancestor (pre-split) connected component exceeded
-    /// `hub_radius_max`. The split mechanism (task #27, hub-radius partition)
-    /// produced these as residuals; useful for diagnostic + downstream
-    /// quality flagging. Empty when no splits occurred.
+    /// `hub_radius_max`. Both halves of any hub-radius split inherit the
+    /// flag; useful for diagnostic / downstream quality filtering.
     pub flagged_cluster_ids: Vec<u32>,
 }
 

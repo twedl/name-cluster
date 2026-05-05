@@ -9,7 +9,7 @@
 //! produce output in sorted order (component members ascending, hub
 //! tie-breaks lex-ascending on canonical name).
 
-use ahash::AHashMap;
+use ahash::{AHashMap, AHashSet};
 use std::collections::VecDeque;
 
 // ---------------------------------------------------------------------------
@@ -107,7 +107,6 @@ pub fn build_adjacency(n: usize, edges: &[(u32, u32)]) -> Vec<Vec<u32>> {
 }
 
 /// BFS from `source`, return per-node distance (`-1` for unreachable).
-/// Caller computes eccentricity / partitions as needed.
 pub fn bfs_distances(adj: &[Vec<u32>], source: u32) -> Vec<i32> {
     let n = adj.len();
     let mut dist: Vec<i32> = vec![-1; n];
@@ -126,37 +125,26 @@ pub fn bfs_distances(adj: &[Vec<u32>], source: u32) -> Vec<i32> {
     dist
 }
 
-/// BFS from `source`, return the maximum distance reached (eccentricity).
-pub fn bfs_eccentricity(adj: &[Vec<u32>], source: u32) -> usize {
-    bfs_distances(adj, source)
-        .into_iter()
-        .filter(|&d| d >= 0)
-        .max()
-        .unwrap_or(0) as usize
-}
-
 /// Find connected components within `members`, using only edges where BOTH
 /// endpoints are in `members`. Each returned CC is sorted ascending; the
 /// outer Vec is ordered by ascending min-member (deterministic).
 pub fn connected_subcomponents(members: &[u32], adj: &[Vec<u32>]) -> Vec<Vec<u32>> {
-    let member_set: AHashMap<u32, ()> = members.iter().map(|&m| (m, ())).collect();
-    let mut visited: AHashMap<u32, ()> = AHashMap::with_capacity(members.len());
+    let member_set: AHashSet<u32> = members.iter().copied().collect();
+    let mut visited: AHashSet<u32> = AHashSet::with_capacity(members.len());
     let mut sorted_members = members.to_vec();
     sorted_members.sort_unstable();
     let mut result: Vec<Vec<u32>> = Vec::new();
     for &start in &sorted_members {
-        if visited.contains_key(&start) {
+        if !visited.insert(start) {
             continue;
         }
         let mut cc: Vec<u32> = Vec::new();
         let mut queue: VecDeque<u32> = VecDeque::new();
         queue.push_back(start);
-        visited.insert(start, ());
         while let Some(u) = queue.pop_front() {
             cc.push(u);
             for &v in &adj[u as usize] {
-                if member_set.contains_key(&v) && !visited.contains_key(&v) {
-                    visited.insert(v, ());
+                if member_set.contains(&v) && visited.insert(v) {
                     queue.push_back(v);
                 }
             }
@@ -226,7 +214,7 @@ pub fn diameter_split(
             result.push(DiameterPiece { members, hub, flagged: true });
             continue;
         }
-        near.sort_unstable();
+        // `near` inherits ascending order from `members`; no resort needed.
         result.push(DiameterPiece { members: near, hub, flagged: true });
         for cc in connected_subcomponents(&far, adj) {
             work.push((cc, true));
@@ -297,31 +285,6 @@ mod tests {
         assert_eq!(groups[0], vec![0, 1, 3]);
         assert_eq!(groups[1], vec![2, 5]);
         assert_eq!(groups[2], vec![4]);
-    }
-
-    #[test]
-    fn bfs_star_eccentricity_two() {
-        // Star: hub = 0, spokes = 1,2,3 (each only connected to 0).
-        let adj = build_adjacency(4, &[(0, 1), (0, 2), (0, 3)]);
-        // From hub: max distance = 1 (each spoke is 1 hop)
-        assert_eq!(bfs_eccentricity(&adj, 0), 1);
-        // From a spoke: max = 2 (spoke -> hub -> other spoke)
-        assert_eq!(bfs_eccentricity(&adj, 1), 2);
-    }
-
-    #[test]
-    fn bfs_chain_eccentricity_grows_with_length() {
-        // Chain: 0-1-2-3-4
-        let adj = build_adjacency(5, &[(0, 1), (1, 2), (2, 3), (3, 4)]);
-        assert_eq!(bfs_eccentricity(&adj, 0), 4);
-        assert_eq!(bfs_eccentricity(&adj, 2), 2);
-    }
-
-    #[test]
-    fn bfs_disconnected_node() {
-        let adj = build_adjacency(3, &[(0, 1)]);
-        // Source 2 is alone -> max distance 0
-        assert_eq!(bfs_eccentricity(&adj, 2), 0);
     }
 
     #[test]
