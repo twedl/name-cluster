@@ -4,6 +4,7 @@
 # dependencies = [
 #     "polars>=1.20",
 #     "tqdm>=4.66",
+#     "unidecode>=1.3",
 # ]
 # ///
 """Audit provisional normalization rules against real-name corpora.
@@ -48,6 +49,7 @@ from _norm import normalize  # noqa: E402
 
 import polars as pl  # noqa: E402
 from tqdm import tqdm  # noqa: E402
+from unidecode import unidecode  # noqa: E402
 
 CACHE_ROOT = Path(
     os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
@@ -64,21 +66,21 @@ def latest_parquet(source: str, glob: str) -> Path | None:
     return files[-1] if files else None
 
 
-def _is_latin_script(name: str) -> bool:
-    """Keep only names that are predominantly Latin script — v1 scope.
+def _select_audit_name(df: pl.DataFrame, src: str, translit: str) -> pl.Series:
+    """Pick `translit` if column present, else compute unidecode on the fly.
 
-    Rules: at least 3 ASCII alpha chars AND >= 50% of non-space chars
-    are ASCII alpha or ASCII digit or common punct. Cheap, lossy filter.
+    Audit funnel: non-Latin scripts (CJK, Cyrillic, Greek, ...) get a Latin
+    transliteration so the normalize() pipeline produces meaningful tokens
+    instead of collapsing them to empty. Pre-computed in download_corpora.py
+    when present; recomputed here as fallback for legacy parquet caches.
     """
-    if not name:
-        return False
-    import unicodedata
-    s = unicodedata.normalize("NFKD", name)
-    ascii_alpha = sum(1 for c in s if "a" <= c.lower() <= "z")
-    non_space = sum(1 for c in s if not c.isspace())
-    if ascii_alpha < 3 or non_space == 0:
-        return False
-    return ascii_alpha / non_space >= 0.5
+    if translit in df.columns:
+        return df[translit]
+    print(f"  no {translit} col found — computing unidecode on the fly")
+    return pl.Series(
+        translit,
+        [unidecode(n) if n is not None else None for n in df[src].to_list()],
+    )
 
 
 def load_names(source: str, sample: int | None) -> pl.DataFrame:
@@ -92,11 +94,12 @@ def load_names(source: str, sample: int | None) -> pl.DataFrame:
         path = latest_parquet("ofac", "sdn-aliases-*.parquet")
         if path is None:
             raise FileNotFoundError("OFAC parquet not found; run download_corpora.py ofac")
-        df = pl.read_parquet(path)
-        df = df.filter(pl.col("entity_type") == "Entity")
-        df = df.select(
+        raw = pl.read_parquet(path).filter(pl.col("entity_type") == "Entity")
+        df = raw.with_columns(
+            _select_audit_name(raw, "name", "name_translit").alias("audit_name"),
+        ).select(
             entity_id=pl.col("entity_id"),
-            name=pl.col("name"),
+            name=pl.col("audit_name"),
             role=pl.when(pl.col("is_primary")).then(pl.lit("primary")).otherwise(pl.lit("alias")),
         )
     elif source == "gleif":
@@ -104,18 +107,24 @@ def load_names(source: str, sample: int | None) -> pl.DataFrame:
         path = latest_parquet("gleif", "lei2-2*.parquet")
         if path is None:
             raise FileNotFoundError("GLEIF parquet not found; run download_corpora.py gleif")
-        df = pl.read_parquet(path).select(
+        raw = pl.read_parquet(path)
+        df = raw.with_columns(
+            _select_audit_name(raw, "legal_name", "legal_name_translit").alias("audit_name"),
+        ).select(
             entity_id=pl.col("lei"),
-            name=pl.col("legal_name"),
+            name=pl.col("audit_name"),
             role=pl.lit("primary"),
         )
     elif source == "ukch":
         path = latest_parquet("ukch", "basic-*.parquet")
         if path is None:
             raise FileNotFoundError("UKCH parquet not found; run download_corpora.py ukch")
-        df = pl.read_parquet(path).select(
+        raw = pl.read_parquet(path)
+        df = raw.with_columns(
+            _select_audit_name(raw, "legal_name", "legal_name_translit").alias("audit_name"),
+        ).select(
             entity_id=pl.col("company_number"),
-            name=pl.col("legal_name"),
+            name=pl.col("audit_name"),
             role=pl.lit("primary"),
         )
     elif source == "sam":
@@ -123,22 +132,17 @@ def load_names(source: str, sample: int | None) -> pl.DataFrame:
         path = latest_parquet("sam", "sam-aliases-*.parquet")
         if path is None:
             raise FileNotFoundError("SAM parquet not found; run download_sam.py")
-        df = pl.read_parquet(path)
-        df = df.select(
+        raw = pl.read_parquet(path)
+        df = raw.with_columns(
+            _select_audit_name(raw, "name", "name_translit").alias("audit_name"),
+        ).select(
             entity_id=pl.col("entity_id"),
-            name=pl.col("name"),
+            name=pl.col("audit_name"),
             role=pl.when(pl.col("is_primary")).then(pl.lit("primary")).otherwise(pl.lit("alias")),
         )
     else:
         raise ValueError(f"unknown source: {source}")
     df = df.filter(pl.col("name").is_not_null() & (pl.col("name").str.len_chars() > 0))
-    # v1 scope filter: predominantly Latin-script names.
-    n_pre = df.height
-    mask = pl.Series([_is_latin_script(n) for n in df["name"].to_list()])
-    df = df.filter(mask)
-    n_post = df.height
-    if n_pre != n_post:
-        print(f"  latin-script filter: kept {n_post:,} / {n_pre:,} ({100*n_post/n_pre:.1f}%)")
     if sample and df.height > sample:
         df = df.sample(n=sample, seed=42)
     return df
@@ -254,7 +258,11 @@ def audit_alias_recall(source: str) -> dict:
         return {}
     print(f"\n=== {source.upper()} alias-recall proxy ===")
     df = pl.read_parquet(path).filter(pl.col("entity_type") == "Entity")
-    df = df.with_columns(normalized=pl.Series([normalize(n) for n in df["name"].to_list()]))
+    audit_name = _select_audit_name(df, "name", "name_translit")
+    df = df.with_columns(
+        audit_name=audit_name,
+        normalized=pl.Series([normalize(n) for n in audit_name.to_list()]),
+    )
     df = df.filter(pl.col("normalized") != "")
 
     grouped = (
@@ -293,8 +301,9 @@ def audit_alias_recall(source: str) -> dict:
     samples = []
     for row in not_collapsed.iter_rows(named=True):
         eid = row["entity_id"]
-        # Get original raw names too
-        raws = df.filter(pl.col("entity_id") == eid).select("name", "normalized").to_dicts()
+        raws = df.filter(pl.col("entity_id") == eid).select(
+            "name", "audit_name", "normalized"
+        ).to_dicts()
         samples.append({"entity_id": eid, "names": raws})
 
     return {
@@ -375,7 +384,10 @@ def write_report(per_source: dict[str, dict], recalls: dict[str, dict]) -> Path:
             for s in r["samples_not_collapsing"]:
                 f.write(f"- entity `{s['entity_id']}`:\n")
                 for n in s["names"]:
-                    f.write(f"  - `{n['name']}` → `{n['normalized']}`\n")
+                    if n["name"] != n["audit_name"]:
+                        f.write(f"  - `{n['name']}` → translit `{n['audit_name']}` → `{n['normalized']}`\n")
+                    else:
+                        f.write(f"  - `{n['name']}` → `{n['normalized']}`\n")
             f.write("\n")
 
     with js.open("w") as f:

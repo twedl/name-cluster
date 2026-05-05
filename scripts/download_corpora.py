@@ -6,6 +6,7 @@
 #     "polars>=1.20",
 #     "lxml>=5",
 #     "tqdm>=4.66",
+#     "unidecode>=1.3",
 # ]
 # ///
 """Download real-name corpora for normalization rule validation.
@@ -44,6 +45,7 @@ import httpx
 import polars as pl
 from lxml import etree
 from tqdm import tqdm
+from unidecode import unidecode
 
 UA = "name_cluster-corpora/0.1 (+https://github.com/jessetweedle/name-cluster)"
 
@@ -87,6 +89,32 @@ def cache_dir(source: str) -> tuple[Path, Path]:
     return raw, parquet
 
 
+def add_translit(df: pl.DataFrame, src_col: str, dst_col: str) -> pl.DataFrame:
+    """Add a Latin-script transliteration column via unidecode.
+
+    For ASCII input this is essentially identity (diacritics stripped); for
+    non-Latin scripts (CJK, Cyrillic, Greek, Arabic, ...) this produces a
+    best-effort Latin form that survives the normalize() pipeline. Audit-
+    only — not consumed by the wheel.
+    """
+    return df.with_columns(
+        pl.col(src_col)
+        .map_elements(
+            lambda x: unidecode(x) if x is not None else None,
+            return_dtype=pl.Utf8,
+        )
+        .alias(dst_col)
+    )
+
+
+def parquet_has_col(path: Path, col: str) -> bool:
+    """Return True if `col` is present in the parquet schema (no full read)."""
+    try:
+        return col in pl.scan_parquet(path).collect_schema().names()
+    except Exception:
+        return False
+
+
 # ---------------------------------------------------------------------------
 # OFAC SDN
 # ---------------------------------------------------------------------------
@@ -112,7 +140,12 @@ def download_ofac(*, force: bool = False) -> None:
     else:
         print(f"[ofac] cached {raw_path.name}")
 
-    if parquet_path.exists() and aliases_path.exists() and not force:
+    if (
+        parquet_path.exists()
+        and aliases_path.exists()
+        and parquet_has_col(aliases_path, "name_translit")
+        and not force
+    ):
         print(f"[ofac] parsed already: {parquet_path.name}, {aliases_path.name}")
         return
 
@@ -165,8 +198,10 @@ def download_ofac(*, force: bool = False) -> None:
         while elem.getprevious() is not None:
             del elem.getparent()[0]
 
-    pl.DataFrame(parties).write_parquet(parquet_path)
-    pl.DataFrame(aliases).write_parquet(aliases_path)
+    parties_df = add_translit(pl.DataFrame(parties), "primary_name", "primary_name_translit")
+    aliases_df = add_translit(pl.DataFrame(aliases), "name", "name_translit")
+    parties_df.write_parquet(parquet_path)
+    aliases_df.write_parquet(aliases_path)
     n_entity = sum(1 for p in parties if p["entity_type"] == "Entity")
     n_alias_entity = sum(1 for a in aliases if a["entity_type"] == "Entity")
     print(
@@ -206,7 +241,11 @@ def download_gleif(*, force: bool = False) -> None:
     else:
         print(f"[gleif] cached {raw_path.name}")
 
-    if parquet_path.exists() and not force:
+    if (
+        parquet_path.exists()
+        and parquet_has_col(parquet_path, "legal_name_translit")
+        and not force
+    ):
         print(f"[gleif] parsed already: {parquet_path.name}")
         return
 
@@ -244,6 +283,8 @@ def download_gleif(*, force: bool = False) -> None:
         "Entity.EntityCategory": "category",
         "Entity.EntityStatus": "status",
     })
+    print(f"[gleif] transliterating {df.height:,} legal names")
+    df = add_translit(df, "legal_name", "legal_name_translit")
     df.write_parquet(parquet_path, compression="zstd", compression_level=3)
     print(f"[gleif] wrote {parquet_path.name} ({df.height} rows, {parquet_path.stat().st_size//1_000_000} MB)")
 
@@ -298,7 +339,11 @@ def download_ukch(*, force: bool = False) -> None:
     else:
         print(f"[ukch] cached {raw_path.name}")
 
-    if parquet_path.exists() and not force:
+    if (
+        parquet_path.exists()
+        and parquet_has_col(parquet_path, "legal_name_translit")
+        and not force
+    ):
         print(f"[ukch] parsed already: {parquet_path.name}")
         return
 
@@ -324,6 +369,8 @@ def download_ukch(*, force: bool = False) -> None:
     if missing:
         print(f"[ukch] WARNING: missing cols (UKCH schema drift?): {missing}")
     df = df.select([raw for raw, _ in pairs]).rename(dict(pairs))
+    print(f"[ukch] transliterating {df.height:,} legal names")
+    df = add_translit(df, "legal_name", "legal_name_translit")
     df.write_parquet(parquet_path, compression="zstd", compression_level=3)
     print(f"[ukch] wrote {parquet_path.name} ({df.height} rows, {parquet_path.stat().st_size//1_000_000} MB)")
 

@@ -29,7 +29,9 @@ LIST1_SUFFIXES_SINGLE: frozenset[str] = frozenset({
     "companies", "lp", "llp", "plc", "pty",
     # German (DE/AT/CH)
     "gmbh", "ag", "kg", "kgaa", "ohg", "gbr", "ev", "eg", "ggmbh", "mbh",
+    "ug",
     "aktiengesellschaft", "kommanditgesellschaft", "gesellschaft",
+    "unternehmergesellschaft",
     # French / Belgian / Swiss-French
     "sa", "sas", "sarl", "sprl", "sagl",
     # Italian
@@ -39,13 +41,21 @@ LIST1_SUFFIXES_SINGLE: frozenset[str] = frozenset({
     # Dutch / Belgian-Dutch
     "bv", "nv", "bvba", "vof", "ua",
     # Nordic
-    "oy", "ab", "as", "asa", "oyj", "aps",
+    "oy", "ab", "as", "asa", "oyj", "aps", "aktiebolag",
+    # Estonian
+    "ou",
     # East Asian
     "kk", "gk", "tmk", "pte",
     # Russian / Slavic (head-strip primary use case post-Fix 2)
     "ooo", "oao", "ojsc", "pjsc", "cjsc", "jsc", "zao", "pao", "ao",
+    # Czech / Slovak (post-period-drop: s.r.o. -> sro)
+    "sro",
     # Polish (post-List-3 compound canonicalization)
     "spzoo", "psa", "ska", "spk", "spj",
+    # Hungarian (short forms; long forms canonicalize via List 3 first)
+    "kft", "bt", "kkt", "rt", "zrt", "nyrt", "reszvenytarsasag",
+    # Italian/Portuguese long forms (in addition to "srl"/"lda")
+    "limitata", "limitada",
     # Middle East
     "fze",
     # Turkish
@@ -74,9 +84,15 @@ LIST3_COMPOUND_LEGAL: dict[tuple[str, ...], str] = {
     ("public", "joint", "stock", "company"): "pjsc",
     ("open", "joint", "stock", "company"): "ojsc",
     ("closed", "joint", "stock", "company"): "cjsc",
-    # Russian (transliterated)
+    # Russian (transliterated). Multiple Latin schemes: BGN/PCGN uses `'iu`
+    # (apostrophe-dropped to `iu`), others use `yu`. Soft-sign Ь after Т in
+    # отвественностью becomes either, so we accept both.
     ("obshchestvo", "s", "ogranichennoi", "otvetstvennostyu"): "ooo",
+    ("obshchestvo", "s", "ogranichennoi", "otvetstvennostiu"): "ooo",
     ("aktsionernoe", "obshchestvo"): "ao",
+    ("publichnoe", "aktsionernoe", "obshchestvo"): "pjsc",
+    ("zakrytoe", "aktsionernoe", "obshchestvo"): "cjsc",
+    ("otkrytoe", "aktsionernoe", "obshchestvo"): "ojsc",
     # Polish (post-atomic-Latin map: ł->l, accents stripped via NFKD)
     # spółka z ograniczoną odpowiedzialnością = LLC = "sp. z o.o."
     ("spolka", "z", "ograniczona", "odpowiedzialnoscia"): "spzoo",
@@ -100,8 +116,28 @@ LIST3_COMPOUND_LEGAL: dict[tuple[str, ...], str] = {
     ("sociedad", "anonima"): "sa",
     ("sociedad", "limitada"): "sl",
     ("societe", "anonyme"): "sa",
+    # French SARL appearing as "S.A R.L." (period-drop: spaces leak between)
+    ("sa", "rl"): "sarl",
     # Japanese (transliterated)
     ("kabushiki", "kaisha"): "kk",
+    # German UG entrepreneurial co: "UG (haftungsbeschränkt)" or full form
+    ("ug", "haftungsbeschrankt"): "ug",
+    ("unternehmergesellschaft", "haftungsbeschrankt"): "ug",
+    # Hungarian: long forms collapse to short legal-form codes (then List 1
+    # strips the short code in the next pass). All entries are post-NFKD
+    # (diacritics stripped: ő->o, ű->u, é->e, etc.).
+    ("korlatolt", "felelossegu", "tarsasag"): "kft",
+    ("zartkoruen", "mukodo", "reszvenytarsasag"): "zrt",
+    ("nyilvanosan", "mukodo", "reszvenytarsasag"): "nyrt",
+    ("beteti", "tarsasag"): "bt",
+    ("kozkereseti", "tarsasag"): "kkt",
+    # Chinese (Pinyin transliteration of the most-common legal forms).
+    # 有限公司      = "Limited Company"      -> ltd
+    # 有限责任公司   = "Limited Liability Co" -> ltd
+    # 股份有限公司   = "Joint-Stock Limited"  -> jsc
+    ("you", "xian", "gong", "si"): "ltd",
+    ("you", "xian", "ze", "ren", "gong", "si"): "ltd",
+    ("gu", "fen", "you", "xian", "gong", "si"): "jsc",
 }
 
 # --- List 2: descriptor-noise canonicalization (always-on, both forms -> short) ---
