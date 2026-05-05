@@ -103,6 +103,10 @@ nc.candidates(df, name_col="name", min_score=0.5)
 nc.explain(result, cluster_id=42)
 # -> {"canonical": "...", "members": [...], "edges": [(a, b, score), ...],
 #     "hub_radius": int, "size": int}
+
+# Discover acronym↔expansion candidates from the corpus (feeds `aliases=`)
+nc.acronym_map(df, name_col="name")
+# -> df with (acronym, expansion_count, expansions, acronym_examples)
 ```
 
 ## Common patterns

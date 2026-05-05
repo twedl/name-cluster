@@ -175,6 +175,25 @@ print(nc.cluster(
 
 
 # ---------------------------------------------------------------------------
+# 8b. acronym_map() — auto-discover alias candidates from the corpus
+# ---------------------------------------------------------------------------
+# Scans for single-token names (acronym candidates) and multi-token names
+# whose first-letter signature matches. Single-expansion rows are
+# high-confidence and feed straight into aliases= on the next cluster() call.
+
+ac = nc.acronym_map(ibm_demo, name_col="name")
+print(ac)
+
+# Build aliases from high-confidence (single-expansion) rows
+high = ac.filter(pl.col("expansion_count") == 1)
+derived_aliases = {
+    row["expansions"][0]: row["acronym_examples"]
+    for row in high.iter_rows(named=True)
+}
+print(f"  -> derived aliases: {derived_aliases}")
+
+
+# ---------------------------------------------------------------------------
 # 9. lsh_calibrate — pick (bands, rows) for a target jaccard / recall
 # ---------------------------------------------------------------------------
 # When the default 32×4 (num_perm=128) doesn't match your similarity

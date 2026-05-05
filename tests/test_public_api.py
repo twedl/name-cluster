@@ -169,6 +169,53 @@ def test_aliases_empty_dict_noop():
     assert a["cluster_id"].to_list() == b["cluster_id"].to_list()
 
 
+def test_acronym_map_finds_corpus_pairs():
+    df = pl.DataFrame({
+        "name": [
+            "IBM Corp",
+            "I.B.M. Inc",
+            "International Business Machines",
+            "AA Inc",
+            "American Airlines",
+            "NASA",
+            "National Aeronautics and Space Administration",
+            "Apple Inc",
+            "Apple Computer Co.",
+        ],
+    })
+    ac = nc.acronym_map(df, name_col="name")
+    assert isinstance(ac, pl.DataFrame)
+    assert set(ac.columns) == {"acronym", "expansion_count", "expansions", "acronym_examples"}
+
+    acronyms = set(ac["acronym"].to_list())
+    assert "ibm" in acronyms, f"ibm not found: {acronyms}"
+    assert "aa" in acronyms, f"aa not found: {acronyms}"
+    assert "nasa" in acronyms, f"nasa not found (stopword skip should help)"
+
+    ibm_row = ac.filter(pl.col("acronym") == "ibm").row(0, named=True)
+    assert ibm_row["expansion_count"] == 1
+    assert "International Business Machines" in ibm_row["expansions"]
+    assert any("IBM" in n for n in ibm_row["acronym_examples"])
+
+
+def test_acronym_map_high_confidence_feeds_aliases():
+    df = pl.DataFrame({
+        "name": [
+            "IBM Corp", "International Business Machines", "International Business Machines Inc",
+            "Apple Inc", "Apple Computer Co.",
+        ],
+    })
+    ac = nc.acronym_map(df, name_col="name")
+    high = ac.filter(pl.col("expansion_count") == 1)
+    aliases = {
+        row["expansions"][0]: row["acronym_examples"]
+        for row in high.iter_rows(named=True)
+    }
+    result = nc.cluster(df, name_col="name", aliases=aliases)
+    cids = result["cluster_id"].to_list()
+    assert cids[0] == cids[1] == cids[2], f"IBM/expansion should merge via derived aliases; got {cids}"
+
+
 def test_aliases_duplicate_alias_resolution_is_deterministic():
     """When the same alias appears under two canonicals, the lex-greater
     canonical wins (build_alias_map sorts ascending and last-write wins)."""
