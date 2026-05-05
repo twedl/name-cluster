@@ -28,6 +28,13 @@ no model weights, no data files, no network calls.
 
 ## Quickstart
 
+A runnable end-to-end demo lives at [`examples/quickstart.py`](./examples/quickstart.py)
+— exercises every public symbol on synthetic data, plus an optional
+real-data section that activates if you've populated the dev cache via
+`scripts/download_*.py`. Run it with `python examples/quickstart.py`.
+
+The minimal version:
+
 ```python
 import name_cluster as nc
 import polars as pl
