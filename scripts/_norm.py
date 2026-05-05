@@ -44,6 +44,8 @@ LIST1_SUFFIXES_SINGLE: frozenset[str] = frozenset({
     "kk", "gk", "tmk", "pte",
     # Russian / Slavic (head-strip primary use case post-Fix 2)
     "ooo", "oao", "ojsc", "pjsc", "cjsc", "jsc", "zao", "pao", "ao",
+    # Polish (post-List-3 compound canonicalization)
+    "spzoo", "psa", "ska", "spk", "spj",
     # Middle East
     "fze",
     # Turkish
@@ -75,6 +77,25 @@ LIST3_COMPOUND_LEGAL: dict[tuple[str, ...], str] = {
     # Russian (transliterated)
     ("obshchestvo", "s", "ogranichennoi", "otvetstvennostyu"): "ooo",
     ("aktsionernoe", "obshchestvo"): "ao",
+    # Polish (post-atomic-Latin map: ł->l, accents stripped via NFKD)
+    # spółka z ograniczoną odpowiedzialnością = LLC = "sp. z o.o."
+    ("spolka", "z", "ograniczona", "odpowiedzialnoscia"): "spzoo",
+    # Abbreviated forms after period-drop. Source variants:
+    #   "Sp. z o.o."     -> "sp z oo"   (3 tokens — periods drop adjacent o's)
+    #   "Sp Z O O"       -> "sp z o o"  (4 tokens — letters were already spaced)
+    ("sp", "z", "oo"): "spzoo",
+    ("sp", "z", "o", "o"): "spzoo",
+    ("spolka", "akcyjna"): "sa",
+    ("prosta", "spolka", "akcyjna"): "psa",
+    # Limited stock partnership: source can be "komandytowo-akcyjna" (hyphen
+    # drop concatenates) or "komandytowo akcyjna" (already spaced).
+    ("spolka", "komandytowoakcyjna"): "ska",
+    ("spolka", "komandytowo", "akcyjna"): "ska",
+    ("spolka", "komandytowa"): "spk",
+    ("spolka", "jawna"): "spj",
+    ("spolka", "partnerska"): "spp",
+    ("spolka", "cywilna"): "sc",
+    ("spolka", "europejska"): "se",
     # Spanish / French / Italian
     ("sociedad", "anonima"): "sa",
     ("sociedad", "limitada"): "sl",
@@ -119,6 +140,22 @@ LIST2_COMPOUND: dict[tuple[str, ...], str] = {
     ("imp", "exp"): "impexp",
 }
 
+# Atomic Latin-extension letters that NFKD doesn't decompose.
+# Without explicit mapping the punct-collapse step would treat these as non-
+# ASCII and replace with space, splitting words mid-token (Polish "SPÓŁKA"
+# would become "spo ka"). Map to their conventional ASCII fallbacks.
+_ATOMIC_LATIN_MAP = {
+    "Ł": "L", "ł": "l",
+    "Ø": "O", "ø": "o",
+    "Æ": "AE", "æ": "ae",
+    "Œ": "OE", "œ": "oe",
+    "ß": "ss",
+    "Þ": "TH", "þ": "th",
+    "Ð": "D", "ð": "d", "Đ": "D", "đ": "d",
+    "ı": "i", "İ": "i",
+}
+_ATOMIC_LATIN_TABLE = str.maketrans(_ATOMIC_LATIN_MAP)
+
 _RE_LEADING_ZERO_GARBAGE = re.compile(r"^0+\s+")
 _RE_LEADING_HASH_GARBAGE = re.compile(r"^[#*]+\s+")
 _RE_AMP = re.compile(r"&")
@@ -142,6 +179,9 @@ def normalize(name: str) -> str:
     # 1. Unicode NFKD + strip combining marks
     s = unicodedata.normalize("NFKD", s)
     s = "".join(ch for ch in s if not unicodedata.combining(ch))
+
+    # 1b. Map atomic Latin-extension letters that NFKD doesn't decompose.
+    s = s.translate(_ATOMIC_LATIN_TABLE)
 
     # 2. Lowercase
     s = s.lower()

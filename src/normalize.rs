@@ -48,6 +48,8 @@ static LIST1_SUFFIXES_SINGLE: LazyLock<HashSet<&'static str>> = LazyLock::new(||
         "kk", "gk", "tmk", "pte",
         // Russian / Slavic (head-strip primary use case)
         "ooo", "oao", "ojsc", "pjsc", "cjsc", "jsc", "zao", "pao", "ao",
+        // Polish (post-List-3 compound canonicalization)
+        "spzoo", "psa", "ska", "spk", "spj",
         // Middle East
         "fze",
         // Turkish
@@ -87,6 +89,24 @@ static LIST3_COMPOUND_LEGAL: LazyLock<Vec<(Vec<&'static str>, &'static str)>> = 
         // Russian (transliterated)
         (&["obshchestvo", "s", "ogranichennoi", "otvetstvennostyu"], "ooo"),
         (&["aktsionernoe", "obshchestvo"], "ao"),
+        // Polish (post-atomic-Latin map: ł->l, NFKD strips accents)
+        // spółka z ograniczoną odpowiedzialnością = LLC = "sp. z o.o."
+        (&["spolka", "z", "ograniczona", "odpowiedzialnoscia"], "spzoo"),
+        // Abbreviated forms after period-drop:
+        //   "Sp. z o.o."    -> "sp z oo"
+        //   "Sp Z O O"      -> "sp z o o"
+        (&["sp", "z", "oo"], "spzoo"),
+        (&["sp", "z", "o", "o"], "spzoo"),
+        (&["spolka", "akcyjna"], "sa"),
+        (&["prosta", "spolka", "akcyjna"], "psa"),
+        // Komandytowo-akcyjna: hyphen-drop concatenates, or source is spaced.
+        (&["spolka", "komandytowoakcyjna"], "ska"),
+        (&["spolka", "komandytowo", "akcyjna"], "ska"),
+        (&["spolka", "komandytowa"], "spk"),
+        (&["spolka", "jawna"], "spj"),
+        (&["spolka", "partnerska"], "spp"),
+        (&["spolka", "cywilna"], "sc"),
+        (&["spolka", "europejska"], "se"),
         // Spanish / French
         (&["sociedad", "anonima"], "sa"),
         (&["sociedad", "limitada"], "sl"),
@@ -154,9 +174,13 @@ pub fn normalize(name: &str) -> String {
     };
 
     // Char-level pass: lowercase + punct policy.
-    //   '&'                 -> " and "
+    //   '&'                  -> " and "
     //   '.' '\'' '-' '_' '+' -> drop entirely
     //   a-z / 0-9            -> keep
+    //   non-decomposable Latin-extension letters: explicit ASCII fallback
+    //     (NFKD doesn't decompose these — they're "atomic" precomposed forms,
+    //      so without an explicit map the catchall replaces them with space
+    //      and splits Polish/German/Danish/French/Icelandic words mid-token)
     //   anything else        -> ' ' (commas, parens, whitespace, non-ASCII)
     let mut s = String::with_capacity(decomposed.len() + 8);
     for c in decomposed.chars() {
@@ -165,6 +189,15 @@ pub fn normalize(name: &str) -> String {
             '&' => s.push_str(" and "),
             '.' | '\'' | '-' | '_' | '+' => {}
             '0'..='9' | 'a'..='z' => s.push(lower),
+            'Ł' | 'ł' => s.push('l'),                 // Polish, Wendish
+            'Ø' | 'ø' => s.push('o'),                 // Danish, Norwegian, Faroese
+            'Æ' | 'æ' => s.push_str("ae"),            // Old English, Nordic, Icelandic
+            'Œ' | 'œ' => s.push_str("oe"),            // French
+            'ß' => s.push_str("ss"),                  // German eszett
+            'Þ' | 'þ' => s.push_str("th"),            // Icelandic, Old English thorn
+            'Ð' | 'ð' | 'Đ' | 'đ' => s.push('d'),    // Icelandic eth, Croatian d-stroke
+            'ı' => s.push('i'),                       // Turkish dotless i
+            'İ' => s.push('i'),                       // Turkish dotted capital I
             _ => s.push(' '),
         }
     }

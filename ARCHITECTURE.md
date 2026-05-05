@@ -202,6 +202,12 @@ Dedup key = normalized name only. Passthrough columns remain row-level.
 ### Pipeline (in order)
 
 1. **Unicode NFKD + strip combining marks** (`Café` → `Cafe`)
+1b. **Atomic Latin-extension char map** — letters NFKD doesn't decompose
+   (no combining-mark form exists) get explicit ASCII fallbacks:
+   `Ł→l, Ø→o, Æ→ae, Œ→oe, ß→ss, Þ→th, Ð/Đ→d, ı/İ→i`. Without this,
+   `SPÓŁKA` would split mid-token into `spo ka` because `ł` is treated
+   as non-ASCII space. Covers Polish, Danish/Norwegian, German, French,
+   Icelandic, Croatian, Turkish.
 2. **Lowercase**
 3. **Punctuation collapse — split-rule:**
    - `&` → ` and `
@@ -267,6 +273,9 @@ KK, GK, TMK, PTE,
 # Russian / Slavic (head-strip primary use case)
 OOO, OAO, OJSC, PJSC, CJSC, JSC, ZAO, PAO, AO,
 
+# Polish (post-List-3 compound canonicalization)
+SPZOO, PSA, SKA, SPK, SPJ,
+
 # Middle East
 FZE,
 
@@ -312,6 +321,18 @@ CLOSED JOINT STOCK COMPANY       → cjsc
 # Russian (transliterated)
 OBSHCHESTVO S OGRANICHENNOI OTVETSTVENNOSTYU   → ooo
 AKTSIONERNOE OBSHCHESTVO                       → ao
+
+# Polish (post atomic-Latin map; NFKD strips ą/ć/ę/ń/ó/ś/ź/ż diacritics)
+SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ        → spzoo   (LLC)
+SP. Z O.O.  /  SP Z O O                        → spzoo   (abbreviated forms)
+SPÓŁKA AKCYJNA                                 → sa      (joint stock)
+PROSTA SPÓŁKA AKCYJNA                          → psa     (simple JSC, 2021+)
+SPÓŁKA KOMANDYTOWO-AKCYJNA                     → ska
+SPÓŁKA KOMANDYTOWA                             → spk
+SPÓŁKA JAWNA                                   → spj
+SPÓŁKA PARTNERSKA                              → spp
+SPÓŁKA CYWILNA                                 → sc
+SPÓŁKA EUROPEJSKA                              → se
 
 # Spanish / French
 SOCIEDAD ANONIMA                 → sa
@@ -557,7 +578,8 @@ match*. Lower bound: the rest depend on the MinHash+cosine fuzzy layer.
 | + refined punct (drop set vs space set) | 1,089 = 2.32% | 268 | — |
 | + bidirectional strip (head + tail) + intl suffixes | 1,684 = 3.59% | 313 | 77.71% |
 | + List 3 compound canonicalize | 2,760 = 5.88% | 578 | 77.71% |
-| + Tier 1+2 European/Asian forms (DE/IT/ES/NL/BE/CH/JP) | **2,770 = 5.90%** | **579** | **80.52%** |
+| + Tier 1+2 European/Asian forms (DE/IT/ES/NL/BE/CH/JP) | 2,770 = 5.90% | 579 | 80.52% |
+| + atomic-Latin char map + Polish List 3/1 (task #15) | **2,771 = 5.90%** | **581** | **80.51%** |
 
 Baseline → final = ~3× matched pairs on OFAC, ~2.4× fully-collapsed
 entities. The Tier 1+2 European/Asian additions specifically target
@@ -667,7 +689,7 @@ overkill for our narrow needs).
 | **Embeddings (model2vec, fastText)** | If non-English/cross-script support is needed. Adds model artifact handling. |
 | **Auto-threshold tuner** (`suggest_threshold`) | After enough users hit the manual sweep workflow. Cheap helper. |
 | **External-memory / spill-to-disk** | If users hit RAM limits at >100M rows without a block key. Builder pattern allows mmap'd sig storage. |
-| **Polish compound legal-form audit (task #15)** | Polish entities use long compound forms (`spółka z ograniczoną odpowiedzialnością`) with non-ASCII chars. Needs own audit pass + List 3 entries; ~41K PL entities in GLEIF, ~18.5K end with `odpowiedzialnoscia`. |
+| ~~**Polish compound legal-form audit (task #15)**~~ | DONE. Atomic-Latin char map (Ł→l etc.) + Polish List 3 entries (spzoo, sa, psa, ska, spk, spj, spp, sc, se) + List 1 strip of canonicalized tokens. Full 41K PL GLEIF: 0% → 89.4% substantive change rate; 0 parity mismatches with Python prototype. Char-map fix also benefits German (ß), Danish (ø), French (œ), Icelandic (þ), Croatian (đ), Turkish (ı). |
 | **Asian-jurisdiction corpora (task #16)** | GLEIF JP/KR coverage is weak (6-8% Latin). Supplement with JPX listed (~3.8K), KRX listed (~2.3K) when cross-Asian-jurisdiction clustering becomes a real need. |
 | **Cross-language synonym translation (task #14)** | Same legal concept, different language root: `OPYTNO KONSTRUKTORSKOE BYURO` ≠ `OKB`, `LIMITED LIABILITY COMPANY` ≠ `OBSHCHESTVO S OGRANICHENNOI OTVETSTVENNOSTYU`. Requires per-jurisdiction translation table or embedding-based similarity. |
 | **Acronym ↔ expansion matching (task #17)** | `IBM` vs `INTERNATIONAL BUSINESS MACHINES` share zero char-n-grams. Approach: builder takes `(canonical, [aliases])`; alias = first-letter acronym sig for names with ≥3 tokens. Plus acronym-aware scoring branch (`max(cosine, w·acronym_match)`). Opt-in flag `acronym_aliases=False`. Collision risk on common acronyms — needs disambiguation, ties to soft-scoring side-features. |
