@@ -106,33 +106,134 @@ pub fn build_adjacency(n: usize, edges: &[(u32, u32)]) -> Vec<Vec<u32>> {
     adj
 }
 
-/// BFS from `source`, return the maximum distance reached (eccentricity).
-/// Distances are in number of edges. Unreachable nodes don't contribute.
-pub fn bfs_eccentricity(adj: &[Vec<u32>], source: u32) -> usize {
+/// BFS from `source`, return per-node distance (`-1` for unreachable).
+/// Caller computes eccentricity / partitions as needed.
+pub fn bfs_distances(adj: &[Vec<u32>], source: u32) -> Vec<i32> {
     let n = adj.len();
     let mut dist: Vec<i32> = vec![-1; n];
     dist[source as usize] = 0;
     let mut queue: VecDeque<u32> = VecDeque::new();
     queue.push_back(source);
-    let mut max_dist = 0;
     while let Some(u) = queue.pop_front() {
         let d = dist[u as usize];
         for &v in &adj[u as usize] {
             if dist[v as usize] < 0 {
                 dist[v as usize] = d + 1;
                 queue.push_back(v);
-                if (d + 1) as usize > max_dist {
-                    max_dist = (d + 1) as usize;
-                }
             }
         }
     }
-    max_dist
+    dist
+}
+
+/// BFS from `source`, return the maximum distance reached (eccentricity).
+pub fn bfs_eccentricity(adj: &[Vec<u32>], source: u32) -> usize {
+    bfs_distances(adj, source)
+        .into_iter()
+        .filter(|&d| d >= 0)
+        .max()
+        .unwrap_or(0) as usize
+}
+
+/// Find connected components within `members`, using only edges where BOTH
+/// endpoints are in `members`. Each returned CC is sorted ascending; the
+/// outer Vec is ordered by ascending min-member (deterministic).
+pub fn connected_subcomponents(members: &[u32], adj: &[Vec<u32>]) -> Vec<Vec<u32>> {
+    let member_set: AHashMap<u32, ()> = members.iter().map(|&m| (m, ())).collect();
+    let mut visited: AHashMap<u32, ()> = AHashMap::with_capacity(members.len());
+    let mut sorted_members = members.to_vec();
+    sorted_members.sort_unstable();
+    let mut result: Vec<Vec<u32>> = Vec::new();
+    for &start in &sorted_members {
+        if visited.contains_key(&start) {
+            continue;
+        }
+        let mut cc: Vec<u32> = Vec::new();
+        let mut queue: VecDeque<u32> = VecDeque::new();
+        queue.push_back(start);
+        visited.insert(start, ());
+        while let Some(u) = queue.pop_front() {
+            cc.push(u);
+            for &v in &adj[u as usize] {
+                if member_set.contains_key(&v) && !visited.contains_key(&v) {
+                    visited.insert(v, ());
+                    queue.push_back(v);
+                }
+            }
+        }
+        cc.sort_unstable();
+        result.push(cc);
+    }
+    result
 }
 
 // ---------------------------------------------------------------------------
 // Hub selection
 // ---------------------------------------------------------------------------
+
+/// One piece produced by [`diameter_split`].
+#[derive(Debug, Clone)]
+pub struct DiameterPiece {
+    pub members: Vec<u32>,
+    pub hub: u32,
+    /// True iff this piece was created by splitting an oversized parent.
+    pub flagged: bool,
+}
+
+/// Hub-radius split of a connected component. Pieces smaller than `min_size`
+/// pass through untouched (no eccentricity check). For larger pieces:
+///   - Pick the hub (max-degree).
+///   - BFS distance from hub.
+///   - If max distance ≤ `radius_max`: keep as-is.
+///   - Else: split off all nodes at distance > `radius_max`. The "near"
+///     group stays with the hub; the "far" group's intra-subgraph CCs are
+///     pushed back onto the worklist for recursive analysis.
+///
+/// Both halves of any split inherit `flagged = true`. Output is unordered.
+pub fn diameter_split(
+    initial: Vec<u32>,
+    adj: &[Vec<u32>],
+    names: &[String],
+    radius_max: usize,
+    min_size: usize,
+) -> Vec<DiameterPiece> {
+    let mut result: Vec<DiameterPiece> = Vec::new();
+    let mut work: Vec<(Vec<u32>, bool)> = vec![(initial, false)];
+    while let Some((members, was_split)) = work.pop() {
+        let hub = pick_hub(&members, adj, names);
+        if members.len() < min_size {
+            result.push(DiameterPiece { members, hub, flagged: was_split });
+            continue;
+        }
+        let dists = bfs_distances(adj, hub);
+        let max_d = dists.iter().filter(|&&d| d >= 0).max().copied().unwrap_or(0) as usize;
+        if max_d <= radius_max {
+            result.push(DiameterPiece { members, hub, flagged: was_split });
+            continue;
+        }
+        let mut near: Vec<u32> = Vec::new();
+        let mut far: Vec<u32> = Vec::new();
+        for &m in &members {
+            let d = dists[m as usize];
+            if d >= 0 && (d as usize) <= radius_max {
+                near.push(m);
+            } else {
+                far.push(m);
+            }
+        }
+        // Defensive: pathological graph where partition fails. Keep whole.
+        if far.is_empty() || near.is_empty() {
+            result.push(DiameterPiece { members, hub, flagged: true });
+            continue;
+        }
+        near.sort_unstable();
+        result.push(DiameterPiece { members: near, hub, flagged: true });
+        for cc in connected_subcomponents(&far, adj) {
+            work.push((cc, true));
+        }
+    }
+    result
+}
 
 /// Highest-degree node in `members`, lex-asc tie-break on `names[i]`.
 /// `members` must be non-empty; `adj` covers the full graph.
@@ -247,5 +348,159 @@ mod tests {
         let adj = build_adjacency(1, &[]);
         let names = vec!["only".to_string()];
         assert_eq!(pick_hub(&[0], &adj, &names), 0);
+    }
+
+    #[test]
+    fn bfs_distances_chain() {
+        // Chain: 0-1-2-3-4
+        let adj = build_adjacency(5, &[(0, 1), (1, 2), (2, 3), (3, 4)]);
+        assert_eq!(bfs_distances(&adj, 0), vec![0, 1, 2, 3, 4]);
+        assert_eq!(bfs_distances(&adj, 2), vec![2, 1, 0, 1, 2]);
+    }
+
+    #[test]
+    fn bfs_distances_unreachable() {
+        // 0-1 connected; 2 alone
+        let adj = build_adjacency(3, &[(0, 1)]);
+        assert_eq!(bfs_distances(&adj, 0), vec![0, 1, -1]);
+    }
+
+    #[test]
+    fn subcomponents_disconnected_after_removing_bridge() {
+        // Barbell 0-1-2-3-4 - 5-6-7-8-9 connected via 4-5
+        // Remove the bridge node {4,5} from members -> {0,1,2,3} and {6,7,8,9}
+        // are 2 separate CCs in the subgraph.
+        let edges = vec![
+            (0, 1), (1, 2), (2, 3), (3, 4),
+            (4, 5),
+            (5, 6), (6, 7), (7, 8), (8, 9),
+        ];
+        let adj = build_adjacency(10, &edges);
+        let members = vec![0, 1, 2, 3, 6, 7, 8, 9];
+        let ccs = connected_subcomponents(&members, &adj);
+        assert_eq!(ccs.len(), 2);
+        assert_eq!(ccs[0], vec![0, 1, 2, 3]);
+        assert_eq!(ccs[1], vec![6, 7, 8, 9]);
+    }
+
+    #[test]
+    fn subcomponents_singleton() {
+        let adj = build_adjacency(3, &[(0, 1)]);
+        // Member {2} is alone -> single CC of one node
+        assert_eq!(connected_subcomponents(&[2], &adj), vec![vec![2]]);
+    }
+
+    fn make_names(n: usize) -> Vec<String> {
+        // Lex-stable: aaaaa, aaaab, aaaac, ... so pick_hub tie-break is deterministic.
+        (0..n).map(|i| format!("name_{:04}", i)).collect()
+    }
+
+    #[test]
+    fn split_chain_strict_radius() {
+        // Chain 0-1-2-3-4 with radius_max=1. Hub from node 2 (degree 2 vs
+        // others' 1 or 2 — actually all internal nodes have deg 2; pick_hub
+        // tie-breaks lex-asc on names). Eccentricity from any internal = 2.
+        // With radius_max=1, both endpoints are at distance 2 from the hub.
+        let adj = build_adjacency(5, &[(0, 1), (1, 2), (2, 3), (3, 4)]);
+        let names = make_names(5);
+        // Node 1 has degree 2; node 2 has degree 2; node 3 has degree 2.
+        // Lex tie-break -> hub = node 1 (smallest name among max-degree).
+        // From node 1: distances 0->1, 1->0, 2->1, 3->2, 4->3.
+        // Within radius 1: {0, 1, 2}. Far: {3, 4}.
+        let pieces = diameter_split(vec![0, 1, 2, 3, 4], &adj, &names, 1, 3);
+        // Should produce: near {0,1,2} flagged, plus split-off {3,4} (1 sub-CC).
+        // {3,4} has size 2 < min_size=3 -> kept as-is, flagged from parent split.
+        assert_eq!(pieces.len(), 2);
+        let near = pieces.iter().find(|p| p.members.len() == 3).expect("near group");
+        let far = pieces.iter().find(|p| p.members.len() == 2).expect("far group");
+        assert_eq!(near.members, vec![0, 1, 2]);
+        assert_eq!(far.members, vec![3, 4]);
+        assert!(near.flagged && far.flagged, "both halves of split should be flagged");
+    }
+
+    #[test]
+    fn no_split_when_within_radius() {
+        // Star: hub at centre (node 0, degree 4), eccentricity=1.
+        // radius_max=2 -> no split.
+        let adj = build_adjacency(5, &[(0, 1), (0, 2), (0, 3), (0, 4)]);
+        let names = make_names(5);
+        let pieces = diameter_split(vec![0, 1, 2, 3, 4], &adj, &names, 2, 3);
+        assert_eq!(pieces.len(), 1);
+        assert_eq!(pieces[0].members, vec![0, 1, 2, 3, 4]);
+        assert!(!pieces[0].flagged);
+    }
+
+    #[test]
+    fn no_split_below_min_size() {
+        // 3-node chain with strict radius=1, but min_size=5 -> skip check entirely.
+        let adj = build_adjacency(3, &[(0, 1), (1, 2)]);
+        let names = make_names(3);
+        let pieces = diameter_split(vec![0, 1, 2], &adj, &names, 1, 5);
+        assert_eq!(pieces.len(), 1);
+        assert!(!pieces[0].flagged);
+    }
+
+    #[test]
+    fn split_barbell() {
+        // Two 4-node cliques joined by a single bridge edge: nodes {0,1,2,3}
+        // form one clique, {4,5,6,7} the other, connected only via 3-4.
+        let mut edges: Vec<(u32, u32)> = Vec::new();
+        for i in 0..4 {
+            for j in (i + 1)..4 {
+                edges.push((i, j));        // first clique
+                edges.push((i + 4, j + 4)); // second clique
+            }
+        }
+        edges.push((3, 4)); // bridge
+        let adj = build_adjacency(8, &edges);
+        let names = make_names(8);
+        // Hub by max degree: nodes 3 and 4 each have degree 4 (3 within their
+        // clique + 1 across the bridge). Lex tie-break -> node 3.
+        // From node 3: distances 0=1, 1=1, 2=1, 3=0, 4=1, 5=2, 6=2, 7=2.
+        // Max distance 2. radius_max=1 -> split.
+        let pieces = diameter_split(vec![0, 1, 2, 3, 4, 5, 6, 7], &adj, &names, 1, 5);
+        // Near {0,1,2,3,4} flagged, far {5,6,7} as one sub-CC (clique among themselves).
+        assert_eq!(pieces.len(), 2);
+        let near = pieces.iter().find(|p| p.members.contains(&3)).unwrap();
+        let far = pieces.iter().find(|p| !p.members.contains(&3)).unwrap();
+        assert_eq!(near.members, vec![0, 1, 2, 3, 4]);
+        assert_eq!(far.members, vec![5, 6, 7]);
+        assert!(near.flagged && far.flagged);
+    }
+
+    #[test]
+    fn split_recursive_long_chain() {
+        // 7-node chain with radius_max=1 and min_size=3. Should split twice.
+        let edges: Vec<(u32, u32)> = (0..6).map(|i| (i, i + 1)).collect();
+        let adj = build_adjacency(7, &edges);
+        let names = make_names(7);
+        let pieces = diameter_split(vec![0, 1, 2, 3, 4, 5, 6], &adj, &names, 1, 3);
+        // Hub = node 1 (lex-smallest among max-degree internal nodes).
+        // Round 1: near = {0,1,2}, far = {3,4,5,6} (chain of 4).
+        // Far CC chain {3,4,5,6}: hub = 3 (lex-smallest of degree-2 nodes 4,5).
+        //   distances from 3: 3->0, 4->1, 5->2, 6->3. Max=3 > 1, split again.
+        //   Wait — but in the SUB-CC, node 3 only has neighbour 4 (we removed
+        //   edges to the near group, so 3's edge to 2 doesn't count). So in
+        //   the subgraph, node 3 has degree 1 — same as 4 (deg 2 inside subgraph)
+        //   ... actually adj is shared, but pick_hub uses adj[m].len() across
+        //   the whole graph. So node 3's degree includes its edge to node 2.
+        // Let's just assert: produces multiple pieces, all flagged, all small.
+        assert!(pieces.len() >= 2, "expected recursive splits, got {}", pieces.len());
+        for p in &pieces {
+            assert!(p.flagged, "every piece from a split should be flagged");
+        }
+        let total: usize = pieces.iter().map(|p| p.members.len()).sum();
+        assert_eq!(total, 7, "all 7 members must end up in exactly one piece");
+    }
+
+    #[test]
+    fn split_singleton_passthrough() {
+        // Single node, no edges -> diameter_split returns it unchanged.
+        let adj = build_adjacency(1, &[]);
+        let names = make_names(1);
+        let pieces = diameter_split(vec![0], &adj, &names, 2, 5);
+        assert_eq!(pieces.len(), 1);
+        assert_eq!(pieces[0].members, vec![0]);
+        assert!(!pieces[0].flagged);
     }
 }

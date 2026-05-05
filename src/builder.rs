@@ -17,7 +17,7 @@
 use ahash::AHashMap;
 
 use crate::cluster::{
-    bfs_eccentricity, build_adjacency, connected_components, group_by_component, pick_hub,
+    build_adjacency, connected_components, diameter_split, group_by_component,
 };
 use crate::lsh::LshIndex;
 use crate::minhash::MinHasher;
@@ -69,9 +69,10 @@ pub struct ClusterResult {
     pub cluster_ids: Vec<Option<u32>>,
     /// Hub-name canonical for each row (`None` when cluster_id is `None`).
     pub canonical: Vec<Option<String>>,
-    /// Cluster IDs (subset of cluster_ids) whose hub-radius exceeded
-    /// `hub_radius_max`. Diagnostic only — these clusters are kept intact
-    /// in v1; an actual split mechanism is task #27.
+    /// Cluster IDs whose ancestor (pre-split) connected component exceeded
+    /// `hub_radius_max`. The split mechanism (task #27, hub-radius partition)
+    /// produced these as residuals; useful for diagnostic + downstream
+    /// quality flagging. Empty when no splits occurred.
     pub flagged_cluster_ids: Vec<u32>,
 }
 
@@ -166,18 +167,32 @@ impl ClusterBuilder {
         struct ComponentInfo {
             members: Vec<u32>,
             canonical: String,
+            /// True iff this cluster came from splitting an oversized parent.
+            /// Either side of a split inherits the flag — not just the residuals.
             flagged: bool,
         }
-        let mut infos: Vec<ComponentInfo> = groups
-            .into_iter()
-            .map(|members| {
-                let hub = pick_hub(&members, &adj, &self.unique_normalized);
-                let canonical = self.unique_normalized[hub as usize].clone();
-                let flagged = members.len() >= self.opts.diameter_check_min_size
-                    && bfs_eccentricity(&adj, hub) > self.opts.hub_radius_max;
-                ComponentInfo { members, canonical, flagged }
-            })
-            .collect();
+
+        // Hub-radius split: oversized components (size ≥ min_size AND hub
+        // eccentricity > radius_max) get split. Pieces smaller than min_size
+        // pass through. The "near" group keeps the original hub; the "far"
+        // group's intra-subgraph CCs are recursively analysed.
+        let mut infos: Vec<ComponentInfo> = Vec::with_capacity(n_components);
+        for members in groups {
+            for piece in diameter_split(
+                members,
+                &adj,
+                &self.unique_normalized,
+                self.opts.hub_radius_max,
+                self.opts.diameter_check_min_size,
+            ) {
+                let canonical = self.unique_normalized[piece.hub as usize].clone();
+                infos.push(ComponentInfo {
+                    members: piece.members,
+                    canonical,
+                    flagged: piece.flagged,
+                });
+            }
+        }
 
         // Stable sort: deterministic with rare canonical-name ties.
         infos.sort_by(|a, b| a.canonical.cmp(&b.canonical));
@@ -368,5 +383,6 @@ mod tests {
         );
         assert!(r.flagged_cluster_ids.is_empty());
     }
+
 }
 
