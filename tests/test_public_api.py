@@ -45,6 +45,19 @@ def test_normalize_abbrev_variants():
     assert nc.normalize("Acme Department") == "acme dept"
 
 
+def test_n_unique_le_2_returns_separate_clusters():
+    """Documented limitation (README § Scope): with ≤ 2 unique normalized
+    names the IDF degenerates to zero and rerank can't score similarity.
+    The lib short-circuits to one cluster per unique name. Add a 3rd
+    distinct name and the same pair clusters correctly."""
+    # 2 inputs that obviously match in spirit — but n_unique=2, so split.
+    assert nc.cluster_names(["99Z CLAUDEAI", "99ZCLAUDEAI"]) == [0, 1]
+    # Same pair + a 3rd distinct name → IDF works, the pair merges.
+    ids = nc.cluster_names(["99Z CLAUDEAI", "99ZCLAUDEAI", "Brightspoke Ltd"])
+    assert ids[0] == ids[1]
+    assert ids[2] != ids[0]
+
+
 def test_glued_vs_spaced_variants_cluster():
     """Names with internal whitespace differences should cluster: char n-grams
     are taken over a whitespace-stripped form so '99z claudeai' and

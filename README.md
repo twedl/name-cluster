@@ -246,6 +246,12 @@ All knobs are flat kwargs on `cluster()`:
 - **Determinism:** same input + same seed → byte-identical output, on the
   same wheel. Guaranteed within a lib version; cluster IDs may differ
   across `0.x` → `0.y` releases.
+- **Minimum corpus size:** at least 3 unique post-normalize names are
+  required for the TF-IDF rerank to produce meaningful cosine scores.
+  Inputs with ≤ 2 unique normalized names always return one cluster per
+  unique name (no merging) — IDF collapses to zero when every n-gram
+  appears in every document. Realistic corpora are never near this floor;
+  it bites REPL/test usage with toy inputs.
 - **Out of v1:** soft-scoring side-features (country / products as
   signals rather than block keys); incremental fit/predict; cross-language
   synonym translation (e.g. acronym ↔ expansion). See `ARCHITECTURE.md`

@@ -374,6 +374,14 @@ fn score_lsh_candidates(
     ngram_size: usize,
     min_score: f32,
 ) -> Vec<(u32, u32, f32)> {
+    // IDF degeneracy short-circuit: with ≤ 2 unique normalized names the
+    // TF-IDF formula collapses (n-grams shared by both docs get idf=0; the
+    // unshared ones land in disjoint vectors → cosine always 0 regardless of
+    // how similar the inputs look). Skip the wasted vocab build + vectorise.
+    // Public limitation documented in README § Scope.
+    if unique_normalized.len() < 3 {
+        return Vec::new();
+    }
     // Strip whitespace before n-gramming so glued/spaced variants of the same
     // name produce identical trigram sets — see ngram::comparison_form.
     let cmp: Vec<_> = unique_normalized
