@@ -175,6 +175,74 @@ impl ClusterBuilder {
         }
     }
 
+    /// Parallel batch insertion. Three phases:
+    ///   A. par_iter: per-row truncate + normalize + alias lookup → Vec<Option<String>>
+    ///   B. sequential: dedup + assign unique indices (preserves insertion order)
+    ///   C. par_iter: per-new-unique MinHash signature, then sequential LSH insert
+    ///
+    /// Same observable result as calling `add()` per row, but cuts the per-row
+    /// CPU into parallel work where it's safe (normalize is pure; signature is
+    /// `&self`-only on the MinHasher).
+    pub fn add_batch(&mut self, names: Vec<Option<String>>) {
+        if names.is_empty() {
+            return;
+        }
+        let max_len = self.opts.max_name_length;
+        let aliases = &self.opts.aliases;
+        let normalized: Vec<Option<String>> = with_thread_pool(self.opts.n_threads, || {
+            names
+                .into_par_iter()
+                .map(|opt| {
+                    let raw = opt?;
+                    let trunc = truncate_utf8(&raw, max_len);
+                    let mut nm = normalize(trunc);
+                    if let Some(canon) = aliases.get(&nm) {
+                        nm = canon.clone();
+                    }
+                    (!nm.is_empty()).then_some(nm)
+                })
+                .collect()
+        });
+
+        use std::collections::hash_map::Entry;
+        let mut new_keys: Vec<String> = Vec::new();
+        let mut new_idxs: Vec<u32> = Vec::new();
+        for opt_norm in normalized {
+            match opt_norm {
+                None => self.original_to_unique.push(None),
+                Some(nm) => {
+                    let next_idx = self.unique_normalized.len() as u32;
+                    let unique_idx = match self.seen.entry(nm) {
+                        Entry::Occupied(e) => *e.get(),
+                        Entry::Vacant(e) => {
+                            new_keys.push(e.key().clone());
+                            new_idxs.push(next_idx);
+                            self.unique_normalized.push(e.key().clone());
+                            e.insert(next_idx);
+                            next_idx
+                        }
+                    };
+                    self.original_to_unique.push(Some(unique_idx));
+                }
+            }
+        }
+
+        if new_keys.is_empty() {
+            return;
+        }
+        let ngram_size = self.opts.ngram_size;
+        let hasher = &self.minhasher;
+        let sigs: Vec<Vec<u64>> = with_thread_pool(self.opts.n_threads, || {
+            new_keys
+                .par_iter()
+                .map(|name| hasher.signature(ngrams(name, ngram_size)))
+                .collect()
+        });
+        for (idx, sig) in new_idxs.iter().zip(sigs.iter()) {
+            self.lsh.insert(*idx, sig);
+        }
+    }
+
     /// Run pipeline through TF-IDF rerank only — no clustering. Pairs are
     /// filtered to `score >= min_score` during scoring (no full Vec built
     /// then re-filtered). Set `min_score = 0.0` to return everything.

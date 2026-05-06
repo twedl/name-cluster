@@ -120,11 +120,8 @@ fn py_cluster_lists(
     };
     let r = py.allow_threads(|| {
         let mut b = builder::ClusterBuilder::new(opts);
-        // Consume `names` by value: the input Vec drops at end of loop scope,
-        // before finalize() runs its big stages. Saves ~3 GB peak RSS at 10M.
-        for name in names {
-            b.add(name.as_deref());
-        }
+        // add_batch consumes `names` and runs Phase A/C of insertion in parallel.
+        b.add_batch(names);
         b.finalize()
     });
     let canonical = if return_canonical { r.canonical } else { Vec::new() };
@@ -189,9 +186,7 @@ fn py_candidate_pairs_lists(
     };
     let r = py.allow_threads(|| {
         let mut b = builder::ClusterBuilder::new(opts);
-        for name in names {
-            b.add(name.as_deref());
-        }
+        b.add_batch(names);
         b.candidate_pairs(min_score)
     });
     let mut idx_a = Vec::with_capacity(r.scored_pairs.len());

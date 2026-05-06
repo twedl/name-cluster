@@ -9,84 +9,44 @@
   },
   "rows": [
     {
-      "n_input": 1000,
-      "n_threads": 1,
-      "n_clusters": 963,
-      "n_null": 37,
-      "wall_seconds": 0.024477249942719936,
-      "peak_rss_delta_mb": 4.5,
-      "peak_vms_delta_mb": 22.0625,
-      "throughput": 40854.262727231806
-    },
-    {
-      "n_input": 1000,
-      "n_threads": null,
-      "n_clusters": 963,
-      "n_null": 37,
-      "wall_seconds": 0.014670749893411994,
-      "peak_rss_delta_mb": 0.03125,
-      "peak_vms_delta_mb": 16.0625,
-      "throughput": 68162.84152244033
-    },
-    {
-      "n_input": 10000,
-      "n_threads": 1,
-      "n_clusters": 9561,
-      "n_null": 420,
-      "wall_seconds": 0.142126000020653,
-      "peak_rss_delta_mb": 36.984375,
-      "peak_vms_delta_mb": 56.03125,
-      "throughput": 70360.10299696644
-    },
-    {
-      "n_input": 10000,
-      "n_threads": null,
-      "n_clusters": 9561,
-      "n_null": 420,
-      "wall_seconds": 0.13104670797474682,
-      "peak_rss_delta_mb": 0.375,
-      "peak_vms_delta_mb": 16.0625,
-      "throughput": 76308.6700501247
-    },
-    {
       "n_input": 100000,
       "n_threads": 1,
       "n_clusters": 94648,
       "n_null": 4043,
-      "wall_seconds": 2.2393769579939544,
-      "peak_rss_delta_mb": 325.9375,
-      "peak_vms_delta_mb": 342.953125,
-      "throughput": 44655.27772938261
+      "wall_seconds": 2.2093861249741167,
+      "peak_rss_delta_mb": 435.890625,
+      "peak_vms_delta_mb": 460.265625,
+      "throughput": 45261.44111689464
     },
     {
       "n_input": 100000,
       "n_threads": null,
       "n_clusters": 94648,
       "n_null": 4043,
-      "wall_seconds": 1.8329328331165016,
-      "peak_rss_delta_mb": 271.4375,
-      "peak_vms_delta_mb": 300.09375,
-      "throughput": 54557.37285799604
+      "wall_seconds": 1.3196344580501318,
+      "peak_rss_delta_mb": 246.515625,
+      "peak_vms_delta_mb": 280.375,
+      "throughput": 75778.56079005258
     },
     {
       "n_input": 1000000,
       "n_threads": 1,
       "n_clusters": 886004,
       "n_null": 40555,
-      "wall_seconds": 123.07735345885158,
-      "peak_rss_delta_mb": 6124.890625,
-      "peak_vms_delta_mb": 11471.828125,
-      "throughput": 8124.971588167354
+      "wall_seconds": 121.25846483302303,
+      "peak_rss_delta_mb": 5546.453125,
+      "peak_vms_delta_mb": 11782.296875,
+      "throughput": 8246.846942826083
     },
     {
       "n_input": 1000000,
       "n_threads": null,
       "n_clusters": 886004,
       "n_null": 40555,
-      "wall_seconds": 75.71424024994485,
-      "peak_rss_delta_mb": 6428.3125,
-      "peak_vms_delta_mb": 10803.34375,
-      "throughput": 13207.55510058398
+      "wall_seconds": 66.57650687498972,
+      "peak_rss_delta_mb": 3436.640625,
+      "peak_vms_delta_mb": 7886.34375,
+      "throughput": 15020.313424939726
     }
   ]
 }
