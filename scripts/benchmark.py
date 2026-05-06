@@ -109,7 +109,7 @@ def run(sizes: list[int], thread_configs: list[int | None]) -> list[dict]:
             throughput = n / elapsed if elapsed > 0 else float("inf")
             rows.append({
                 "n_input": n,
-                "n_threads": nt if nt is not None else 0,  # 0 sentinel = default
+                "n_threads": nt,  # None serialises to JSON null
                 "n_clusters": n_clusters,
                 "n_null": n_null,
                 "wall_seconds": elapsed,
@@ -133,8 +133,10 @@ def run(sizes: list[int], thread_configs: list[int | None]) -> list[dict]:
 
 def write_report(rows: list[dict], source_label: str) -> Path:
     DOCS.mkdir(exist_ok=True)
+    today = date.today().isoformat()
     md = DOCS / "benchmark.md"
     js = DOCS / "benchmark.json"
+    js_snapshot = DOCS / f"benchmark-{today}.json"
 
     info = {
         "machine": platform.platform(),
@@ -157,7 +159,7 @@ def write_report(rows: list[dict], source_label: str) -> Path:
         f.write("| input names | threads | clusters | null | wall time | peak Δ RSS | peak Δ VMS | throughput |\n")
         f.write("|---:|---:|---:|---:|---:|---:|---:|---:|\n")
         for r in rows:
-            thr_label = "default" if r["n_threads"] == 0 else str(r["n_threads"])
+            thr_label = "default" if r["n_threads"] is None else str(r["n_threads"])
             f.write(
                 f"| {r['n_input']:,} | {thr_label} | {r['n_clusters']:,} | {r['n_null']:,} | "
                 f"{r['wall_seconds']:.2f} s | {r['peak_rss_delta_mb']:.0f} MB | "
@@ -196,8 +198,10 @@ def write_report(rows: list[dict], source_label: str) -> Path:
             "```\n"
         )
 
-    with js.open("w") as f:
-        json.dump({"info": info, "rows": rows}, f, indent=2)
+    payload = {"info": info, "rows": rows}
+    for path in (js, js_snapshot):
+        with path.open("w") as f:
+            json.dump(payload, f, indent=2)
 
     return md
 

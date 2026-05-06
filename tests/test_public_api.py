@@ -170,13 +170,18 @@ def test_aliases_empty_dict_noop():
 
 
 def test_parallel_matches_serial_byte_identical():
-    """Cluster the same input with n_threads=1 vs 8; cluster_ids must match
-    exactly. Determinism is the contract; rayon's collect preserves order."""
-    ds = nc.generate_examples(n_entities=120, difficulty="medium", seed=7)
-    serial = nc.cluster(ds, name_col="variant_name", n_threads=1)
-    parallel = nc.cluster(ds, name_col="variant_name", n_threads=8)
-    assert serial["cluster_id"].to_pylist() == parallel["cluster_id"].to_pylist()
-    assert serial["canonical_name"].to_pylist() == parallel["canonical_name"].to_pylist()
+    """Cluster a non-trivial corpus across three thread counts; outputs must
+    match byte-for-byte. Determinism is the contract; rayon's collect preserves
+    order. Larger n + extra config increases the chance of catching contention
+    races that wouldn't surface at low thread count."""
+    ds = nc.generate_examples(n_entities=800, difficulty="hard", seed=7)
+    baseline = nc.cluster(ds, name_col="variant_name", n_threads=1)
+    base_ids = baseline["cluster_id"].to_pylist()
+    base_canon = baseline["canonical_name"].to_pylist()
+    for nt in (4, 8, 16):
+        r = nc.cluster(ds, name_col="variant_name", n_threads=nt)
+        assert r["cluster_id"].to_pylist() == base_ids, f"cluster_id drift at n_threads={nt}"
+        assert r["canonical_name"].to_pylist() == base_canon, f"canonical drift at n_threads={nt}"
 
 
 def test_acronym_map_finds_corpus_pairs():
