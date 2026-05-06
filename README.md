@@ -14,7 +14,11 @@ works on polars, pandas, and pyarrow inputs.
 
 ## Install
 
-PyPI publishing is pending. From source (requires rust toolchain):
+```bash
+pip install name-cluster   # Linux x86_64 / aarch64 wheels
+```
+
+Other platforms (macOS, Windows) — build from source, requires the Rust toolchain:
 
 ```bash
 git clone https://github.com/jessetweedle/name-cluster && cd name-cluster
