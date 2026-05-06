@@ -45,6 +45,33 @@ def test_normalize_abbrev_variants():
     assert nc.normalize("Acme Department") == "acme dept"
 
 
+def test_normalize_names_batched_matches_scalar():
+    """normalize_names() == [normalize(x) for x in ...] elementwise, with
+    None passthrough and np.nan / non-str coerced to None."""
+    inputs = ["Acme Corporation Inc", "00 IBM", "", "Procter & Gamble", None, 42]
+    out = nc.normalize_names(inputs)
+    assert out[0] == nc.normalize("Acme Corporation Inc")
+    assert out[1] == nc.normalize("00 IBM")
+    assert out[2] == ""
+    assert out[3] == nc.normalize("Procter & Gamble")
+    assert out[4] is None
+    assert out[5] is None  # non-str coerced to None
+
+
+def test_normalize_names_polars_column():
+    """The documented polars idiom — map_batches over .to_list()."""
+    df = pl.DataFrame({"name": ["Acme Corp", "ACME Inc", None]})
+    out = df.with_columns(
+        pl.col("name")
+        .map_batches(
+            lambda s: pl.Series(nc.normalize_names(s.to_list())),
+            return_dtype=pl.Utf8,
+        )
+        .alias("normalized")
+    )
+    assert out["normalized"].to_list() == ["acme", "acme", None]
+
+
 def test_cluster_names_dedups_acme():
     ids = nc.cluster_names(["Acme Corp", "ACME Inc", "Brightspoke"])
     assert ids[0] == ids[1]

@@ -11,6 +11,7 @@
 
 use ahash::AHashMap;
 use pyo3::prelude::*;
+use rayon::prelude::*;
 use std::collections::HashMap;
 
 mod builder;
@@ -24,6 +25,19 @@ mod tfidf;
 #[pyfunction(name = "normalize")]
 fn py_normalize(name: &str) -> String {
     normalize::normalize(name)
+}
+
+/// Batched, parallel scalar `normalize` over a list. `None` passes through
+/// to `None`; otherwise returns the same string `normalize()` would for
+/// each input. No truncation, no alias rewriting — pure normalization.
+#[pyfunction(name = "normalize_lists")]
+fn py_normalize_lists(py: Python<'_>, names: Vec<Option<String>>) -> Vec<Option<String>> {
+    py.allow_threads(|| {
+        names
+            .into_par_iter()
+            .map(|opt| opt.map(|s| normalize::normalize(&s)))
+            .collect()
+    })
 }
 
 /// Normalize each (canonical, [alias]) pair and flatten to alias_norm ->
@@ -243,6 +257,7 @@ fn py_pairwise_cosines_lists(
 #[pymodule]
 fn _lowlevel(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(py_normalize, m)?)?;
+    m.add_function(wrap_pyfunction!(py_normalize_lists, m)?)?;
     m.add_function(wrap_pyfunction!(py_cluster_lists, m)?)?;
     m.add_function(wrap_pyfunction!(py_candidate_pairs_lists, m)?)?;
     m.add_function(wrap_pyfunction!(py_pairwise_cosines_lists, m)?)?;

@@ -91,6 +91,9 @@ nc.cluster_names(["IBM Corp", "IBM Inc", "Apple Inc"])  # -> [0, 0, 1]
 # Single-name normalization (debug what the lib actually compares)
 nc.normalize("00 IBM Corp.")  # -> "ibm"
 
+# Batched, parallel normalize over a list (None / np.nan → None passthrough)
+nc.normalize_names(["Acme Corp", "ACME Inc", None])  # -> ["acme", "acme", None]
+
 # Synthetic data + cluster-quality metrics for evaluation
 ds = nc.generate_examples(n_entities=100, difficulty="medium", seed=0)
 metrics = nc.score_clusters(predicted, true)  # ARI, F1, precision, recall
@@ -114,6 +117,28 @@ nc.acronym_map(df, name_col="name")
 ```
 
 ## Common patterns
+
+### Add a normalized column to a dataframe
+
+`nc.normalize_names(seq)` is the batched (rayon-parallel) form of
+`nc.normalize`. The polars idiom:
+
+```python
+df = df.with_columns(
+    pl.col("name")
+      .map_batches(
+          lambda s: pl.Series(nc.normalize_names(s.to_list())),
+          return_dtype=pl.Utf8,
+      )
+      .alias("normalized")
+)
+```
+
+`map_batches` hands the whole series to the callback in one shot, so
+rayon parallelizes the Rust loop across all available cores. Useful for
+inspecting what `cluster()` actually compares, or pre-deduping before
+clustering. On pandas, `df["name"].map(nc.normalize)` works but is
+serial — go through `normalize_names` for the batched path.
 
 ### Block by country (recommended for cross-country corpora)
 
