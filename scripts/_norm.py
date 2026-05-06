@@ -28,6 +28,7 @@ LIST1_SUFFIXES_SINGLE: frozenset[str] = frozenset(
     {
         # English / Western
         "inc",
+        "incorporated",
         "llc",
         "ltd",
         "limited",

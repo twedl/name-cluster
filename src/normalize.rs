@@ -30,6 +30,7 @@ static LIST1_SUFFIXES_SINGLE: LazyLock<HashSet<&'static str>> = LazyLock::new(||
     [
         // English / Western
         "inc",
+        "incorporated",
         "llc",
         "ltd",
         "limited",
@@ -492,6 +493,7 @@ mod tests {
     fn basic_punct_and_suffix() {
         assert_eq!(norm("IBM Corp"), "ibm");
         assert_eq!(norm("Apple Inc."), "apple");
+        assert_eq!(norm("Apple Incorporated"), "apple");
         assert_eq!(norm("Procter & Gamble"), "procter gamble");
     }
 
