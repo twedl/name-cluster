@@ -20,7 +20,7 @@ use rayon::prelude::*;
 use crate::cluster::{build_adjacency, connected_components, diameter_split, group_by_component};
 use crate::lsh::LshIndex;
 use crate::minhash::MinHasher;
-use crate::ngram::ngrams;
+use crate::ngram::{comparison_form, ngrams};
 use crate::normalize::normalize;
 use crate::tfidf::{cosine, Vocabulary};
 
@@ -156,9 +156,10 @@ impl ClusterBuilder {
         let unique_idx = match self.seen.entry(norm) {
             Entry::Occupied(e) => *e.get(),
             Entry::Vacant(e) => {
+                let cmp = comparison_form(e.key());
                 let sig = self
                     .minhasher
-                    .signature(ngrams(e.key(), self.opts.ngram_size));
+                    .signature(ngrams(cmp.as_ref(), self.opts.ngram_size));
                 self.lsh.insert(next_idx, &sig);
                 self.unique_normalized.push(e.key().clone());
                 e.insert(next_idx);
@@ -228,7 +229,10 @@ impl ClusterBuilder {
         let sigs: Vec<Vec<u64>> = with_thread_pool(self.opts.n_threads, || {
             new_keys
                 .par_iter()
-                .map(|name| hasher.signature(ngrams(name, ngram_size)))
+                .map(|name| {
+                    let cmp = comparison_form(name);
+                    hasher.signature(ngrams(cmp.as_ref(), ngram_size))
+                })
                 .collect()
         });
         for (idx, sig) in new_idxs.iter().zip(sigs.iter()) {
@@ -370,10 +374,16 @@ fn score_lsh_candidates(
     ngram_size: usize,
     min_score: f32,
 ) -> Vec<(u32, u32, f32)> {
-    let vocab = Vocabulary::build(unique_normalized.iter(), ngram_size);
-    let vectors: Vec<_> = unique_normalized
+    // Strip whitespace before n-gramming so glued/spaced variants of the same
+    // name produce identical trigram sets — see ngram::comparison_form.
+    let cmp: Vec<_> = unique_normalized
         .par_iter()
-        .map(|n| vocab.vectorize(n))
+        .map(|s| comparison_form(s))
+        .collect();
+    let vocab = Vocabulary::build(cmp.iter().map(|c| c.as_ref()), ngram_size);
+    let vectors: Vec<_> = cmp
+        .par_iter()
+        .map(|c| vocab.vectorize(c.as_ref()))
         .collect();
     lsh.candidate_pairs_distinct()
         .into_par_iter()
@@ -393,13 +403,13 @@ pub fn pairwise_cosines(names: &[String], ngram_size: usize) -> Vec<(u32, u32, f
     if names.len() < 2 {
         return Vec::new();
     }
-    use crate::ngram::ngrams;
     use ahash::AHashMap;
     let docs: Vec<AHashMap<Vec<u8>, u32>> = names
         .iter()
         .map(|n| {
+            let cmp = comparison_form(n);
             let mut counts: AHashMap<Vec<u8>, u32> = AHashMap::new();
-            for g in ngrams(n, ngram_size) {
+            for g in ngrams(cmp.as_ref(), ngram_size) {
                 *counts.entry(g.to_vec()).or_insert(0) += 1;
             }
             counts

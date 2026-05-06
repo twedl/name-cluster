@@ -45,6 +45,30 @@ def test_normalize_abbrev_variants():
     assert nc.normalize("Acme Department") == "acme dept"
 
 
+def test_glued_vs_spaced_variants_cluster():
+    """Names with internal whitespace differences should cluster: char n-grams
+    are taken over a whitespace-stripped form so '99z claudeai' and
+    '99zclaudeai' produce identical trigram sets. Needs a real-sized corpus
+    so IDF doesn't degenerate (small corpora where all docs share all n-grams
+    collapse cosine to 0)."""
+    corpus = [
+        "99Z CLAUDEAI",
+        "99ZCLAUDEAI",
+        "AcmeFoo",
+        "Acme Foo",
+        "Brightspoke Ltd",
+        "Foothill Industries",
+        "Apple Inc",
+        "Pineapple Inc",  # near-substring; should NOT merge with Apple
+        "Microsoft Corp",
+        "Google Inc",
+    ]
+    ids = nc.cluster_names(corpus)
+    assert ids[0] == ids[1], "99Z CLAUDEAI / 99ZCLAUDEAI should cluster"
+    assert ids[2] == ids[3], "AcmeFoo / Acme Foo should cluster"
+    assert ids[6] != ids[7], "Apple / Pineapple should NOT merge"
+
+
 def test_normalize_names_batched_matches_scalar():
     """normalize_names() == [normalize(x) for x in ...] elementwise, with
     None passthrough and np.nan / non-str coerced to None."""
