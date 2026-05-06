@@ -29,6 +29,7 @@ def _run(
     diameter_check_min_size: int,
     max_name_length: int,
     aliases: dict[str, list[str]] | None,
+    n_threads: int | None,
 ) -> tuple[list[int | None], list[str | None], list[int]]:
     # Coerce np.nan / non-str to None — pandas null repr differs from polars/pyarrow.
     coerced = [n if isinstance(n, str) else None for n in names]
@@ -43,6 +44,7 @@ def _run(
         diameter_check_min_size=diameter_check_min_size,
         max_name_length=max_name_length,
         aliases=aliases,
+        n_threads=n_threads,
         return_canonical=return_canonical,
     )
 
@@ -60,6 +62,7 @@ def cluster(
     diameter_check_min_size: int = 5,
     max_name_length: int = 256,
     aliases: dict[str, list[str]] | None = None,
+    n_threads: int | None = None,
 ):
     """Cluster business names into entity groups.
 
@@ -87,6 +90,11 @@ def cluster(
         cosine never connects acronym + expansion. If two canonicals map the
         same alias, the lexicographically-greater canonical wins
         (deterministic regardless of dict insertion order).
+    n_threads : int | None
+        Worker threads for the parallelised stages (TF-IDF rerank scoring +
+        per-name vectorisation). ``None`` uses rayon's default (= CPU count);
+        ``1`` forces single-threaded. Output is byte-identical regardless
+        of thread count.
 
     Returns
     -------
@@ -107,6 +115,7 @@ def cluster(
         diameter_check_min_size=diameter_check_min_size,
         max_name_length=max_name_length,
         aliases=aliases,
+        n_threads=n_threads,
     )
     backend = data.implementation
     return data.with_columns(
@@ -126,6 +135,7 @@ def cluster_names(
     diameter_check_min_size: int = 5,
     max_name_length: int = 256,
     aliases: dict[str, list[str]] | None = None,
+    n_threads: int | None = None,
 ) -> list[int | None]:
     """REPL convenience: cluster a flat list, return cluster ids only.
 
@@ -144,6 +154,7 @@ def cluster_names(
         diameter_check_min_size=diameter_check_min_size,
         max_name_length=max_name_length,
         aliases=aliases,
+        n_threads=n_threads,
     )
     return cluster_ids
 

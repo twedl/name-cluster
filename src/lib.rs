@@ -71,10 +71,12 @@ fn build_alias_map(
     diameter_check_min_size = 5,
     max_name_length = 256,
     aliases = None,
+    n_threads = None,
     return_canonical = true,
 ))]
 #[allow(clippy::too_many_arguments)]
 fn py_cluster_lists(
+    py: Python<'_>,
     names: Vec<Option<String>>,
     threshold: f32,
     seed: u64,
@@ -85,6 +87,7 @@ fn py_cluster_lists(
     diameter_check_min_size: usize,
     max_name_length: usize,
     aliases: Option<HashMap<String, Vec<String>>>,
+    n_threads: Option<usize>,
     return_canonical: bool,
 ) -> PyResult<(Vec<Option<u32>>, Vec<Option<String>>, Vec<u32>)> {
     if !(0.0..=1.0).contains(&threshold) {
@@ -113,14 +116,17 @@ fn py_cluster_lists(
         diameter_check_min_size,
         max_name_length,
         aliases: build_alias_map(aliases),
+        n_threads,
     };
-    let mut b = builder::ClusterBuilder::new(opts);
-    // Consume `names` by value: the input Vec drops at end of loop scope,
-    // before finalize() runs its big stages. Saves ~3 GB peak RSS at 10M.
-    for name in names {
-        b.add(name.as_deref());
-    }
-    let r = b.finalize();
+    let r = py.allow_threads(|| {
+        let mut b = builder::ClusterBuilder::new(opts);
+        // Consume `names` by value: the input Vec drops at end of loop scope,
+        // before finalize() runs its big stages. Saves ~3 GB peak RSS at 10M.
+        for name in names {
+            b.add(name.as_deref());
+        }
+        b.finalize()
+    });
     let canonical = if return_canonical { r.canonical } else { Vec::new() };
     Ok((r.cluster_ids, canonical, r.flagged_cluster_ids))
 }
@@ -143,9 +149,11 @@ fn py_cluster_lists(
     lsh_rows = 4,
     max_name_length = 256,
     aliases = None,
+    n_threads = None,
 ))]
 #[allow(clippy::too_many_arguments, clippy::type_complexity)]
 fn py_candidate_pairs_lists(
+    py: Python<'_>,
     names: Vec<Option<String>>,
     min_score: f32,
     seed: u64,
@@ -154,6 +162,7 @@ fn py_candidate_pairs_lists(
     lsh_rows: usize,
     max_name_length: usize,
     aliases: Option<HashMap<String, Vec<String>>>,
+    n_threads: Option<usize>,
 ) -> PyResult<(Vec<u32>, Vec<u32>, Vec<f32>, Vec<String>, Vec<Option<u32>>)> {
     if !(0.0..=1.0).contains(&min_score) {
         return Err(pyo3::exceptions::PyValueError::new_err(format!(
@@ -176,12 +185,15 @@ fn py_candidate_pairs_lists(
         diameter_check_min_size: 5,
         max_name_length,
         aliases: build_alias_map(aliases),
+        n_threads,
     };
-    let mut b = builder::ClusterBuilder::new(opts);
-    for name in names {
-        b.add(name.as_deref());
-    }
-    let r = b.candidate_pairs(min_score);
+    let r = py.allow_threads(|| {
+        let mut b = builder::ClusterBuilder::new(opts);
+        for name in names {
+            b.add(name.as_deref());
+        }
+        b.candidate_pairs(min_score)
+    });
     let mut idx_a = Vec::with_capacity(r.scored_pairs.len());
     let mut idx_b = Vec::with_capacity(r.scored_pairs.len());
     let mut scores = Vec::with_capacity(r.scored_pairs.len());

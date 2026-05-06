@@ -169,6 +169,16 @@ def test_aliases_empty_dict_noop():
     assert a["cluster_id"].to_list() == b["cluster_id"].to_list()
 
 
+def test_parallel_matches_serial_byte_identical():
+    """Cluster the same input with n_threads=1 vs 8; cluster_ids must match
+    exactly. Determinism is the contract; rayon's collect preserves order."""
+    ds = nc.generate_examples(n_entities=120, difficulty="medium", seed=7)
+    serial = nc.cluster(ds, name_col="variant_name", n_threads=1)
+    parallel = nc.cluster(ds, name_col="variant_name", n_threads=8)
+    assert serial["cluster_id"].to_pylist() == parallel["cluster_id"].to_pylist()
+    assert serial["canonical_name"].to_pylist() == parallel["canonical_name"].to_pylist()
+
+
 def test_acronym_map_finds_corpus_pairs():
     df = pl.DataFrame({
         "name": [

@@ -15,6 +15,7 @@
 //! (so two runs over the same input + seed produce byte-identical IDs).
 
 use ahash::AHashMap;
+use rayon::prelude::*;
 
 use crate::cluster::{
     build_adjacency, connected_components, diameter_split, group_by_component,
@@ -40,6 +41,12 @@ pub struct ClusterOpts {
     /// acronym with its expansion (e.g. "ibm" -> "intl business machines"),
     /// where char-n-gram cosine alone never would. Empty by default.
     pub aliases: AHashMap<String, String>,
+    /// Worker threads for the parallelisable stages (TF-IDF rerank scoring +
+    /// per-name vectorisation). `None` uses rayon's default (= num_cpus).
+    /// `Some(1)` forces single-threaded execution; useful for benchmarking
+    /// and debugging non-determinism. Output is byte-identical regardless
+    /// of thread count.
+    pub n_threads: Option<usize>,
 }
 
 impl Default for ClusterOpts {
@@ -54,7 +61,22 @@ impl Default for ClusterOpts {
             diameter_check_min_size: 5,
             max_name_length: 256,
             aliases: AHashMap::new(),
+            n_threads: None,
         }
+    }
+}
+
+/// Run `f` inside a rayon thread pool of `n_threads` workers (or the global
+/// pool when `None`). Per-call pool, so we don't mutate `build_global` and
+/// callers can vary thread count freely.
+fn with_thread_pool<R: Send, F: FnOnce() -> R + Send>(n_threads: Option<usize>, f: F) -> R {
+    match n_threads {
+        None => f(),
+        Some(n) => rayon::ThreadPoolBuilder::new()
+            .num_threads(n.max(1))
+            .build()
+            .expect("rayon thread pool")
+            .install(f),
     }
 }
 
@@ -164,12 +186,14 @@ impl ClusterBuilder {
                 original_to_unique: self.original_to_unique,
             };
         }
-        let scored_pairs = score_lsh_candidates(
-            &self.unique_normalized,
-            &self.lsh,
-            self.opts.ngram_size,
-            min_score,
-        );
+        let scored_pairs = with_thread_pool(self.opts.n_threads, || {
+            score_lsh_candidates(
+                &self.unique_normalized,
+                &self.lsh,
+                self.opts.ngram_size,
+                min_score,
+            )
+        });
         CandidatePairsResult {
             scored_pairs,
             unique_normalized: self.unique_normalized,
@@ -188,12 +212,14 @@ impl ClusterBuilder {
             };
         }
 
-        let scored_pairs = score_lsh_candidates(
-            &self.unique_normalized,
-            &self.lsh,
-            self.opts.ngram_size,
-            self.opts.threshold,
-        );
+        let scored_pairs = with_thread_pool(self.opts.n_threads, || {
+            score_lsh_candidates(
+                &self.unique_normalized,
+                &self.lsh,
+                self.opts.ngram_size,
+                self.opts.threshold,
+            )
+        });
         let edges: Vec<(u32, u32)> = scored_pairs
             .into_iter()
             .map(|(a, b, _)| (a, b))
@@ -273,6 +299,9 @@ impl ClusterBuilder {
 /// score every LSH candidate pair via cosine, keeping only pairs at or above
 /// `min_score`. Shared by `finalize()` (threshold) and `candidate_pairs()`
 /// (debug min_score) — both stop here in the pipeline.
+///
+/// Vectorisation and scoring are par-iter'd; output ordering is preserved by
+/// rayon's `collect`, so the returned Vec is byte-identical to the serial run.
 fn score_lsh_candidates(
     unique_normalized: &[String],
     lsh: &LshIndex,
@@ -280,9 +309,12 @@ fn score_lsh_candidates(
     min_score: f32,
 ) -> Vec<(u32, u32, f32)> {
     let vocab = Vocabulary::build(unique_normalized.iter(), ngram_size);
-    let vectors: Vec<_> = unique_normalized.iter().map(|n| vocab.vectorize(n)).collect();
+    let vectors: Vec<_> = unique_normalized
+        .par_iter()
+        .map(|n| vocab.vectorize(n))
+        .collect();
     lsh.candidate_pairs_distinct()
-        .into_iter()
+        .into_par_iter()
         .filter_map(|(a, b)| {
             let score = cosine(&vectors[a as usize], &vectors[b as usize]);
             (score >= min_score).then_some((a, b, score))

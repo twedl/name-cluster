@@ -32,12 +32,13 @@ def candidates(
     lsh_rows: int = 4,
     max_name_length: int = 256,
     aliases: dict[str, list[str]] | None = None,
+    n_threads: int | None = None,
 ):
     """Return LSH candidate pairs with their TF-IDF cosine scores.
 
     Parameters
     ----------
-    data, name_col, seed, ngram_size, lsh_bands, lsh_rows, max_name_length, aliases
+    data, name_col, seed, ngram_size, lsh_bands, lsh_rows, max_name_length, aliases, n_threads
         Same as `cluster()`.
     min_score : float in [0.0, 1.0]
         Drop pairs scoring below this. Default 0.0 = return everything.
@@ -65,6 +66,7 @@ def candidates(
         lsh_rows=lsh_rows,
         max_name_length=max_name_length,
         aliases=aliases,
+        n_threads=n_threads,
     )
 
     unique_to_first_row: list[int | None] = [None] * len(unique_norm)

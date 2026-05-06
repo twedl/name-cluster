@@ -1,0 +1,92 @@
+{
+  "info": {
+    "machine": "macOS-26.4.1-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.12.12",
+    "name_cluster": "0.1.0",
+    "date": "2026-05-05",
+    "corpus": "GLEIF (lei2-2026-05-05)"
+  },
+  "rows": [
+    {
+      "n_input": 1000,
+      "n_threads": 1,
+      "n_clusters": 963,
+      "n_null": 37,
+      "wall_seconds": 0.02612545806914568,
+      "peak_rss_delta_mb": 7.53125,
+      "peak_vms_delta_mb": 28.140625,
+      "throughput": 38276.84082527173
+    },
+    {
+      "n_input": 1000,
+      "n_threads": 0,
+      "n_clusters": 963,
+      "n_null": 37,
+      "wall_seconds": 0.01571220811456442,
+      "peak_rss_delta_mb": 0.296875,
+      "peak_vms_delta_mb": 32.5,
+      "throughput": 63644.77816921549
+    },
+    {
+      "n_input": 10000,
+      "n_threads": 1,
+      "n_clusters": 9561,
+      "n_null": 420,
+      "wall_seconds": 0.1525089170318097,
+      "peak_rss_delta_mb": 36.984375,
+      "peak_vms_delta_mb": 56.03125,
+      "throughput": 65569.93646420189
+    },
+    {
+      "n_input": 10000,
+      "n_threads": 0,
+      "n_clusters": 9561,
+      "n_null": 420,
+      "wall_seconds": 0.138928750064224,
+      "peak_rss_delta_mb": 0.390625,
+      "peak_vms_delta_mb": 16.0625,
+      "throughput": 71979.34189559179
+    },
+    {
+      "n_input": 100000,
+      "n_threads": 1,
+      "n_clusters": 94648,
+      "n_null": 4043,
+      "wall_seconds": 2.281915750121698,
+      "peak_rss_delta_mb": 336.921875,
+      "peak_vms_delta_mb": 360.078125,
+      "throughput": 43822.827374177534
+    },
+    {
+      "n_input": 100000,
+      "n_threads": 0,
+      "n_clusters": 94648,
+      "n_null": 4043,
+      "wall_seconds": 1.844863082980737,
+      "peak_rss_delta_mb": 269.703125,
+      "peak_vms_delta_mb": 291.171875,
+      "throughput": 54204.564513497906
+    },
+    {
+      "n_input": 1000000,
+      "n_threads": 1,
+      "n_clusters": 886004,
+      "n_null": 40555,
+      "wall_seconds": 123.70514945802279,
+      "peak_rss_delta_mb": 5796.9375,
+      "peak_vms_delta_mb": 11451.71875,
+      "throughput": 8083.737858781156
+    },
+    {
+      "n_input": 1000000,
+      "n_threads": 0,
+      "n_clusters": 886004,
+      "n_null": 40555,
+      "wall_seconds": 73.77813341701403,
+      "peak_rss_delta_mb": 6829.796875,
+      "peak_vms_delta_mb": 10820.703125,
+      "throughput": 13554.151530884206
+    }
+  ]
+}
