@@ -12,6 +12,7 @@ Run from the project venv (where namecluster is maturin-developed):
     python scripts/benchmark.py --sizes 1000,10000,100000
     python scripts/benchmark.py --include-large    # adds 3M (full GLEIF)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,7 +41,7 @@ def load_corpus(min_size: int) -> tuple[pl.DataFrame, str, str]:
     if gleif:
         df = pl.read_parquet(gleif[-1]).filter(pl.col("legal_name").is_not_null())
         return df, "legal_name", f"GLEIF ({gleif[-1].stem})"
-    print(f"  GLEIF cache missing — falling back to synthetic generator")
+    print("  GLEIF cache missing — falling back to synthetic generator")
     n_entities = max(min_size // 10, 50)
     df = nc.generate_examples(n_entities=n_entities, difficulty="medium", seed=42)
     return df, "variant_name", f"synthetic generator (n_entities={n_entities})"
@@ -101,22 +102,27 @@ def run(sizes: list[int], thread_configs: list[int | None]) -> list[dict]:
         sample = full.sample(n=n, seed=42) if n < full.height else full
         for nt in thread_configs:
             result, elapsed, peak_rss_mb, peak_vms_mb = measure_call(
-                nc.cluster, sample, name_col=name_col, n_threads=nt,
+                nc.cluster,
+                sample,
+                name_col=name_col,
+                n_threads=nt,
             )
             cids = result["cluster_id"].to_list()
             n_clusters = len({c for c in cids if c is not None})
             n_null = sum(1 for c in cids if c is None)
             throughput = n / elapsed if elapsed > 0 else float("inf")
-            rows.append({
-                "n_input": n,
-                "n_threads": nt,  # None serialises to JSON null
-                "n_clusters": n_clusters,
-                "n_null": n_null,
-                "wall_seconds": elapsed,
-                "peak_rss_delta_mb": peak_rss_mb,
-                "peak_vms_delta_mb": peak_vms_mb,
-                "throughput": throughput,
-            })
+            rows.append(
+                {
+                    "n_input": n,
+                    "n_threads": nt,  # None serialises to JSON null
+                    "n_clusters": n_clusters,
+                    "n_null": n_null,
+                    "wall_seconds": elapsed,
+                    "peak_rss_delta_mb": peak_rss_mb,
+                    "peak_vms_delta_mb": peak_vms_mb,
+                    "throughput": throughput,
+                }
+            )
             label = "default" if nt is None else str(nt)
             print(
                 f"  n={n:>10,}  threads={label:>7}  t={elapsed:>7.2f}s  "
@@ -156,7 +162,9 @@ def write_report(rows: list[dict], source_label: str) -> Path:
             f"- Date: {info['date']}\n\n"
         )
         f.write("## Default settings (threshold=0.85, num_perm=128)\n\n")
-        f.write("| input names | threads | clusters | null | wall time | peak Δ RSS | peak Δ VMS | throughput |\n")
+        f.write(
+            "| input names | threads | clusters | null | wall time | peak Δ RSS | peak Δ VMS | throughput |\n"
+        )
         f.write("|---:|---:|---:|---:|---:|---:|---:|---:|\n")
         for r in rows:
             thr_label = "default" if r["n_threads"] is None else str(r["n_threads"])
@@ -207,7 +215,9 @@ def write_report(rows: list[dict], source_label: str) -> Path:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     p.add_argument(
         "--sizes",
         default="1000,10000,100000,1000000",

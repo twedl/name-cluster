@@ -2,6 +2,7 @@
 
 See ARCHITECTURE.md for the full design and target public surface.
 """
+
 from __future__ import annotations
 
 from ._lowlevel import normalize  # rust binding

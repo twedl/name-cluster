@@ -55,6 +55,7 @@ Usage:
   uv run scripts/download_sam.py --force          # re-download from page 0
   uv run scripts/download_sam.py --parse-only     # skip fetch, only re-parse
 """
+
 from __future__ import annotations
 
 import argparse
@@ -72,9 +73,9 @@ from tqdm import tqdm
 
 UA = "name_cluster-corpora/0.1 (+https://github.com/jessetweedle/name-cluster)"
 
-CACHE_ROOT = Path(
-    os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
-) / "name_cluster"
+CACHE_ROOT = (
+    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "name_cluster"
+)
 
 API_BASE = "https://api.sam.gov/entity-information/v3/entities"
 PAGE_SIZE = 10  # server max for entity-information v3
@@ -93,6 +94,7 @@ def cache_dirs() -> tuple[Path, Path]:
 # ---------------------------------------------------------------------------
 # Fetch
 # ---------------------------------------------------------------------------
+
 
 def fetch_all(
     api_key: str,
@@ -115,7 +117,7 @@ def fetch_all(
     else:
         next_page = 0
         total = None
-        print(f"[sam] starting fresh fetch")
+        print("[sam] starting fresh fetch")
 
     # SAM.gov accepts api_key as query param or header; send both for safety.
     headers = {"User-Agent": UA, "X-Api-Key": api_key}
@@ -151,7 +153,9 @@ def fetch_all(
                 try:
                     r = client.get(API_BASE, params=params)
                 except httpx.HTTPError as e:
-                    print(f"[sam] network error on page {next_page}: {e}; retrying in 30s")
+                    print(
+                        f"[sam] network error on page {next_page}: {e}; retrying in 30s"
+                    )
                     time.sleep(30)
                     continue
 
@@ -161,7 +165,9 @@ def fetch_all(
                     time.sleep(retry_after)
                     continue
                 if r.status_code in (500, 502, 503, 504):
-                    print(f"[sam] server {r.status_code} on page {next_page}, backoff 30s")
+                    print(
+                        f"[sam] server {r.status_code} on page {next_page}, backoff 30s"
+                    )
                     time.sleep(30)
                     continue
                 if r.status_code in (401, 403):
@@ -180,7 +186,10 @@ def fetch_all(
                 if total is None:
                     total = int(payload.get("totalRecords", 0))
                     pbar = tqdm(
-                        total=total, desc="sam entities", unit="ent", initial=next_page * PAGE_SIZE
+                        total=total,
+                        desc="sam entities",
+                        unit="ent",
+                        initial=next_page * PAGE_SIZE,
                     )
                     print(f"[sam] total active entities: {total:,}")
 
@@ -196,10 +205,14 @@ def fetch_all(
                 pages_done_this_run += 1
                 if pbar:
                     pbar.update(len(entities))
-                cursor_path.write_text(json.dumps({
-                    "next_page": next_page,
-                    "total_records": total,
-                }))
+                cursor_path.write_text(
+                    json.dumps(
+                        {
+                            "next_page": next_page,
+                            "total_records": total,
+                        }
+                    )
+                )
 
                 if next_page * PAGE_SIZE >= total:
                     print(f"[sam] fetched all {total:,} entities")
@@ -216,6 +229,7 @@ def fetch_all(
 # ---------------------------------------------------------------------------
 # Parse
 # ---------------------------------------------------------------------------
+
 
 def _get(d: dict, *path: str, default=None):
     for k in path:
@@ -251,41 +265,50 @@ def parse(raw_path: Path, parquet_path: Path, aliases_path: Path) -> None:
             ]
             primary_naics = next(
                 (
-                    n.get("naicsCode") for n in naics_list
+                    n.get("naicsCode")
+                    for n in naics_list
                     if isinstance(n, dict) and n.get("isPrimary") in ("Y", True, "true")
                 ),
                 naics_codes[0] if naics_codes else None,
             )
 
-            rows.append({
-                "uei": uei,
-                "legal_name": legal,
-                "dba_name": dba or None,
-                "state": phys.get("stateOrProvinceCode"),
-                "country": phys.get("countryCode"),
-                "primary_naics": primary_naics,
-                "naics_codes": naics_codes,
-                "entity_structure": _get(cd, "entityInformation", "entityStructureCode"),
-                "registration_date": er.get("initialRegistrationDate"),
-                "entity_status": er.get("registrationStatus"),
-            })
+            rows.append(
+                {
+                    "uei": uei,
+                    "legal_name": legal,
+                    "dba_name": dba or None,
+                    "state": phys.get("stateOrProvinceCode"),
+                    "country": phys.get("countryCode"),
+                    "primary_naics": primary_naics,
+                    "naics_codes": naics_codes,
+                    "entity_structure": _get(
+                        cd, "entityInformation", "entityStructureCode"
+                    ),
+                    "registration_date": er.get("initialRegistrationDate"),
+                    "entity_status": er.get("registrationStatus"),
+                }
+            )
 
             if uei and legal:
-                aliases.append({
-                    "entity_id": uei,
-                    "entity_type": "Entity",
-                    "is_primary": True,
-                    "alias_type": "PRIMARY",
-                    "name": legal,
-                })
-                if dba and dba != legal:
-                    aliases.append({
+                aliases.append(
+                    {
                         "entity_id": uei,
                         "entity_type": "Entity",
-                        "is_primary": False,
-                        "alias_type": "DBA",
-                        "name": dba,
-                    })
+                        "is_primary": True,
+                        "alias_type": "PRIMARY",
+                        "name": legal,
+                    }
+                )
+                if dba and dba != legal:
+                    aliases.append(
+                        {
+                            "entity_id": uei,
+                            "entity_type": "Entity",
+                            "is_primary": False,
+                            "alias_type": "DBA",
+                            "name": dba,
+                        }
+                    )
 
     df = pl.DataFrame(rows)
     df.write_parquet(parquet_path, compression="zstd", compression_level=3)
@@ -303,15 +326,22 @@ def parse(raw_path: Path, parquet_path: Path, aliases_path: Path) -> None:
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     p = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     p.add_argument("--force", action="store_true", help="re-download from page 0")
-    p.add_argument("--parse-only", action="store_true", help="skip fetch, only re-parse cached raw")
-    p.add_argument("--max-pages", type=int, default=None, help="cap pages fetched (smoke test)")
     p.add_argument(
-        "--max-records", type=int, default=DEFAULT_MAX_RECORDS,
+        "--parse-only", action="store_true", help="skip fetch, only re-parse cached raw"
+    )
+    p.add_argument(
+        "--max-pages", type=int, default=None, help="cap pages fetched (smoke test)"
+    )
+    p.add_argument(
+        "--max-records",
+        type=int,
+        default=DEFAULT_MAX_RECORDS,
         help=f"cap total records (default {DEFAULT_MAX_RECORDS:,}; 0 = unlimited)",
     )
     args = p.parse_args()
@@ -332,8 +362,12 @@ def main() -> int:
             )
         max_records = args.max_records if args.max_records > 0 else None
         fetch_all(
-            api_key, raw_path, cursor_path,
-            max_pages=args.max_pages, max_records=max_records, force=args.force,
+            api_key,
+            raw_path,
+            cursor_path,
+            max_pages=args.max_pages,
+            max_records=max_records,
+            force=args.force,
         )
 
     if not raw_path.exists():

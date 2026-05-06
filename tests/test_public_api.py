@@ -3,6 +3,7 @@
 Run via: source .venv/bin/activate && pytest tests/test_public_api.py
 (maturin develop --release must have been run first to install the rust ext).
 """
+
 from __future__ import annotations
 
 import namecluster as nc
@@ -34,7 +35,9 @@ def test_normalize_abbrev_variants():
     # Service singular + abbrev variants -> svc
     base_svc = nc.normalize("Acme Services Inc")
     for v in ["Service", "Serv", "Ser", "Srv", "SRVC"]:
-        assert nc.normalize(f"Acme {v} Inc") == base_svc, f"service variant {v!r} drifted"
+        assert nc.normalize(f"Acme {v} Inc") == base_svc, (
+            f"service variant {v!r} drifted"
+        )
     # New canonicals: management / information / department
     assert nc.normalize("Acme Management") == "acme mgmt"
     assert nc.normalize("Acme MGT") == "acme mgmt"
@@ -57,9 +60,11 @@ def test_cluster_names_handles_nulls():
 
 
 def test_cluster_polars():
-    df = pl.DataFrame({
-        "name": ["Acme Corp", "ACME Inc", "Apple Inc", None],
-    })
+    df = pl.DataFrame(
+        {
+            "name": ["Acme Corp", "ACME Inc", "Apple Inc", None],
+        }
+    )
     result = nc.cluster(df, name_col="name")
     assert isinstance(result, pl.DataFrame)
     assert result.columns == ["name", "cluster_id", "canonical_name"]
@@ -83,7 +88,9 @@ def test_cluster_threshold_changes_partition():
     loose = nc.cluster(ds, name_col="variant_name", threshold=0.5)
     n_strict = len(set(strict["cluster_id"].to_pylist()))
     n_loose = len(set(loose["cluster_id"].to_pylist()))
-    assert n_strict >= n_loose, f"stricter threshold should leave >= clusters: strict={n_strict}, loose={n_loose}"
+    assert n_strict >= n_loose, (
+        f"stricter threshold should leave >= clusters: strict={n_strict}, loose={n_loose}"
+    )
 
 
 def test_cluster_deterministic():
@@ -136,18 +143,26 @@ def test_invalid_threshold_raises():
 
 
 def test_candidates_returns_scored_pairs():
-    df = pl.DataFrame({
-        "name": [
-            "Foothill Industries",
-            "Foothill Inds Limited",
-            "Sherwin-Williams Co",
-            "Sherwin Williams Company",
-            "Apple Inc",
-        ],
-    })
+    df = pl.DataFrame(
+        {
+            "name": [
+                "Foothill Industries",
+                "Foothill Inds Limited",
+                "Sherwin-Williams Co",
+                "Sherwin Williams Company",
+                "Apple Inc",
+            ],
+        }
+    )
     cand = nc.candidates(df, name_col="name", min_score=0.0)
     assert isinstance(cand, pl.DataFrame)
-    assert set(cand.columns) == {"name_a", "name_b", "normalized_a", "normalized_b", "score"}
+    assert set(cand.columns) == {
+        "name_a",
+        "name_b",
+        "normalized_a",
+        "normalized_b",
+        "score",
+    }
     assert cand.height >= 1
     foothill = cand.filter(
         pl.col("normalized_a").str.contains("foothill")
@@ -161,21 +176,26 @@ def test_candidates_returns_scored_pairs():
 
 
 def test_aliases_force_merge_acronym_with_expansion():
-    df = pl.DataFrame({
-        "name": [
-            "IBM Corp",
-            "I.B.M. Inc",
-            "International Business Machines",
-            "International Business Machines Corporation",
-            "Apple Inc",
-        ],
-    })
+    df = pl.DataFrame(
+        {
+            "name": [
+                "IBM Corp",
+                "I.B.M. Inc",
+                "International Business Machines",
+                "International Business Machines Corporation",
+                "Apple Inc",
+            ],
+        }
+    )
     r0 = nc.cluster(df, name_col="name")
     cids0 = r0["cluster_id"].to_list()
-    assert cids0[0] != cids0[2], "without aliases, IBM and the expansion should NOT cluster"
+    assert cids0[0] != cids0[2], (
+        "without aliases, IBM and the expansion should NOT cluster"
+    )
 
     r1 = nc.cluster(
-        df, name_col="name",
+        df,
+        name_col="name",
         aliases={"International Business Machines": ["IBM", "I.B.M."]},
     )
     cids1 = r1["cluster_id"].to_list()
@@ -205,32 +225,43 @@ def test_parallel_matches_serial_byte_identical():
     base_canon = baseline["canonical_name"].to_pylist()
     for nt in (4, 8, 16):
         r = nc.cluster(ds, name_col="variant_name", n_threads=nt)
-        assert r["cluster_id"].to_pylist() == base_ids, f"cluster_id drift at n_threads={nt}"
-        assert r["canonical_name"].to_pylist() == base_canon, f"canonical drift at n_threads={nt}"
+        assert r["cluster_id"].to_pylist() == base_ids, (
+            f"cluster_id drift at n_threads={nt}"
+        )
+        assert r["canonical_name"].to_pylist() == base_canon, (
+            f"canonical drift at n_threads={nt}"
+        )
 
 
 def test_acronym_map_finds_corpus_pairs():
-    df = pl.DataFrame({
-        "name": [
-            "IBM Corp",
-            "I.B.M. Inc",
-            "International Business Machines",
-            "AA Inc",
-            "American Airlines",
-            "NASA",
-            "National Aeronautics and Space Administration",
-            "Apple Inc",
-            "Apple Computer Co.",
-        ],
-    })
+    df = pl.DataFrame(
+        {
+            "name": [
+                "IBM Corp",
+                "I.B.M. Inc",
+                "International Business Machines",
+                "AA Inc",
+                "American Airlines",
+                "NASA",
+                "National Aeronautics and Space Administration",
+                "Apple Inc",
+                "Apple Computer Co.",
+            ],
+        }
+    )
     ac = nc.acronym_map(df, name_col="name")
     assert isinstance(ac, pl.DataFrame)
-    assert set(ac.columns) == {"acronym", "expansion_count", "expansions", "acronym_examples"}
+    assert set(ac.columns) == {
+        "acronym",
+        "expansion_count",
+        "expansions",
+        "acronym_examples",
+    }
 
     acronyms = set(ac["acronym"].to_list())
     assert "ibm" in acronyms, f"ibm not found: {acronyms}"
     assert "aa" in acronyms, f"aa not found: {acronyms}"
-    assert "nasa" in acronyms, f"nasa not found (stopword skip should help)"
+    assert "nasa" in acronyms, "nasa not found (stopword skip should help)"
 
     ibm_row = ac.filter(pl.col("acronym") == "ibm").row(0, named=True)
     assert ibm_row["expansion_count"] == 1
@@ -239,12 +270,17 @@ def test_acronym_map_finds_corpus_pairs():
 
 
 def test_acronym_map_high_confidence_feeds_aliases():
-    df = pl.DataFrame({
-        "name": [
-            "IBM Corp", "International Business Machines", "International Business Machines Inc",
-            "Apple Inc", "Apple Computer Co.",
-        ],
-    })
+    df = pl.DataFrame(
+        {
+            "name": [
+                "IBM Corp",
+                "International Business Machines",
+                "International Business Machines Inc",
+                "Apple Inc",
+                "Apple Computer Co.",
+            ],
+        }
+    )
     ac = nc.acronym_map(df, name_col="name")
     high = ac.filter(pl.col("expansion_count") == 1)
     aliases = {
@@ -253,7 +289,9 @@ def test_acronym_map_high_confidence_feeds_aliases():
     }
     result = nc.cluster(df, name_col="name", aliases=aliases)
     cids = result["cluster_id"].to_list()
-    assert cids[0] == cids[1] == cids[2], f"IBM/expansion should merge via derived aliases; got {cids}"
+    assert cids[0] == cids[1] == cids[2], (
+        f"IBM/expansion should merge via derived aliases; got {cids}"
+    )
 
 
 def test_aliases_duplicate_alias_resolution_is_deterministic():
@@ -261,11 +299,13 @@ def test_aliases_duplicate_alias_resolution_is_deterministic():
     canonical wins (build_alias_map sorts ascending and last-write wins)."""
     df = pl.DataFrame({"name": ["XX Inc"]})
     a = nc.cluster(
-        df, name_col="name",
+        df,
+        name_col="name",
         aliases={"Alpha": ["XX"], "Bravo": ["XX"]},
     )
     b = nc.cluster(
-        df, name_col="name",
+        df,
+        name_col="name",
         aliases={"Bravo": ["XX"], "Alpha": ["XX"]},
     )
     assert a["canonical_name"][0] == b["canonical_name"][0] == "bravo", (
@@ -275,13 +315,15 @@ def test_aliases_duplicate_alias_resolution_is_deterministic():
 
 
 def test_explain_returns_cluster_diagnostics():
-    df = pl.DataFrame({
-        "name": [
-            "Foothill Industries",
-            "Foothill Inds Limited",
-            "Apple Inc",
-        ],
-    })
+    df = pl.DataFrame(
+        {
+            "name": [
+                "Foothill Industries",
+                "Foothill Inds Limited",
+                "Apple Inc",
+            ],
+        }
+    )
     result = nc.cluster(df, name_col="name", threshold=0.7)
     fcid = result.filter(pl.col("name") == "Foothill Industries")["cluster_id"][0]
     info = nc.explain(result, fcid)

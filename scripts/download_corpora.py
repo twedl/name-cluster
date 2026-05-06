@@ -30,14 +30,13 @@ Usage:
   uv run scripts/download_corpora.py ukch
   uv run scripts/download_corpora.py all
 """
+
 from __future__ import annotations
 
 import argparse
-import io
 import os
 import sys
 import zipfile
-from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -49,14 +48,15 @@ from unidecode import unidecode
 
 UA = "name_cluster-corpora/0.1 (+https://github.com/jessetweedle/name-cluster)"
 
-CACHE_ROOT = Path(
-    os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
-) / "name_cluster"
+CACHE_ROOT = (
+    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "name_cluster"
+)
 
 
 # ---------------------------------------------------------------------------
 # generic helpers
 # ---------------------------------------------------------------------------
+
 
 def stream_download(url: str, dest: Path, *, follow_redirects: bool = True) -> None:
     """Download `url` to `dest` with progress bar. Atomic via .tmp rename."""
@@ -68,13 +68,16 @@ def stream_download(url: str, dest: Path, *, follow_redirects: bool = True) -> N
     ) as r:
         r.raise_for_status()
         total = int(r.headers.get("content-length", 0))
-        with tmp.open("wb") as f, tqdm(
-            total=total or None,
-            unit="B",
-            unit_scale=True,
-            desc=dest.name,
-            leave=False,
-        ) as bar:
+        with (
+            tmp.open("wb") as f,
+            tqdm(
+                total=total or None,
+                unit="B",
+                unit_scale=True,
+                desc=dest.name,
+                leave=False,
+            ) as bar,
+        ):
             for chunk in r.iter_bytes(chunk_size=1024 * 256):
                 f.write(chunk)
                 bar.update(len(chunk))
@@ -119,9 +122,7 @@ def parquet_has_col(path: Path, col: str) -> bool:
 # OFAC SDN
 # ---------------------------------------------------------------------------
 
-OFAC_URL = (
-    "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN_ENHANCED.XML"
-)
+OFAC_URL = "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN_ENHANCED.XML"
 # PublicationPreview Enhanced XML default namespace
 OFAC_NS_URI = "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/ENHANCED_XML"
 OFAC_NS = {"x": OFAC_NS_URI}
@@ -166,7 +167,9 @@ def download_ofac(*, force: bool = False) -> None:
         primary_name = None
         for name in elem.findall("x:names/x:name", OFAC_NS):
             is_primary = name.findtext("x:isPrimary", "false", OFAC_NS) == "true"
-            alias_type = name.findtext("x:aliasType", "", OFAC_NS).strip()  # blank for primary
+            alias_type = name.findtext(
+                "x:aliasType", "", OFAC_NS
+            ).strip()  # blank for primary
             # Take the Latin-script translation; fall back to first available
             full = ""
             for trans in name.findall("x:translations/x:translation", OFAC_NS):
@@ -180,25 +183,31 @@ def download_ofac(*, force: bool = False) -> None:
                 continue
             if is_primary and primary_name is None:
                 primary_name = full
-            aliases.append({
-                "entity_id": entity_id,
-                "entity_type": entity_type,
-                "is_primary": is_primary,
-                "alias_type": alias_type or ("PRIMARY" if is_primary else ""),
-                "name": full,
-            })
+            aliases.append(
+                {
+                    "entity_id": entity_id,
+                    "entity_type": entity_type,
+                    "is_primary": is_primary,
+                    "alias_type": alias_type or ("PRIMARY" if is_primary else ""),
+                    "name": full,
+                }
+            )
         if primary_name:
-            parties.append({
-                "entity_id": entity_id,
-                "entity_type": entity_type,
-                "primary_name": primary_name,
-            })
+            parties.append(
+                {
+                    "entity_id": entity_id,
+                    "entity_type": entity_type,
+                    "primary_name": primary_name,
+                }
+            )
         elem.clear()
         # Also clear preceding siblings to keep memory bounded during iterparse
         while elem.getprevious() is not None:
             del elem.getparent()[0]
 
-    parties_df = add_translit(pl.DataFrame(parties), "primary_name", "primary_name_translit")
+    parties_df = add_translit(
+        pl.DataFrame(parties), "primary_name", "primary_name_translit"
+    )
     aliases_df = add_translit(pl.DataFrame(aliases), "name", "name_translit")
     parties_df.write_parquet(parquet_path)
     aliases_df.write_parquet(aliases_path)
@@ -275,23 +284,28 @@ def download_gleif(*, force: bool = False) -> None:
     missing = [c for c in keep_cols if c not in df.columns]
     if missing:
         print(f"[gleif] WARNING: missing cols (CDF schema drift?): {missing}")
-    df = df.select(have).rename({
-        "LEI": "lei",
-        "Entity.LegalName": "legal_name",
-        "Entity.LegalAddress.Country": "country",
-        "Entity.LegalJurisdiction": "jurisdiction",
-        "Entity.EntityCategory": "category",
-        "Entity.EntityStatus": "status",
-    })
+    df = df.select(have).rename(
+        {
+            "LEI": "lei",
+            "Entity.LegalName": "legal_name",
+            "Entity.LegalAddress.Country": "country",
+            "Entity.LegalJurisdiction": "jurisdiction",
+            "Entity.EntityCategory": "category",
+            "Entity.EntityStatus": "status",
+        }
+    )
     print(f"[gleif] transliterating {df.height:,} legal names")
     df = add_translit(df, "legal_name", "legal_name_translit")
     df.write_parquet(parquet_path, compression="zstd", compression_level=3)
-    print(f"[gleif] wrote {parquet_path.name} ({df.height} rows, {parquet_path.stat().st_size//1_000_000} MB)")
+    print(
+        f"[gleif] wrote {parquet_path.name} ({df.height} rows, {parquet_path.stat().st_size // 1_000_000} MB)"
+    )
 
 
 # ---------------------------------------------------------------------------
 # UK Companies House Basic Data
 # ---------------------------------------------------------------------------
+
 
 def _ukch_snapshot_url(today: date | None = None) -> tuple[str, str]:
     """Return (url, snapshot_date_iso) for the most recent monthly snapshot.
@@ -372,7 +386,9 @@ def download_ukch(*, force: bool = False) -> None:
     print(f"[ukch] transliterating {df.height:,} legal names")
     df = add_translit(df, "legal_name", "legal_name_translit")
     df.write_parquet(parquet_path, compression="zstd", compression_level=3)
-    print(f"[ukch] wrote {parquet_path.name} ({df.height} rows, {parquet_path.stat().st_size//1_000_000} MB)")
+    print(
+        f"[ukch] wrote {parquet_path.name} ({df.height} rows, {parquet_path.stat().st_size // 1_000_000} MB)"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -387,7 +403,9 @@ DISPATCH = {
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     p.add_argument("source", choices=[*DISPATCH.keys(), "all"])
     p.add_argument("--force", action="store_true", help="re-download + re-parse")
     args = p.parse_args()

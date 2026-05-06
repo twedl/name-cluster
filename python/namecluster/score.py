@@ -4,10 +4,10 @@
 sequence-likes of equal length. Treated as ID-permutation-invariant:
 the actual numeric labels don't matter, only the partition they induce.
 """
+
 from __future__ import annotations
 
 from collections import Counter
-from itertools import combinations
 from math import comb
 from typing import Iterable
 
@@ -101,8 +101,6 @@ def _pairwise_metrics(predicted: list, true: list) -> dict:
     pt = sum(comb(c, 2) for c in joint.values())
 
     tp = pt
-    fp = pp - pt
-    fn = tt - pt
 
     precision = tp / pp if pp > 0 else 1.0
     recall = tp / tt if tt > 0 else 1.0
@@ -122,7 +120,7 @@ def _adjusted_rand_index(predicted: list, true: list) -> float:
 
     contingency = Counter(zip(predicted, true))
     a = Counter(predicted)  # row sums
-    b = Counter(true)       # col sums
+    b = Counter(true)  # col sums
 
     sum_comb_c = sum(comb(c, 2) for c in contingency.values())
     sum_comb_a = sum(comb(c, 2) for c in a.values())

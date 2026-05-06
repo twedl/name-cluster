@@ -47,10 +47,10 @@ Usage
   uv run scripts/parse_sam_bulk.py --input ~/Downloads/SAM_...20260503.dat
   uv run scripts/parse_sam_bulk.py --force
 """
+
 from __future__ import annotations
 
 import argparse
-import io
 import os
 import sys
 import zipfile
@@ -58,11 +58,10 @@ from datetime import date
 from pathlib import Path
 
 import polars as pl
-from tqdm import tqdm
 
-CACHE_ROOT = Path(
-    os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
-) / "name_cluster"
+CACHE_ROOT = (
+    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "name_cluster"
+)
 
 # Column positions are 1-indexed in the data dictionary; polars new_columns
 # is 0-indexed names. We give names to ALL 142 cols (mostly placeholders) and
@@ -135,7 +134,9 @@ def read_dat(input_path: Path) -> pl.DataFrame:
     print(f"[sam-bulk] reading {input_path.name}")
     if input_path.suffix.lower() == ".zip":
         with zipfile.ZipFile(input_path) as zf:
-            dats = [n for n in zf.namelist() if n.endswith(".dat") or n.endswith(".DAT")]
+            dats = [
+                n for n in zf.namelist() if n.endswith(".dat") or n.endswith(".DAT")
+            ]
             if not dats:
                 raise SystemExit(f"no .dat inside {input_path}")
             with zf.open(dats[0]) as fh:
@@ -148,17 +149,17 @@ def read_dat(input_path: Path) -> pl.DataFrame:
     nl = raw.find(b"\n")
     if nl < 0:
         raise SystemExit("no newline in file")
-    raw_no_bof = raw[nl + 1:]
+    raw_no_bof = raw[nl + 1 :]
 
     df = pl.read_csv(
         raw_no_bof,
         separator="|",
         has_header=False,
         new_columns=COL_NAMES,
-        infer_schema_length=0,            # all utf8
+        infer_schema_length=0,  # all utf8
         truncate_ragged_lines=True,
         ignore_errors=False,
-        quote_char=None,                  # SAM doesn't quote pipe-separated fields
+        quote_char=None,  # SAM doesn't quote pipe-separated fields
     )
     print(f"[sam-bulk] loaded {df.height:,} rows x {df.width} cols")
     return df
@@ -169,8 +170,10 @@ def to_entities_parquet(df: pl.DataFrame, out_path: Path) -> pl.DataFrame:
     out = df.select(cols)
     out = out.filter(pl.col("status") == "A")
     out.write_parquet(out_path, compression="zstd", compression_level=3)
-    print(f"[sam-bulk] wrote {out_path.name} ({out.height:,} active entities, "
-          f"{out_path.stat().st_size // 1_000_000} MB)")
+    print(
+        f"[sam-bulk] wrote {out_path.name} ({out.height:,} active entities, "
+        f"{out_path.stat().st_size // 1_000_000} MB)"
+    )
     return out
 
 
@@ -178,48 +181,50 @@ def to_aliases_parquet(entities: pl.DataFrame, out_path: Path) -> None:
     """OFAC-shape aliases parquet: (entity_id, entity_type, is_primary,
     alias_type, name). One PRIMARY row per entity + DBA row when distinct."""
     # PRIMARY rows
-    primary = (
-        entities.filter(
-            pl.col("legal_name").is_not_null() & (pl.col("legal_name").str.len_chars() > 0)
-        )
-        .select(
-            entity_id=pl.col("uei"),
-            entity_type=pl.lit("Entity"),
-            is_primary=pl.lit(True),
-            alias_type=pl.lit("PRIMARY"),
-            name=pl.col("legal_name"),
-        )
+    primary = entities.filter(
+        pl.col("legal_name").is_not_null() & (pl.col("legal_name").str.len_chars() > 0)
+    ).select(
+        entity_id=pl.col("uei"),
+        entity_type=pl.lit("Entity"),
+        is_primary=pl.lit(True),
+        alias_type=pl.lit("PRIMARY"),
+        name=pl.col("legal_name"),
     )
     # DBA rows (only when DBA is non-null and differs from legal_name)
-    dba = (
-        entities.filter(
-            pl.col("dba_name").is_not_null()
-            & (pl.col("dba_name").str.len_chars() > 0)
-            & (pl.col("dba_name") != pl.col("legal_name"))
-        )
-        .select(
-            entity_id=pl.col("uei"),
-            entity_type=pl.lit("Entity"),
-            is_primary=pl.lit(False),
-            alias_type=pl.lit("DBA"),
-            name=pl.col("dba_name"),
-        )
+    dba = entities.filter(
+        pl.col("dba_name").is_not_null()
+        & (pl.col("dba_name").str.len_chars() > 0)
+        & (pl.col("dba_name") != pl.col("legal_name"))
+    ).select(
+        entity_id=pl.col("uei"),
+        entity_type=pl.lit("Entity"),
+        is_primary=pl.lit(False),
+        alias_type=pl.lit("DBA"),
+        name=pl.col("dba_name"),
     )
     aliases = pl.concat([primary, dba])
     aliases.write_parquet(out_path, compression="zstd", compression_level=3)
     n_primary = primary.height
     n_dba = dba.height
-    print(f"[sam-bulk] wrote {out_path.name} ({aliases.height:,} alias rows: "
-          f"{n_primary:,} primary + {n_dba:,} DBA-distinct)")
+    print(
+        f"[sam-bulk] wrote {out_path.name} ({aliases.height:,} alias rows: "
+        f"{n_primary:,} primary + {n_dba:,} DBA-distinct)"
+    )
 
 
 def main() -> int:
     p = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    p.add_argument("--input", type=Path, default=None,
-                   help="path to SAM_PUBLIC_..._MONTHLY_V2_YYYYMMDD.{zip,dat}")
-    p.add_argument("--force", action="store_true", help="re-parse even if outputs exist")
+    p.add_argument(
+        "--input",
+        type=Path,
+        default=None,
+        help="path to SAM_PUBLIC_..._MONTHLY_V2_YYYYMMDD.{zip,dat}",
+    )
+    p.add_argument(
+        "--force", action="store_true", help="re-parse even if outputs exist"
+    )
     args = p.parse_args()
 
     raw_dir, pq_dir = cache_dirs()
@@ -231,7 +236,7 @@ def main() -> int:
     aliases_path = pq_dir / f"sam-aliases-{snapshot_date}.parquet"
 
     if parquet_path.exists() and aliases_path.exists() and not args.force:
-        print(f"[sam-bulk] outputs exist; pass --force to re-parse")
+        print("[sam-bulk] outputs exist; pass --force to re-parse")
         return 0
 
     df = read_dat(input_path)

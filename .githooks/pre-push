@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Pre-push hook: run scripts/ci.sh. Bypass with `git push --no-verify`.
+# Activated by: git config core.hooksPath .githooks
+exec "$(git rev-parse --show-toplevel)/scripts/ci.sh"

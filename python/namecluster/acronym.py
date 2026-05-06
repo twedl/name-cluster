@@ -10,6 +10,7 @@ match "American Airlines" AND "Alcoholics Anonymous" — caller decides).
 
 Standalone of cluster() — only depends on `normalize()` for tokenisation.
 """
+
 from __future__ import annotations
 
 import narwhals as nw
@@ -80,7 +81,9 @@ def acronym_map(
             f"got ({min_acronym_len}, {max_acronym_len})"
         )
     if min_expansion_tokens < 2:
-        raise ValueError(f"min_expansion_tokens must be >= 2, got {min_expansion_tokens}")
+        raise ValueError(
+            f"min_expansion_tokens must be >= 2, got {min_expansion_tokens}"
+        )
 
     raw_names = data[name_col].to_list()
     acronym_to_raws: dict[str, list[str]] = {}
@@ -109,12 +112,14 @@ def acronym_map(
         if ac not in expansion_to_raws:
             continue
         expansions = expansion_to_raws[ac]
-        rows.append({
-            "acronym": ac,
-            "expansion_count": len(set(_normalize(e) for e in expansions)),
-            "expansions": expansions[:10],
-            "acronym_examples": acronym_to_raws[ac][:5],
-        })
+        rows.append(
+            {
+                "acronym": ac,
+                "expansion_count": len(set(_normalize(e) for e in expansions)),
+                "expansions": expansions[:10],
+                "acronym_examples": acronym_to_raws[ac][:5],
+            }
+        )
 
     rows.sort(key=lambda r: (r["expansion_count"], r["acronym"]))
 

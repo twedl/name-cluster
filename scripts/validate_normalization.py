@@ -32,6 +32,7 @@ Usage:
   uv run scripts/validate_normalization.py --source ofac
   uv run scripts/validate_normalization.py --sample 200000  # subsample big sources
 """
+
 from __future__ import annotations
 
 import argparse
@@ -52,9 +53,9 @@ import polars as pl  # noqa: E402
 from tqdm import tqdm  # noqa: E402
 from unidecode import unidecode  # noqa: E402
 
-CACHE_ROOT = Path(
-    os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
-) / "name_cluster"
+CACHE_ROOT = (
+    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "name_cluster"
+)
 REPO_ROOT = Path(__file__).resolve().parent.parent
 AUDIT_DIR = REPO_ROOT / "audit"
 
@@ -70,11 +71,12 @@ def latest_parquet(source: str, glob: str) -> Path | None:
 @dataclass(frozen=True)
 class SourceSpec:
     """Per-source schema differences for the audit pipeline."""
-    glob: str            # parquet filename glob in <cache>/<source>/parquet/
-    src_col: str         # raw name column
-    translit_col: str    # transliterated name column (added by download_corpora.py)
-    entity_col: str      # column to use as entity_id
-    has_aliases: bool    # True if the parquet has is_primary/alias_type rows
+
+    glob: str  # parquet filename glob in <cache>/<source>/parquet/
+    src_col: str  # raw name column
+    translit_col: str  # transliterated name column (added by download_corpora.py)
+    entity_col: str  # column to use as entity_id
+    has_aliases: bool  # True if the parquet has is_primary/alias_type rows
     entity_type_filter: str | None = None  # filter pl.col("entity_type") == this if set
 
 
@@ -185,7 +187,9 @@ def audit_source(source: str, sample: int | None) -> dict:
     print(f"  one-char after norm: {n_one_char:,}  ({100 * n_one_char / n:.3f}%)")
 
     # Substantive changes (any difference after lowercase + collapse)
-    n_changed = sum(1 for r, n_ in zip(raw_names, norm_names) if r.casefold().strip() != n_)
+    n_changed = sum(
+        1 for r, n_ in zip(raw_names, norm_names) if r.casefold().strip() != n_
+    )
     print(f"  changed substantively: {n_changed:,}  ({100 * n_changed / n:.2f}%)")
 
     # Length distribution
@@ -201,18 +205,21 @@ def audit_source(source: str, sample: int | None) -> dict:
     # Top normalized strings (collision candidates)
     top_norm = (
         df.filter(pl.col("normalized") != "")
-          .group_by("normalized")
-          .len()
-          .sort("len", descending=True)
-          .head(100)
+        .group_by("normalized")
+        .len()
+        .sort("len", descending=True)
+        .head(100)
     )
     print(f"  top-5 collisions: {top_norm.head(5).to_dicts()}")
 
     # Sample alarms
     sample_empty = [r for r, n_ in zip(raw_names, norm_names) if not n_][:20]
-    sample_one_char = [(r, n_) for r, n_ in zip(raw_names, norm_names) if len(n_) == 1][:20]
+    sample_one_char = [(r, n_) for r, n_ in zip(raw_names, norm_names) if len(n_) == 1][
+        :20
+    ]
     sample_changed = [
-        (r, n_) for r, n_ in zip(raw_names, norm_names)
+        (r, n_)
+        for r, n_ in zip(raw_names, norm_names)
         if r.casefold().strip() != n_ and n_
     ]
     # Pick 20 evenly-spaced from changed for diversity
@@ -283,9 +290,9 @@ def audit_alias_recall(source: str) -> dict:
 
     grouped = (
         df.group_by("entity_id")
-          .agg(pl.col("normalized"))
-          .with_columns(n=pl.col("normalized").list.len())
-          .filter(pl.col("n") >= 2)
+        .agg(pl.col("normalized"))
+        .with_columns(n=pl.col("normalized").list.len())
+        .filter(pl.col("n") >= 2)
     )
     print(f"  entities with >=2 normalized aliases: {grouped.height:,}")
 
@@ -305,21 +312,27 @@ def audit_alias_recall(source: str) -> dict:
             n_full_collapse += 1
 
     pct = 100 * matching_pairs / total_pairs if total_pairs else 0
-    print(f"  pair-recall via exact-normalized-match: {matching_pairs:,} / {total_pairs:,} ({pct:.2f}%)")
-    print(f"  entities collapsed to single normalized form: {n_full_collapse:,} / {grouped.height:,}")
+    print(
+        f"  pair-recall via exact-normalized-match: {matching_pairs:,} / {total_pairs:,} ({pct:.2f}%)"
+    )
+    print(
+        f"  entities collapsed to single normalized form: {n_full_collapse:,} / {grouped.height:,}"
+    )
 
     # Sample entities NOT collapsing (where rules failed to merge)
     not_collapsed = (
         grouped.with_columns(n_unique=pl.col("normalized").list.unique().list.len())
-               .filter(pl.col("n_unique") > 1)
-               .head(10)
+        .filter(pl.col("n_unique") > 1)
+        .head(10)
     )
     samples = []
     for row in not_collapsed.iter_rows(named=True):
         eid = row["entity_id"]
-        raws = df.filter(pl.col("entity_id") == eid).select(
-            "name", "audit_name", "normalized"
-        ).to_dicts()
+        raws = (
+            df.filter(pl.col("entity_id") == eid)
+            .select("name", "audit_name", "normalized")
+            .to_dicts()
+        )
         samples.append({"entity_id": eid, "names": raws})
 
     return {
@@ -340,17 +353,25 @@ def write_report(per_source: dict[str, dict], recalls: dict[str, dict]) -> Path:
 
     with md.open("w") as f:
         f.write(f"# Normalization audit — {today}\n\n")
-        f.write("Provisional rules per `scripts/_norm.py`. Audit per ARCHITECTURE.md task #13.\n\n")
+        f.write(
+            "Provisional rules per `scripts/_norm.py`. Audit per ARCHITECTURE.md task #13.\n\n"
+        )
 
         for src, m in per_source.items():
             f.write(f"## {src}\n\n")
             f.write(f"- input names: **{m['n_input']:,}**\n")
-            f.write(f"- empty after norm: {m['n_normalized_empty']:,} "
-                    f"({100*m['n_normalized_empty']/m['n_input']:.3f}%)\n")
-            f.write(f"- one-char after norm: {m['n_normalized_one_char']:,} "
-                    f"({100*m['n_normalized_one_char']/m['n_input']:.4f}%)\n")
-            f.write(f"- changed substantively: {m['n_changed_substantively']:,} "
-                    f"({100*m['n_changed_substantively']/m['n_input']:.2f}%)\n\n")
+            f.write(
+                f"- empty after norm: {m['n_normalized_empty']:,} "
+                f"({100 * m['n_normalized_empty'] / m['n_input']:.3f}%)\n"
+            )
+            f.write(
+                f"- one-char after norm: {m['n_normalized_one_char']:,} "
+                f"({100 * m['n_normalized_one_char'] / m['n_input']:.4f}%)\n"
+            )
+            f.write(
+                f"- changed substantively: {m['n_changed_substantively']:,} "
+                f"({100 * m['n_changed_substantively'] / m['n_input']:.2f}%)\n\n"
+            )
 
             f.write("### char length\n\n")
             f.write("| stat | value |\n|---|---|\n")
@@ -378,7 +399,9 @@ def write_report(per_source: dict[str, dict], recalls: dict[str, dict]) -> Path:
             for raw, norm in m["sample_substantively_changed"]:
                 f.write(f"- `{raw}` → `{norm}`\n")
 
-            f.write("\n### top 30 trailing raw tokens (suffix-list inclusion candidates)\n\n")
+            f.write(
+                "\n### top 30 trailing raw tokens (suffix-list inclusion candidates)\n\n"
+            )
             f.write("| token | count |\n|---|---|\n")
             for tok, cnt in m["top_trailing_tokens"][:30]:
                 f.write(f"| `{tok}` | {cnt} |\n")
@@ -392,34 +415,54 @@ def write_report(per_source: dict[str, dict], recalls: dict[str, dict]) -> Path:
 
         for src_name, r in recalls.items():
             f.write(f"## {src_name.upper()} alias-recall proxy\n\n")
-            f.write(f"- entities with >=2 normalized aliases: **{r['n_entities_with_aliases']:,}**\n")
-            f.write(f"- alias pairs sharing normalized form: **{r['matching_pairs']:,} / {r['total_pairs']:,}** "
-                    f"({r['pair_recall_pct']:.2f}%)\n")
-            f.write(f"- entities fully collapsed to one normalized form: {r['entities_collapsed_fully']:,}\n\n")
+            f.write(
+                f"- entities with >=2 normalized aliases: **{r['n_entities_with_aliases']:,}**\n"
+            )
+            f.write(
+                f"- alias pairs sharing normalized form: **{r['matching_pairs']:,} / {r['total_pairs']:,}** "
+                f"({r['pair_recall_pct']:.2f}%)\n"
+            )
+            f.write(
+                f"- entities fully collapsed to one normalized form: {r['entities_collapsed_fully']:,}\n\n"
+            )
             f.write("### samples NOT collapsing (rule blind spots)\n\n")
             for s in r["samples_not_collapsing"]:
                 f.write(f"- entity `{s['entity_id']}`:\n")
                 for n in s["names"]:
                     if n["name"] != n["audit_name"]:
-                        f.write(f"  - `{n['name']}` → translit `{n['audit_name']}` → `{n['normalized']}`\n")
+                        f.write(
+                            f"  - `{n['name']}` → translit `{n['audit_name']}` → `{n['normalized']}`\n"
+                        )
                     else:
                         f.write(f"  - `{n['name']}` → `{n['normalized']}`\n")
             f.write("\n")
 
     with js.open("w") as f:
-        json.dump({"per_source": per_source, "recalls": recalls}, f, indent=2, default=str)
+        json.dump(
+            {"per_source": per_source, "recalls": recalls}, f, indent=2, default=str
+        )
 
     return md
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--source", choices=["ofac", "gleif", "ukch", "sam", "all"], default="all")
-    p.add_argument("--sample", type=int, default=None,
-                   help="randomly subsample to this many names per source")
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    p.add_argument(
+        "--source", choices=["ofac", "gleif", "ukch", "sam", "all"], default="all"
+    )
+    p.add_argument(
+        "--sample",
+        type=int,
+        default=None,
+        help="randomly subsample to this many names per source",
+    )
     args = p.parse_args()
 
-    sources = ["ofac", "gleif", "ukch", "sam"] if args.source == "all" else [args.source]
+    sources = (
+        ["ofac", "gleif", "ukch", "sam"] if args.source == "all" else [args.source]
+    )
     per_source = {}
     for s in sources:
         try:

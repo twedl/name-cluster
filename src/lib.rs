@@ -5,6 +5,10 @@
 //!   - `cluster_lists(names, **opts)` — full pipeline; takes/returns Python
 //!     lists (the Python wrapper layer plugs this into narwhals/Arrow).
 
+// pyo3 0.22's `#[pyfunction]` macro emits a `.into()` for the Err branch of
+// `PyResult` that clippy reads as a same-type round-trip. Quiet at module level.
+#![allow(clippy::useless_conversion)]
+
 use ahash::AHashMap;
 use pyo3::prelude::*;
 use std::collections::HashMap;
@@ -26,11 +30,11 @@ fn py_normalize(name: &str) -> String {
 /// canon_norm. Pairs whose normalized form is empty are dropped silently.
 /// Iteration is sorted by canonical so duplicate-alias behavior (last wins)
 /// is deterministic across runs regardless of input dict order.
-fn build_alias_map(
-    raw: Option<HashMap<String, Vec<String>>>,
-) -> AHashMap<String, String> {
+fn build_alias_map(raw: Option<HashMap<String, Vec<String>>>) -> AHashMap<String, String> {
     let mut out = AHashMap::new();
-    let Some(d) = raw else { return out; };
+    let Some(d) = raw else {
+        return out;
+    };
     let mut entries: Vec<(String, Vec<String>)> = d.into_iter().collect();
     entries.sort_by(|a, b| a.0.cmp(&b.0));
     for (canon_raw, alias_list) in entries {
@@ -74,7 +78,7 @@ fn build_alias_map(
     n_threads = None,
     return_canonical = true,
 ))]
-#[allow(clippy::too_many_arguments)]
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
 fn py_cluster_lists(
     py: Python<'_>,
     names: Vec<Option<String>>,
@@ -124,7 +128,11 @@ fn py_cluster_lists(
         b.add_batch(names);
         b.finalize()
     });
-    let canonical = if return_canonical { r.canonical } else { Vec::new() };
+    let canonical = if return_canonical {
+        r.canonical
+    } else {
+        Vec::new()
+    };
     Ok((r.cluster_ids, canonical, r.flagged_cluster_ids))
 }
 
@@ -197,7 +205,13 @@ fn py_candidate_pairs_lists(
         idx_b.push(b);
         scores.push(s);
     }
-    Ok((idx_a, idx_b, scores, r.unique_normalized, r.original_to_unique))
+    Ok((
+        idx_a,
+        idx_b,
+        scores,
+        r.unique_normalized,
+        r.original_to_unique,
+    ))
 }
 
 /// Pairwise cosine over a small ad-hoc list of names. Used by `explain()`
@@ -251,17 +265,17 @@ mod pipeline_smoke {
     /// IBM↔INTERNATIONAL BUSINESS MACHINES is intentionally a hard case
     /// (acronym/expansion: task #17) — should NOT pair via plain LSH.
     const FIXTURE: &[&str] = &[
-        "Acme Corporation",                       // 0
-        "ACME Corp",                              // 1
-        "Acme Corporation Inc",                   // 2
-        "International Business Machines",        // 3
-        "IBM",                                    // 4
-        "INTERNATIONAL BUSINESS MACHINES INC",    // 5
-        "Sherwin-Williams Co",                    // 6
-        "Sherwin Williams Company",               // 7
-        "The Sherwin-Williams Co",                // 8
-        "Foothill Industries",                    // 9
-        "Brightspoke",                            // 10
+        "Acme Corporation",                    // 0
+        "ACME Corp",                           // 1
+        "Acme Corporation Inc",                // 2
+        "International Business Machines",     // 3
+        "IBM",                                 // 4
+        "INTERNATIONAL BUSINESS MACHINES INC", // 5
+        "Sherwin-Williams Co",                 // 6
+        "Sherwin Williams Company",            // 7
+        "The Sherwin-Williams Co",             // 8
+        "Foothill Industries",                 // 9
+        "Brightspoke",                         // 10
     ];
 
     fn run_pipeline() -> (Vec<String>, Vec<(u32, u32)>) {
@@ -324,13 +338,16 @@ mod pipeline_smoke {
         for p in &acme_pairs {
             assert!(
                 high_score_pairs.iter().any(|(a, b, _)| (*a, *b) == *p),
-                "Acme pair {:?} should rerank above 0.7", p
+                "Acme pair {:?} should rerank above 0.7",
+                p
             );
         }
         // At least one Sherwin-Williams pair should rerank high
         let sherwin = [(6u32, 7u32), (6, 8), (7, 8)];
         assert!(
-            sherwin.iter().any(|p| high_score_pairs.iter().any(|(a, b, _)| (*a, *b) == *p)),
+            sherwin
+                .iter()
+                .any(|p| high_score_pairs.iter().any(|(a, b, _)| (*a, *b) == *p)),
             "no Sherwin-Williams pair scored above 0.7"
         );
     }
@@ -359,8 +376,20 @@ mod pipeline_smoke {
 
         let foothill_id = r.cluster_ids[9].unwrap();
         let brightspoke_id = r.cluster_ids[10].unwrap();
-        assert_eq!(r.cluster_ids.iter().filter(|c| **c == Some(foothill_id)).count(), 1);
-        assert_eq!(r.cluster_ids.iter().filter(|c| **c == Some(brightspoke_id)).count(), 1);
+        assert_eq!(
+            r.cluster_ids
+                .iter()
+                .filter(|c| **c == Some(foothill_id))
+                .count(),
+            1
+        );
+        assert_eq!(
+            r.cluster_ids
+                .iter()
+                .filter(|c| **c == Some(brightspoke_id))
+                .count(),
+            1
+        );
 
         assert_ne!(acme_id, r.cluster_ids[3].unwrap());
         assert!(r.canonical.iter().all(|c| c.is_some()));

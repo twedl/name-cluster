@@ -7,6 +7,7 @@
 The rust core lives in `_lowlevel.cluster_lists`; this layer marshals
 narwhals/list inputs to the rust list API and attaches results back.
 """
+
 from __future__ import annotations
 
 from typing import NamedTuple, Sequence
@@ -216,10 +217,10 @@ def lsh_calibrate(
             if num_perm % r != 0:
                 continue
             b = num_perm // r
-            p_target = 1.0 - (1.0 - target_jaccard ** r) ** b
+            p_target = 1.0 - (1.0 - target_jaccard**r) ** b
             if p_target < target_recall:
                 continue
-            p_fp = 1.0 - (1.0 - fp_jaccard ** r) ** b
+            p_fp = 1.0 - (1.0 - fp_jaccard**r) ** b
             if best is None or p_fp < best.p_fp:
                 best = _LshConfig(b, r, p_target, p_fp)
         if best is not None:

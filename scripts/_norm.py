@@ -15,6 +15,7 @@ Pipeline (per ARCHITECTURE.md §Normalization):
   8. Token-by-token canonicalize via List 2 map
   9. Whitespace collapse
 """
+
 from __future__ import annotations
 
 import re
@@ -23,46 +24,114 @@ import unicodedata
 # --- List 1: legal-form suffixes (always end-strip) ---
 # Tokens compared case-insensitively, post-punct. Multi-word entries match as
 # adjacent tokens at the end of the name.
-LIST1_SUFFIXES_SINGLE: frozenset[str] = frozenset({
-    # English / Western
-    "inc", "llc", "ltd", "limited", "corp", "corporation", "co", "company",
-    "companies", "lp", "llp", "plc", "pty",
-    # German (DE/AT/CH)
-    "gmbh", "ag", "kg", "kgaa", "ohg", "gbr", "ev", "eg", "ggmbh", "mbh",
-    "ug",
-    "aktiengesellschaft", "kommanditgesellschaft", "gesellschaft",
-    "unternehmergesellschaft",
-    # French / Belgian / Swiss-French
-    "sa", "sas", "sarl", "sprl", "sagl",
-    # Italian
-    "srl", "spa", "snc", "ss",
-    # Spanish / Portuguese
-    "sl", "slu", "slp", "cb", "lda", "ltda",
-    # Dutch / Belgian-Dutch
-    "bv", "nv", "bvba", "vof", "ua",
-    # Nordic
-    "oy", "ab", "as", "asa", "oyj", "aps", "aktiebolag",
-    # Estonian
-    "ou",
-    # East Asian
-    "kk", "gk", "tmk", "pte",
-    # Russian / Slavic (head-strip primary use case post-Fix 2)
-    "ooo", "oao", "ojsc", "pjsc", "cjsc", "jsc", "zao", "pao", "ao",
-    # Czech / Slovak (post-period-drop: s.r.o. -> sro)
-    "sro",
-    # Polish (post-List-3 compound canonicalization)
-    "spzoo", "psa", "ska", "spk", "spj",
-    # Hungarian (short forms; long forms canonicalize via List 3 first)
-    "kft", "bt", "kkt", "rt", "zrt", "nyrt", "reszvenytarsasag",
-    # Italian/Portuguese long forms (in addition to "srl"/"lda")
-    "limitata", "limitada",
-    # Middle East
-    "fze",
-    # Turkish
-    "sirketi",
-    # Common initialisms preserved through period-drop
-    "cv",
-})
+LIST1_SUFFIXES_SINGLE: frozenset[str] = frozenset(
+    {
+        # English / Western
+        "inc",
+        "llc",
+        "ltd",
+        "limited",
+        "corp",
+        "corporation",
+        "co",
+        "company",
+        "companies",
+        "lp",
+        "llp",
+        "plc",
+        "pty",
+        # German (DE/AT/CH)
+        "gmbh",
+        "ag",
+        "kg",
+        "kgaa",
+        "ohg",
+        "gbr",
+        "ev",
+        "eg",
+        "ggmbh",
+        "mbh",
+        "ug",
+        "aktiengesellschaft",
+        "kommanditgesellschaft",
+        "gesellschaft",
+        "unternehmergesellschaft",
+        # French / Belgian / Swiss-French
+        "sa",
+        "sas",
+        "sarl",
+        "sprl",
+        "sagl",
+        # Italian
+        "srl",
+        "spa",
+        "snc",
+        "ss",
+        # Spanish / Portuguese
+        "sl",
+        "slu",
+        "slp",
+        "cb",
+        "lda",
+        "ltda",
+        # Dutch / Belgian-Dutch
+        "bv",
+        "nv",
+        "bvba",
+        "vof",
+        "ua",
+        # Nordic
+        "oy",
+        "ab",
+        "as",
+        "asa",
+        "oyj",
+        "aps",
+        "aktiebolag",
+        # Estonian
+        "ou",
+        # East Asian
+        "kk",
+        "gk",
+        "tmk",
+        "pte",
+        # Russian / Slavic (head-strip primary use case post-Fix 2)
+        "ooo",
+        "oao",
+        "ojsc",
+        "pjsc",
+        "cjsc",
+        "jsc",
+        "zao",
+        "pao",
+        "ao",
+        # Czech / Slovak (post-period-drop: s.r.o. -> sro)
+        "sro",
+        # Polish (post-List-3 compound canonicalization)
+        "spzoo",
+        "psa",
+        "ska",
+        "spk",
+        "spj",
+        # Hungarian (short forms; long forms canonicalize via List 3 first)
+        "kft",
+        "bt",
+        "kkt",
+        "rt",
+        "zrt",
+        "nyrt",
+        "reszvenytarsasag",
+        # Italian/Portuguese long forms (in addition to "srl"/"lda")
+        "limitata",
+        "limitada",
+        # Middle East
+        "fze",
+        # Turkish
+        "sirketi",
+        # Common initialisms preserved through period-drop
+        "cv",
+    }
+)
 LIST1_SUFFIXES_MULTI: tuple[tuple[str, ...], ...] = (
     ("co", "ltd"),  # 'CO LTD' is one logical suffix in Chinese-style names
 )
@@ -202,14 +271,23 @@ LIST2_COMPOUND: dict[tuple[str, ...], str] = {
 # ASCII and replace with space, splitting words mid-token (Polish "SPÓŁKA"
 # would become "spo ka"). Map to their conventional ASCII fallbacks.
 _ATOMIC_LATIN_MAP = {
-    "Ł": "L", "ł": "l",
-    "Ø": "O", "ø": "o",
-    "Æ": "AE", "æ": "ae",
-    "Œ": "OE", "œ": "oe",
+    "Ł": "L",
+    "ł": "l",
+    "Ø": "O",
+    "ø": "o",
+    "Æ": "AE",
+    "æ": "ae",
+    "Œ": "OE",
+    "œ": "oe",
     "ß": "ss",
-    "Þ": "TH", "þ": "th",
-    "Ð": "D", "ð": "d", "Đ": "D", "đ": "d",
-    "ı": "i", "İ": "i",
+    "Þ": "TH",
+    "þ": "th",
+    "Ð": "D",
+    "ð": "d",
+    "Đ": "D",
+    "đ": "d",
+    "ı": "i",
+    "İ": "i",
 }
 _ATOMIC_LATIN_TABLE = str.maketrans(_ATOMIC_LATIN_MAP)
 
@@ -277,7 +355,7 @@ def normalize(name: str) -> str:
             matched = False
             for pat, canon in compound_patterns:
                 plen = len(pat)
-                if i + plen <= len(tokens) and tuple(tokens[i:i + plen]) == pat:
+                if i + plen <= len(tokens) and tuple(tokens[i : i + plen]) == pat:
                     out.append(canon)
                     i += plen
                     matched = True
@@ -319,7 +397,7 @@ def normalize(name: str) -> str:
             matched = False
             for compound, canon in LIST2_COMPOUND.items():
                 clen = len(compound)
-                if tuple(tokens[i:i + clen]) == compound:
+                if tuple(tokens[i : i + clen]) == compound:
                     out.append(canon)
                     i += clen
                     matched = True

@@ -17,9 +17,7 @@
 use ahash::AHashMap;
 use rayon::prelude::*;
 
-use crate::cluster::{
-    build_adjacency, connected_components, diameter_split, group_by_component,
-};
+use crate::cluster::{build_adjacency, connected_components, diameter_split, group_by_component};
 use crate::lsh::LshIndex;
 use crate::minhash::MinHasher;
 use crate::ngram::ngrams;
@@ -131,7 +129,9 @@ impl ClusterBuilder {
         }
     }
 
-    /// Append one row. `None` is treated as null.
+    /// Append one row. `None` is treated as null. Test-only — production
+    /// code uses `add_batch` for the parallel insertion path.
+    #[cfg(test)]
     pub fn add(&mut self, name: Option<&str>) {
         let raw = match name {
             Some(s) => s,
@@ -166,13 +166,6 @@ impl ClusterBuilder {
             }
         };
         self.original_to_unique.push(Some(unique_idx));
-    }
-
-    /// Convenience: append many rows.
-    pub fn add_chunk<'a, I: IntoIterator<Item = Option<&'a str>>>(&mut self, names: I) {
-        for n in names {
-            self.add(n);
-        }
     }
 
     /// Parallel batch insertion. Three phases:
@@ -288,10 +281,7 @@ impl ClusterBuilder {
                 self.opts.threshold,
             )
         });
-        let edges: Vec<(u32, u32)> = scored_pairs
-            .into_iter()
-            .map(|(a, b, _)| (a, b))
-            .collect();
+        let edges: Vec<(u32, u32)> = scored_pairs.into_iter().map(|(a, b, _)| (a, b)).collect();
 
         let (component_of, n_components) = connected_components(n_unique, &edges);
         let groups = group_by_component(&component_of, n_components);
@@ -359,7 +349,11 @@ impl ClusterBuilder {
             })
             .unzip();
 
-        ClusterResult { cluster_ids, canonical, flagged_cluster_ids }
+        ClusterResult {
+            cluster_ids,
+            canonical,
+            flagged_cluster_ids,
+        }
     }
 }
 
@@ -577,12 +571,7 @@ mod tests {
     fn diameter_flag_not_triggered_on_small_clusters() {
         // Small cluster: diameter_check_min_size defaults to 5; Acme cluster
         // is 3 names, so no flag regardless of structure.
-        let r = cluster(
-            &["Acme Corp", "Acme Inc", "Acme Corporation"],
-            opts(),
-        );
+        let r = cluster(&["Acme Corp", "Acme Inc", "Acme Corporation"], opts());
         assert!(r.flagged_cluster_ids.is_empty());
     }
-
 }
-

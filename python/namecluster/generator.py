@@ -16,6 +16,7 @@ Design (per ARCHITECTURE.md):
   superset of easy, hard of medium.
 - Deterministic given seed.
 """
+
 from __future__ import annotations
 
 import random
@@ -34,8 +35,17 @@ Difficulty = Literal["easy", "medium", "hard"]
 # ---------------------------------------------------------------------------
 
 LEGAL_SUFFIXES_INTERCHANGEABLE = [
-    "Inc", "LLC", "Ltd", "Limited", "Corp", "Corporation", "Co", "Company",
-    "LLP", "LP", "PLC",
+    "Inc",
+    "LLC",
+    "Ltd",
+    "Limited",
+    "Corp",
+    "Corporation",
+    "Co",
+    "Company",
+    "LLP",
+    "LP",
+    "PLC",
 ]
 _LEGAL_SUFFIXES_LOWER = frozenset(s.lower() for s in LEGAL_SUFFIXES_INTERCHANGEABLE)
 
@@ -71,8 +81,7 @@ TYPO_VOWELS = "aeiou"
 
 def _strip_accents(s: str) -> str:
     return "".join(
-        c for c in unicodedata.normalize("NFKD", s)
-        if not unicodedata.combining(c)
+        c for c in unicodedata.normalize("NFKD", s) if not unicodedata.combining(c)
     )
 
 
@@ -142,12 +151,12 @@ def _typo_char(name: str, rng: random.Random) -> str:
         ch = rng.choice(string.ascii_lowercase)
         return name[:pos] + ch + name[pos:]
     if op == "delete":
-        return name[:pos] + name[pos + 1:]
+        return name[:pos] + name[pos + 1 :]
     if op == "transpose" and pos < len(name) - 1:
-        return name[:pos] + name[pos + 1] + name[pos] + name[pos + 2:]
+        return name[:pos] + name[pos + 1] + name[pos] + name[pos + 2 :]
     if op == "substitute":
         ch = rng.choice(string.ascii_lowercase)
-        return name[:pos] + ch + name[pos + 1:]
+        return name[:pos] + ch + name[pos + 1 :]
     return name
 
 
@@ -157,13 +166,17 @@ def _drop_internal_word(name: str, rng: random.Random) -> str:
         return name
     # Drop one internal token (not first or last)
     idx = rng.randrange(1, len(tokens) - 1)
-    return " ".join(tokens[:idx] + tokens[idx + 1:])
+    return " ".join(tokens[:idx] + tokens[idx + 1 :])
 
 
 def _add_internal_spacing_oddity(name: str, rng: random.Random) -> str:
     """E.g. `IBM` -> `I B M` (mostly relevant for short tokens)."""
     tokens = name.split()
-    candidates = [i for i, t in enumerate(tokens) if 2 <= len(t.strip(".,")) <= 5 and t.strip(".,").isalpha()]
+    candidates = [
+        i
+        for i, t in enumerate(tokens)
+        if 2 <= len(t.strip(".,")) <= 5 and t.strip(".,").isalpha()
+    ]
     if not candidates:
         return name
     i = rng.choice(candidates)
@@ -187,6 +200,7 @@ def _toggle_punct(name: str, rng: random.Random) -> str:
 # Difficulty-leveled edit menus
 # ---------------------------------------------------------------------------
 
+
 # Each entry is (op_name, fn(name, rng) -> name). Difficulty menus reference
 # these names. Adding an op = one entry here + one entry in the difficulty
 # tier(s). The dispatcher is a dict lookup, no if/elif chain.
@@ -195,17 +209,17 @@ def _strip_accents_op(name: str, rng: random.Random) -> str:
 
 
 _OPS: dict[str, Callable[[str, random.Random], str]] = {
-    "case":           _change_case,
-    "punct":          _toggle_punct,
-    "suffix_swap":    _swap_suffix,
-    "drop_suffix":    _drop_suffix,
-    "abbrev":         _swap_abbreviation,
+    "case": _change_case,
+    "punct": _toggle_punct,
+    "suffix_swap": _swap_suffix,
+    "drop_suffix": _drop_suffix,
+    "abbrev": _swap_abbreviation,
     "garbage_prefix": _add_garbage_prefix,
-    "the_toggle":     _toggle_the,
-    "strip_accents":  _strip_accents_op,
-    "typo":           _typo_char,
-    "drop_word":      _drop_internal_word,
-    "add_geo":        _add_geo_suffix,
+    "the_toggle": _toggle_the,
+    "strip_accents": _strip_accents_op,
+    "typo": _typo_char,
+    "drop_word": _drop_internal_word,
+    "add_geo": _add_geo_suffix,
     "spacing_oddity": _add_internal_spacing_oddity,
 }
 
@@ -221,9 +235,9 @@ DIFFICULTY_OPS: dict[Difficulty, list[str]] = {
 
 # Approximate # of edits per variant per difficulty (Bernoulli-ish per op).
 DIFFICULTY_EDIT_RATE: dict[Difficulty, float] = {
-    "easy": 0.6,    # ~1-2 edits per variant
+    "easy": 0.6,  # ~1-2 edits per variant
     "medium": 1.2,  # ~2-3 edits per variant
-    "hard": 2.0,    # ~3-5 edits per variant
+    "hard": 2.0,  # ~3-5 edits per variant
 }
 
 
@@ -259,6 +273,7 @@ def _power_law_count(low: int, high: int, rng: random.Random) -> int:
 # Public entry
 # ---------------------------------------------------------------------------
 
+
 def generate_examples(
     n_entities: int = 1000,
     variants_per_entity: tuple[int, int] = (1, 8),
@@ -288,10 +303,14 @@ def generate_examples(
     spokes diverge from the hub but not necessarily from each other.
     """
     if difficulty not in DIFFICULTY_OPS:
-        raise ValueError(f"difficulty must be one of {list(DIFFICULTY_OPS)}, got {difficulty!r}")
+        raise ValueError(
+            f"difficulty must be one of {list(DIFFICULTY_OPS)}, got {difficulty!r}"
+        )
     low, high = variants_per_entity
     if low < 1 or high < low:
-        raise ValueError(f"variants_per_entity must be (low>=1, high>=low), got {variants_per_entity!r}")
+        raise ValueError(
+            f"variants_per_entity must be (low>=1, high>=low), got {variants_per_entity!r}"
+        )
 
     pool = canonicals if canonicals is not None else TOY_CANONICALS
     if not pool:
@@ -322,8 +341,10 @@ def generate_examples(
             rows_id.append(entity_id)
             rows_canonical.append(canonical)
 
-    return pa.table({
-        "variant_name": pa.array(rows_variant, type=pa.string()),
-        "true_entity_id": pa.array(rows_id, type=pa.int64()),
-        "true_canonical": pa.array(rows_canonical, type=pa.string()),
-    })
+    return pa.table(
+        {
+            "variant_name": pa.array(rows_variant, type=pa.string()),
+            "true_entity_id": pa.array(rows_id, type=pa.int64()),
+            "true_canonical": pa.array(rows_canonical, type=pa.string()),
+        }
+    )

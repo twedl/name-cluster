@@ -100,16 +100,23 @@ fn mersenne_mul_add(a: u64, x: u64, b: u64) -> u64 {
     let mut r = prod.wrapping_add(b as u128);
     r = (r >> 61) + (r & P);
     r = (r >> 61) + (r & P);
-    if r >= P { r -= P; }
+    if r >= P {
+        r -= P;
+    }
     r as u64
 }
 
+#[cfg(test)]
 pub fn estimate_jaccard(sig_a: &[u64], sig_b: &[u64]) -> f64 {
     assert_eq!(sig_a.len(), sig_b.len(), "signature length mismatch");
     if sig_a.is_empty() {
         return 0.0;
     }
-    let eq = sig_a.iter().zip(sig_b.iter()).filter(|(a, b)| a == b).count();
+    let eq = sig_a
+        .iter()
+        .zip(sig_b.iter())
+        .filter(|(a, b)| a == b)
+        .count();
     eq as f64 / sig_a.len() as f64
 }
 

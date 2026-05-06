@@ -35,40 +35,13 @@ cache_root = (
 )
 gleif_files = sorted((cache_root / "gleif" / "parquet").glob("lei2-2*.parquet"))
 
-if gleif_files:
-    full = pl.read_parquet(gleif_files[-1])
-    # Block by country to keep the walkthrough fast + meaningful. UK has lots
-    # of distinct entity types and a large alias surface; swap to "DE" or
-    # "CN" to see different normalization rules fire.
-    df = full.filter(pl.col("country") == "GB").sample(n=2000, seed=0)
-    name_col = "legal_name"
-    print(f"loaded {df.height:,} GB names from {gleif_files[-1].name}")
-else:
-    df = pl.DataFrame(
-        {
-            "name": [
-                "Acme Corporation",
-                "ACME Corp Inc",
-                "Acme Corp.",
-                "Apple Computer Co.",
-                "Apple Inc",
-                "Microsoft Corporation, USA",
-                "Microsoft Corp",
-                "International Business Machines",
-                "I.B.M. Inc",
-                "IBM Corp",
-                "Foothill Industries",
-                "Foothill Inds Limited",
-                "Sherwin-Williams Co",
-                "Sherwin Williams Company",
-                None,
-            ],
-        }
-    )
-    name_col = "name"
-    print(f"GLEIF cache not found, using {df.height} inline names")
-    print("(run `uv run scripts/download_corpora.py gleif` to populate)")
-
+full = pl.read_parquet(gleif_files[-1])
+# Block by country to keep the walkthrough fast + meaningful. UK has lots
+# of distinct entity types and a large alias surface; swap to "DE" or
+# "CN" to see different normalization rules fire.
+df = full.filter(pl.col("country") == "US").sample(n=10000, seed=0)
+name_col = "legal_name"
+# print(f"loaded {df.height:,} GB names from {gleif_files[-1].name}")
 print(df.head(5))
 
 

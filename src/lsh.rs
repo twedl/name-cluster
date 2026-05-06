@@ -94,6 +94,7 @@ impl LshIndex {
 
 /// Probability that two items with true Jaccard `s` share at least one band.
 /// Useful for tuning bands/rows against a target recall.
+#[cfg(test)]
 pub fn lsh_collision_prob(jaccard: f64, bands: usize, rows: usize) -> f64 {
     1.0 - (1.0 - jaccard.powi(rows as i32)).powi(bands as i32)
 }
@@ -154,7 +155,11 @@ mod tests {
     #[test]
     fn collision_prob_formula() {
         let p = lsh_collision_prob(0.5, 32, 4);
-        assert!((p - 0.85).abs() < 0.05, "expected ~0.85 at j=0.5 b=32 r=4, got {}", p);
+        assert!(
+            (p - 0.85).abs() < 0.05,
+            "expected ~0.85 at j=0.5 b=32 r=4, got {}",
+            p
+        );
         assert_eq!(lsh_collision_prob(0.0, 32, 4), 0.0);
         assert_eq!(lsh_collision_prob(1.0, 32, 4), 1.0);
     }

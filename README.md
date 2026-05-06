@@ -267,10 +267,23 @@ Full design rationale, audit findings, and the decision history live in
 Run all tests (rust + python integration):
 
 ```bash
-cargo test --lib                          # 63 rust unit tests
+cargo test --lib                          # 78 rust unit tests
 maturin develop --release                  # rebuild + reinstall extension
-pytest tests/test_public_api.py            # 11 python integration tests
+pytest tests/test_public_api.py            # 21 python integration tests
 ```
+
+### Pre-push hook (local CI)
+
+`scripts/ci.sh` runs ruff (check + format), `cargo fmt`, `cargo clippy
+-D warnings`, `cargo test --lib`, `maturin develop` (only if rust changed),
+and `pytest`. Wire it as a pre-push hook once:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Subsequent `git push` runs the script and aborts on failure. Bypass with
+`git push --no-verify`. The script can also be run manually: `scripts/ci.sh`.
 
 Re-run the normalization audit against real corpora (downloads ~600 MB on
 first run; auth required for SAM.gov):

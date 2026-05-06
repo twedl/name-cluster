@@ -31,10 +31,8 @@ pub struct SparseVector {
     entries: Vec<(u32, f32)>,
 }
 
+#[cfg(test)]
 impl SparseVector {
-    pub fn len(&self) -> usize {
-        self.entries.len()
-    }
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }
@@ -79,15 +77,13 @@ impl Vocabulary {
         Self { n, ids, idf }
     }
 
-    pub fn n(&self) -> usize {
-        self.n
-    }
-
+    #[cfg(test)]
     pub fn vocab_size(&self) -> usize {
         self.idf.len()
     }
 
     /// IDF weight for one n-gram, or `None` if the n-gram is not in vocab.
+    #[cfg(test)]
     pub fn idf_for(&self, gram: &[u8]) -> Option<f32> {
         self.ids.get(gram).map(|&id| self.idf[id as usize])
     }
@@ -167,22 +163,35 @@ mod tests {
     #[test]
     fn known_overlap_cosine_in_range() {
         let v = vocab(
-            &["acme corporation", "acme corporations", "acme inc", "other thing"],
+            &[
+                "acme corporation",
+                "acme corporations",
+                "acme inc",
+                "other thing",
+            ],
             3,
         );
         let a = v.vectorize("acme corporation");
         let b = v.vectorize("acme corporations");
         let c = cosine(&a, &b);
-        assert!(c > 0.7 && c < 1.0, "near-duplicate cosine {} should be 0.7..1.0", c);
+        assert!(
+            c > 0.7 && c < 1.0,
+            "near-duplicate cosine {} should be 0.7..1.0",
+            c
+        );
     }
 
     #[test]
     fn idf_downweights_common_grams() {
         // "abc" is in every doc (df=N → IDF=0); "xyz" only in one (IDF=ln(N)).
-        let docs = vec!["abc def", "abc ghi", "abc jkl", "abc xyz"];
+        let docs = ["abc def", "abc ghi", "abc jkl", "abc xyz"];
         let v = Vocabulary::build(docs.iter().copied(), 3);
 
-        assert_eq!(v.idf_for(b"abc"), Some(0.0), "common n-gram should have IDF 0");
+        assert_eq!(
+            v.idf_for(b"abc"),
+            Some(0.0),
+            "common n-gram should have IDF 0"
+        );
         let xyz = v.idf_for(b"xyz").expect("xyz should be in vocab");
         assert!(xyz > 1.0, "rare n-gram should have IDF > 1, got {}", xyz);
     }
@@ -212,16 +221,23 @@ mod tests {
     #[test]
     fn empty_vector_cosine_zero() {
         let v = vocab(&["acme corp"], 3);
-        let empty = v.vectorize("?!");  // no valid n-grams (single non-ascii)
+        let empty = v.vectorize("?!"); // no valid n-grams (single non-ascii)
         let nonempty = v.vectorize("acme corp");
         assert_eq!(cosine(&empty, &nonempty), 0.0);
     }
 
     #[test]
     fn vectorize_is_l2_normalized() {
-        let v = vocab(&["acme corporation", "acme corp ltd", "other thing here"], 3);
+        let v = vocab(
+            &["acme corporation", "acme corp ltd", "other thing here"],
+            3,
+        );
         let vec = v.vectorize("acme corporation");
-        assert!((vec.l2_norm() - 1.0).abs() < 1e-5, "L2 norm {} should be 1.0", vec.l2_norm());
+        assert!(
+            (vec.l2_norm() - 1.0).abs() < 1e-5,
+            "L2 norm {} should be 1.0",
+            vec.l2_norm()
+        );
     }
 
     #[test]

@@ -29,37 +29,103 @@ use unicode_normalization::UnicodeNormalization;
 static LIST1_SUFFIXES_SINGLE: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     [
         // English / Western
-        "inc", "llc", "ltd", "limited", "corp", "corporation", "co", "company",
-        "companies", "lp", "llp", "plc", "pty",
+        "inc",
+        "llc",
+        "ltd",
+        "limited",
+        "corp",
+        "corporation",
+        "co",
+        "company",
+        "companies",
+        "lp",
+        "llp",
+        "plc",
+        "pty",
         // German (DE/AT/CH)
-        "gmbh", "ag", "kg", "kgaa", "ohg", "gbr", "ev", "eg", "ggmbh", "mbh",
+        "gmbh",
+        "ag",
+        "kg",
+        "kgaa",
+        "ohg",
+        "gbr",
+        "ev",
+        "eg",
+        "ggmbh",
+        "mbh",
         "ug",
-        "aktiengesellschaft", "kommanditgesellschaft", "gesellschaft",
+        "aktiengesellschaft",
+        "kommanditgesellschaft",
+        "gesellschaft",
         "unternehmergesellschaft",
         // French / Belgian / Swiss-French
-        "sa", "sas", "sarl", "sprl", "sagl",
+        "sa",
+        "sas",
+        "sarl",
+        "sprl",
+        "sagl",
         // Italian
-        "srl", "spa", "snc", "ss",
+        "srl",
+        "spa",
+        "snc",
+        "ss",
         // Spanish / Portuguese
-        "sl", "slu", "slp", "cb", "lda", "ltda",
+        "sl",
+        "slu",
+        "slp",
+        "cb",
+        "lda",
+        "ltda",
         // Dutch / Belgian-Dutch
-        "bv", "nv", "bvba", "vof", "ua",
+        "bv",
+        "nv",
+        "bvba",
+        "vof",
+        "ua",
         // Nordic
-        "oy", "ab", "as", "asa", "oyj", "aps", "aktiebolag",
+        "oy",
+        "ab",
+        "as",
+        "asa",
+        "oyj",
+        "aps",
+        "aktiebolag",
         // Estonian
         "ou",
         // East Asian (transliterated)
-        "kk", "gk", "tmk", "pte",
+        "kk",
+        "gk",
+        "tmk",
+        "pte",
         // Russian / Slavic (head-strip primary use case)
-        "ooo", "oao", "ojsc", "pjsc", "cjsc", "jsc", "zao", "pao", "ao",
+        "ooo",
+        "oao",
+        "ojsc",
+        "pjsc",
+        "cjsc",
+        "jsc",
+        "zao",
+        "pao",
+        "ao",
         // Czech / Slovak (post-period-drop: s.r.o. -> sro)
         "sro",
         // Polish (post-List-3 compound canonicalization)
-        "spzoo", "psa", "ska", "spk", "spj",
+        "spzoo",
+        "psa",
+        "ska",
+        "spk",
+        "spj",
         // Hungarian (short forms; long forms canonicalize via List 3 first)
-        "kft", "bt", "kkt", "rt", "zrt", "nyrt", "reszvenytarsasag",
+        "kft",
+        "bt",
+        "kkt",
+        "rt",
+        "zrt",
+        "nyrt",
+        "reszvenytarsasag",
         // Italian/Portuguese long forms (in addition to "srl"/"lda")
-        "limitata", "limitada",
+        "limitata",
+        "limitada",
         // Middle East
         "fze",
         // Turkish
@@ -75,7 +141,9 @@ static LIST1_SUFFIXES_MULTI: LazyLock<Vec<Vec<&'static str>>> =
     LazyLock::new(|| vec![vec!["co", "ltd"]]);
 
 /// Build a longest-first compound canonicalize table.
-fn build_compound(entries: &[(&[&'static str], &'static str)]) -> Vec<(Vec<&'static str>, &'static str)> {
+fn build_compound(
+    entries: &[(&[&'static str], &'static str)],
+) -> Vec<(Vec<&'static str>, &'static str)> {
     let mut v: Vec<(Vec<&'static str>, &'static str)> =
         entries.iter().map(|(p, c)| (p.to_vec(), *c)).collect();
     v.sort_by(|a, b| b.0.len().cmp(&a.0.len()));
@@ -84,73 +152,83 @@ fn build_compound(entries: &[(&[&'static str], &'static str)]) -> Vec<(Vec<&'sta
 
 /// Compound legal-form -> canonical short token. Applied anywhere in name,
 /// longest-first to avoid partial overlaps.
-static LIST3_COMPOUND_LEGAL: LazyLock<Vec<(Vec<&'static str>, &'static str)>> = LazyLock::new(|| {
-    build_compound(&[
-        // English
-        (&["limited", "liability", "company"], "llc"),
-        (&["limited", "liability"], "llc"),
-        (&["limited", "liability", "partnership"], "llp"),
-        (&["limited", "partnership"], "lp"),
-        (&["general", "partnership"], "gp"),
-        (&["joint", "stock", "company"], "jsc"),
-        (&["public", "joint", "stock", "company"], "pjsc"),
-        (&["open", "joint", "stock", "company"], "ojsc"),
-        (&["closed", "joint", "stock", "company"], "cjsc"),
-        // Russian (transliterated). Multiple Latin schemes: BGN/PCGN uses `'iu`
-        // (apostrophe-dropped to `iu`), others use `yu`. Soft-sign Ь after Т in
-        // отвественностью becomes either, so we accept both.
-        (&["obshchestvo", "s", "ogranichennoi", "otvetstvennostyu"], "ooo"),
-        (&["obshchestvo", "s", "ogranichennoi", "otvetstvennostiu"], "ooo"),
-        (&["aktsionernoe", "obshchestvo"], "ao"),
-        (&["publichnoe", "aktsionernoe", "obshchestvo"], "pjsc"),
-        (&["zakrytoe", "aktsionernoe", "obshchestvo"], "cjsc"),
-        (&["otkrytoe", "aktsionernoe", "obshchestvo"], "ojsc"),
-        // Polish (post-atomic-Latin map: ł->l, NFKD strips accents)
-        // spółka z ograniczoną odpowiedzialnością = LLC = "sp. z o.o."
-        (&["spolka", "z", "ograniczona", "odpowiedzialnoscia"], "spzoo"),
-        // Abbreviated forms after period-drop:
-        //   "Sp. z o.o."    -> "sp z oo"
-        //   "Sp Z O O"      -> "sp z o o"
-        (&["sp", "z", "oo"], "spzoo"),
-        (&["sp", "z", "o", "o"], "spzoo"),
-        (&["spolka", "akcyjna"], "sa"),
-        (&["prosta", "spolka", "akcyjna"], "psa"),
-        // Komandytowo-akcyjna: hyphen-drop concatenates, or source is spaced.
-        (&["spolka", "komandytowoakcyjna"], "ska"),
-        (&["spolka", "komandytowo", "akcyjna"], "ska"),
-        (&["spolka", "komandytowa"], "spk"),
-        (&["spolka", "jawna"], "spj"),
-        (&["spolka", "partnerska"], "spp"),
-        (&["spolka", "cywilna"], "sc"),
-        (&["spolka", "europejska"], "se"),
-        // Spanish / French
-        (&["sociedad", "anonima"], "sa"),
-        (&["sociedad", "limitada"], "sl"),
-        (&["societe", "anonyme"], "sa"),
-        // French SARL appearing as "S.A R.L." (period-drop: spaces leak between)
-        (&["sa", "rl"], "sarl"),
-        // Japanese (transliterated)
-        (&["kabushiki", "kaisha"], "kk"),
-        // German UG entrepreneurial co: "UG (haftungsbeschränkt)" or full form
-        (&["ug", "haftungsbeschrankt"], "ug"),
-        (&["unternehmergesellschaft", "haftungsbeschrankt"], "ug"),
-        // Hungarian: long forms collapse to short legal-form codes (then List 1
-        // strips the short code in the next pass). All entries are post-NFKD
-        // (diacritics stripped: ő->o, ű->u, é->e, etc.).
-        (&["korlatolt", "felelossegu", "tarsasag"], "kft"),
-        (&["zartkoruen", "mukodo", "reszvenytarsasag"], "zrt"),
-        (&["nyilvanosan", "mukodo", "reszvenytarsasag"], "nyrt"),
-        (&["beteti", "tarsasag"], "bt"),
-        (&["kozkereseti", "tarsasag"], "kkt"),
-        // Chinese (Pinyin transliteration of the most-common legal forms).
-        // 有限公司      = "Limited Company"      -> ltd
-        // 有限责任公司   = "Limited Liability Co" -> ltd
-        // 股份有限公司   = "Joint-Stock Limited"  -> jsc
-        (&["you", "xian", "gong", "si"], "ltd"),
-        (&["you", "xian", "ze", "ren", "gong", "si"], "ltd"),
-        (&["gu", "fen", "you", "xian", "gong", "si"], "jsc"),
-    ])
-});
+static LIST3_COMPOUND_LEGAL: LazyLock<Vec<(Vec<&'static str>, &'static str)>> =
+    LazyLock::new(|| {
+        build_compound(&[
+            // English
+            (&["limited", "liability", "company"], "llc"),
+            (&["limited", "liability"], "llc"),
+            (&["limited", "liability", "partnership"], "llp"),
+            (&["limited", "partnership"], "lp"),
+            (&["general", "partnership"], "gp"),
+            (&["joint", "stock", "company"], "jsc"),
+            (&["public", "joint", "stock", "company"], "pjsc"),
+            (&["open", "joint", "stock", "company"], "ojsc"),
+            (&["closed", "joint", "stock", "company"], "cjsc"),
+            // Russian (transliterated). Multiple Latin schemes: BGN/PCGN uses `'iu`
+            // (apostrophe-dropped to `iu`), others use `yu`. Soft-sign Ь after Т in
+            // отвественностью becomes either, so we accept both.
+            (
+                &["obshchestvo", "s", "ogranichennoi", "otvetstvennostyu"],
+                "ooo",
+            ),
+            (
+                &["obshchestvo", "s", "ogranichennoi", "otvetstvennostiu"],
+                "ooo",
+            ),
+            (&["aktsionernoe", "obshchestvo"], "ao"),
+            (&["publichnoe", "aktsionernoe", "obshchestvo"], "pjsc"),
+            (&["zakrytoe", "aktsionernoe", "obshchestvo"], "cjsc"),
+            (&["otkrytoe", "aktsionernoe", "obshchestvo"], "ojsc"),
+            // Polish (post-atomic-Latin map: ł->l, NFKD strips accents)
+            // spółka z ograniczoną odpowiedzialnością = LLC = "sp. z o.o."
+            (
+                &["spolka", "z", "ograniczona", "odpowiedzialnoscia"],
+                "spzoo",
+            ),
+            // Abbreviated forms after period-drop:
+            //   "Sp. z o.o."    -> "sp z oo"
+            //   "Sp Z O O"      -> "sp z o o"
+            (&["sp", "z", "oo"], "spzoo"),
+            (&["sp", "z", "o", "o"], "spzoo"),
+            (&["spolka", "akcyjna"], "sa"),
+            (&["prosta", "spolka", "akcyjna"], "psa"),
+            // Komandytowo-akcyjna: hyphen-drop concatenates, or source is spaced.
+            (&["spolka", "komandytowoakcyjna"], "ska"),
+            (&["spolka", "komandytowo", "akcyjna"], "ska"),
+            (&["spolka", "komandytowa"], "spk"),
+            (&["spolka", "jawna"], "spj"),
+            (&["spolka", "partnerska"], "spp"),
+            (&["spolka", "cywilna"], "sc"),
+            (&["spolka", "europejska"], "se"),
+            // Spanish / French
+            (&["sociedad", "anonima"], "sa"),
+            (&["sociedad", "limitada"], "sl"),
+            (&["societe", "anonyme"], "sa"),
+            // French SARL appearing as "S.A R.L." (period-drop: spaces leak between)
+            (&["sa", "rl"], "sarl"),
+            // Japanese (transliterated)
+            (&["kabushiki", "kaisha"], "kk"),
+            // German UG entrepreneurial co: "UG (haftungsbeschränkt)" or full form
+            (&["ug", "haftungsbeschrankt"], "ug"),
+            (&["unternehmergesellschaft", "haftungsbeschrankt"], "ug"),
+            // Hungarian: long forms collapse to short legal-form codes (then List 1
+            // strips the short code in the next pass). All entries are post-NFKD
+            // (diacritics stripped: ő->o, ű->u, é->e, etc.).
+            (&["korlatolt", "felelossegu", "tarsasag"], "kft"),
+            (&["zartkoruen", "mukodo", "reszvenytarsasag"], "zrt"),
+            (&["nyilvanosan", "mukodo", "reszvenytarsasag"], "nyrt"),
+            (&["beteti", "tarsasag"], "bt"),
+            (&["kozkereseti", "tarsasag"], "kkt"),
+            // Chinese (Pinyin transliteration of the most-common legal forms).
+            // 有限公司      = "Limited Company"      -> ltd
+            // 有限责任公司   = "Limited Liability Co" -> ltd
+            // 股份有限公司   = "Joint-Stock Limited"  -> jsc
+            (&["you", "xian", "gong", "si"], "ltd"),
+            (&["you", "xian", "ze", "ren", "gong", "si"], "ltd"),
+            (&["gu", "fen", "you", "xian", "gong", "si"], "jsc"),
+        ])
+    });
 
 /// Single-token descriptor abbreviation -> canonical short form.
 /// Empty-string targets are stripped by the final empty-token filter (used
@@ -247,15 +325,15 @@ pub fn normalize(name: &str) -> String {
             '&' => s.push_str(" and "),
             '.' | '\'' | '-' | '_' | '+' => {}
             '0'..='9' | 'a'..='z' => s.push(lower),
-            'Ł' | 'ł' => s.push('l'),                 // Polish, Wendish
-            'Ø' | 'ø' => s.push('o'),                 // Danish, Norwegian, Faroese
-            'Æ' | 'æ' => s.push_str("ae"),            // Old English, Nordic, Icelandic
-            'Œ' | 'œ' => s.push_str("oe"),            // French
-            'ß' => s.push_str("ss"),                  // German eszett
-            'Þ' | 'þ' => s.push_str("th"),            // Icelandic, Old English thorn
-            'Ð' | 'ð' | 'Đ' | 'đ' => s.push('d'),    // Icelandic eth, Croatian d-stroke
-            'ı' => s.push('i'),                       // Turkish dotless i
-            'İ' => s.push('i'),                       // Turkish dotted capital I
+            'Ł' | 'ł' => s.push('l'),             // Polish, Wendish
+            'Ø' | 'ø' => s.push('o'),             // Danish, Norwegian, Faroese
+            'Æ' | 'æ' => s.push_str("ae"),        // Old English, Nordic, Icelandic
+            'Œ' | 'œ' => s.push_str("oe"),        // French
+            'ß' => s.push_str("ss"),              // German eszett
+            'Þ' | 'þ' => s.push_str("th"),        // Icelandic, Old English thorn
+            'Ð' | 'ð' | 'Đ' | 'đ' => s.push('d'), // Icelandic eth, Croatian d-stroke
+            'ı' => s.push('i'),                   // Turkish dotless i
+            'İ' => s.push('i'),                   // Turkish dotted capital I
             _ => s.push(' '),
         }
     }
@@ -301,17 +379,13 @@ pub fn normalize(name: &str) -> String {
         }
 
         // single-word tail
-        if tokens.len() > 1
-            && LIST1_SUFFIXES_SINGLE.contains(tokens.last().unwrap().as_str())
-        {
+        if tokens.len() > 1 && LIST1_SUFFIXES_SINGLE.contains(tokens.last().unwrap().as_str()) {
             tokens.pop();
             continue;
         }
 
         // single-word head
-        if tokens.len() > 1
-            && LIST1_SUFFIXES_SINGLE.contains(tokens.first().unwrap().as_str())
-        {
+        if tokens.len() > 1 && LIST1_SUFFIXES_SINGLE.contains(tokens.first().unwrap().as_str()) {
             tokens.remove(0);
             continue;
         }
@@ -360,7 +434,10 @@ fn strip_leading_garbage(s: &str) -> &str {
 
     let prefix_len = bytes.iter().take_while(|&&b| pred(b)).count();
     let after_prefix = &bytes[prefix_len..];
-    if after_prefix.first().is_none_or(|&b| !(b as char).is_whitespace()) {
+    if after_prefix
+        .first()
+        .is_none_or(|&b| !(b as char).is_whitespace())
+    {
         return s;
     }
     let ws_len = after_prefix
@@ -372,10 +449,7 @@ fn strip_leading_garbage(s: &str) -> &str {
 
 /// Apply compound-token replacements to `tokens`, longest-match-first,
 /// left-to-right, anywhere in the name.
-fn apply_compound(
-    tokens: &[String],
-    map: &[(Vec<&'static str>, &'static str)],
-) -> Vec<String> {
+fn apply_compound(tokens: &[String], map: &[(Vec<&'static str>, &'static str)]) -> Vec<String> {
     let mut out: Vec<String> = Vec::with_capacity(tokens.len());
     let mut i = 0;
     while i < tokens.len() {
@@ -548,12 +622,12 @@ mod tests {
     #[test]
     fn cjk_pinyin_compound() {
         // 有限公司 = Limited Co -> after List 3 collapse + List 1 strip
-        assert_eq!(norm("BEIJING XYZ TECH YOU XIAN GONG SI"), "beijing xyz tech");
-        // 有限责任公司 = Limited Liability Co
         assert_eq!(
-            norm("ZHEJIANG XYZ YOU XIAN ZE REN GONG SI"),
-            "zhejiang xyz"
+            norm("BEIJING XYZ TECH YOU XIAN GONG SI"),
+            "beijing xyz tech"
         );
+        // 有限责任公司 = Limited Liability Co
+        assert_eq!(norm("ZHEJIANG XYZ YOU XIAN ZE REN GONG SI"), "zhejiang xyz");
         // 股份有限公司 = Joint-Stock Limited
         assert_eq!(norm("XYZ GU FEN YOU XIAN GONG SI"), "xyz");
     }
@@ -561,15 +635,9 @@ mod tests {
     #[test]
     fn hungarian_long_form_compounds() {
         // Korlátolt Felelősségű Társaság = LLC
-        assert_eq!(
-            norm("XYZ KORLATOLT FELELOSSEGU TARSASAG"),
-            "xyz"
-        );
+        assert_eq!(norm("XYZ KORLATOLT FELELOSSEGU TARSASAG"), "xyz");
         // Zártkörűen Működő Részvénytársaság = private joint-stock co
-        assert_eq!(
-            norm("XYZ ZARTKORUEN MUKODO RESZVENYTARSASAG"),
-            "xyz"
-        );
+        assert_eq!(norm("XYZ ZARTKORUEN MUKODO RESZVENYTARSASAG"), "xyz");
         // Standalone Részvénytársaság (post-NFKD) -> rt -> strip
         assert_eq!(norm("XYZ RESZVENYTARSASAG"), "xyz");
         assert_eq!(norm("XYZ RT"), "xyz");
@@ -621,13 +689,7 @@ mod tests {
             "surgutneftegaz"
         );
         // CJSC and OJSC long forms
-        assert_eq!(
-            norm("ZAKRYTOE AKTSIONERNOE OBSHCHESTVO XYZ"),
-            "xyz"
-        );
-        assert_eq!(
-            norm("OTKRYTOE AKTSIONERNOE OBSHCHESTVO XYZ"),
-            "xyz"
-        );
+        assert_eq!(norm("ZAKRYTOE AKTSIONERNOE OBSHCHESTVO XYZ"), "xyz");
+        assert_eq!(norm("OTKRYTOE AKTSIONERNOE OBSHCHESTVO XYZ"), "xyz");
     }
 }

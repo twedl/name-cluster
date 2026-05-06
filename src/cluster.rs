@@ -190,13 +190,26 @@ pub fn diameter_split(
     while let Some((members, was_split)) = work.pop() {
         let hub = pick_hub(&members, adj, names);
         if members.len() < min_size {
-            result.push(DiameterPiece { members, hub, flagged: was_split });
+            result.push(DiameterPiece {
+                members,
+                hub,
+                flagged: was_split,
+            });
             continue;
         }
         let dists = bfs_distances(adj, hub);
-        let max_d = dists.iter().filter(|&&d| d >= 0).max().copied().unwrap_or(0) as usize;
+        let max_d = dists
+            .iter()
+            .filter(|&&d| d >= 0)
+            .max()
+            .copied()
+            .unwrap_or(0) as usize;
         if max_d <= radius_max {
-            result.push(DiameterPiece { members, hub, flagged: was_split });
+            result.push(DiameterPiece {
+                members,
+                hub,
+                flagged: was_split,
+            });
             continue;
         }
         let mut near: Vec<u32> = Vec::new();
@@ -211,11 +224,19 @@ pub fn diameter_split(
         }
         // Defensive: pathological graph where partition fails. Keep whole.
         if far.is_empty() || near.is_empty() {
-            result.push(DiameterPiece { members, hub, flagged: true });
+            result.push(DiameterPiece {
+                members,
+                hub,
+                flagged: true,
+            });
             continue;
         }
         // `near` inherits ascending order from `members`; no resort needed.
-        result.push(DiameterPiece { members: near, hub, flagged: true });
+        result.push(DiameterPiece {
+            members: near,
+            hub,
+            flagged: true,
+        });
         for cc in connected_subcomponents(&far, adj) {
             work.push((cc, true));
         }
@@ -291,7 +312,12 @@ mod tests {
     fn pick_hub_max_degree_wins() {
         // Star with hub=2 (degree 3), spokes 0,1,3 (each degree 1)
         let adj = build_adjacency(4, &[(2, 0), (2, 1), (2, 3)]);
-        let names = vec!["a".to_string(), "b".to_string(), "c".to_string(), "d".to_string()];
+        let names = vec![
+            "a".to_string(),
+            "b".to_string(),
+            "c".to_string(),
+            "d".to_string(),
+        ];
         let members = vec![0, 1, 2, 3];
         assert_eq!(pick_hub(&members, &adj, &names), 2);
     }
@@ -334,9 +360,15 @@ mod tests {
         // Remove the bridge node {4,5} from members -> {0,1,2,3} and {6,7,8,9}
         // are 2 separate CCs in the subgraph.
         let edges = vec![
-            (0, 1), (1, 2), (2, 3), (3, 4),
+            (0, 1),
+            (1, 2),
+            (2, 3),
+            (3, 4),
             (4, 5),
-            (5, 6), (6, 7), (7, 8), (8, 9),
+            (5, 6),
+            (6, 7),
+            (7, 8),
+            (8, 9),
         ];
         let adj = build_adjacency(10, &edges);
         let members = vec![0, 1, 2, 3, 6, 7, 8, 9];
@@ -374,11 +406,20 @@ mod tests {
         // Should produce: near {0,1,2} flagged, plus split-off {3,4} (1 sub-CC).
         // {3,4} has size 2 < min_size=3 -> kept as-is, flagged from parent split.
         assert_eq!(pieces.len(), 2);
-        let near = pieces.iter().find(|p| p.members.len() == 3).expect("near group");
-        let far = pieces.iter().find(|p| p.members.len() == 2).expect("far group");
+        let near = pieces
+            .iter()
+            .find(|p| p.members.len() == 3)
+            .expect("near group");
+        let far = pieces
+            .iter()
+            .find(|p| p.members.len() == 2)
+            .expect("far group");
         assert_eq!(near.members, vec![0, 1, 2]);
         assert_eq!(far.members, vec![3, 4]);
-        assert!(near.flagged && far.flagged, "both halves of split should be flagged");
+        assert!(
+            near.flagged && far.flagged,
+            "both halves of split should be flagged"
+        );
     }
 
     #[test]
@@ -410,7 +451,7 @@ mod tests {
         let mut edges: Vec<(u32, u32)> = Vec::new();
         for i in 0..4 {
             for j in (i + 1)..4 {
-                edges.push((i, j));        // first clique
+                edges.push((i, j)); // first clique
                 edges.push((i + 4, j + 4)); // second clique
             }
         }
@@ -448,7 +489,11 @@ mod tests {
         //   ... actually adj is shared, but pick_hub uses adj[m].len() across
         //   the whole graph. So node 3's degree includes its edge to node 2.
         // Let's just assert: produces multiple pieces, all flagged, all small.
-        assert!(pieces.len() >= 2, "expected recursive splits, got {}", pieces.len());
+        assert!(
+            pieces.len() >= 2,
+            "expected recursive splits, got {}",
+            pieces.len()
+        );
         for p in &pieces {
             assert!(p.flagged, "every piece from a split should be flagged");
         }

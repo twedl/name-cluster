@@ -9,6 +9,7 @@ canonical, internal edges with scores, hub eccentricity, size. Edges are
 recomputed on demand from the cluster's members (cheap O(k²) for small
 clusters; lib does not retain edge state post-clustering).
 """
+
 from __future__ import annotations
 
 from typing import Sequence
@@ -92,7 +93,9 @@ def candidates(
     )
 
 
-def explain(result, cluster_id: int, name_col: str = "name", ngram_size: int = 3) -> dict:
+def explain(
+    result, cluster_id: int, name_col: str = "name", ngram_size: int = 3
+) -> dict:
     """Return diagnostic info for a single cluster from a `cluster()` result.
 
     Parameters
@@ -146,6 +149,7 @@ def explain(result, cluster_id: int, name_col: str = "name", ngram_size: int = 3
         }
 
     from ._lowlevel import normalize as _normalize
+
     normalized = [_normalize(n) for n in raw_names]
     seen: dict[str, str] = {}
     for raw, norm in zip(raw_names, normalized):
@@ -165,10 +169,13 @@ def explain(result, cluster_id: int, name_col: str = "name", ngram_size: int = 3
 
     idx_a, idx_b, scores = _pairwise_cosines_lists(unique_norm, ngram_size=ngram_size)
     edges = [
-        (unique_raw[a], unique_raw[b], score) for a, b, score in zip(idx_a, idx_b, scores)
+        (unique_raw[a], unique_raw[b], score)
+        for a, b, score in zip(idx_a, idx_b, scores)
     ]
 
-    hub_radius = _bfs_eccentricity_from_canonical(unique_norm, canonical, idx_a, idx_b, scores)
+    hub_radius = _bfs_eccentricity_from_canonical(
+        unique_norm, canonical, idx_a, idx_b, scores
+    )
 
     return {
         "canonical": canonical,
