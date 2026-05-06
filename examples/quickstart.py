@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.11"
+# requires-python = ">=3.13"
 # dependencies = [
-#     "name_cluster",
+#     "name-cluster",
 #     "polars>=1.20",
 # ]
 # ///
-"""End-to-end demo of the name_cluster public API.
+"""End-to-end demo of the namecluster public API.
 
 Five sections, each runnable in isolation:
 
@@ -28,7 +28,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-import name_cluster as nc
+import namecluster as nc
 import polars as pl
 
 
@@ -209,7 +209,7 @@ def real_data_demo() -> None:
 
 
 def main() -> None:
-    print("name_cluster quickstart — exercises the v1 public API")
+    print("namecluster quickstart — exercises the v1 public API")
     print(f"version: {nc.__version__}")
     quickstart()
     repl_convenience()

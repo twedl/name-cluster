@@ -1,11 +1,11 @@
 # /// script
-# requires-python = ">=3.11"
+# requires-python = ">=3.13"
 # dependencies = [
-#     "name_cluster",
+#     "name-cluster",
 #     "polars>=1.20",
 # ]
 # ///
-"""Step-by-step walkthrough of the name_cluster pipeline.
+"""Step-by-step walkthrough of the namecluster pipeline.
 
 Designed for copy-paste into a REPL — every block is a top-level statement,
 no main() to dive through. Run from `python -i examples/repl_walkthrough.py`
@@ -14,12 +14,13 @@ to land at the prompt with everything loaded.
 Each block prints what it just did. Comments explain why. Edit thresholds
 and inputs in place.
 """
+
 from __future__ import annotations
 
 import os
 from pathlib import Path
 
-import name_cluster as nc
+import namecluster as nc
 import polars as pl
 
 # ---------------------------------------------------------------------------
@@ -29,7 +30,9 @@ import polars as pl
 # haven't downloaded it, we fall back to a tiny inline DataFrame so the
 # walkthrough still runs.
 
-cache_root = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "name_cluster"
+cache_root = (
+    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "name_cluster"
+)
 gleif_files = sorted((cache_root / "gleif" / "parquet").glob("lei2-2*.parquet"))
 
 if gleif_files:
@@ -41,25 +44,27 @@ if gleif_files:
     name_col = "legal_name"
     print(f"loaded {df.height:,} GB names from {gleif_files[-1].name}")
 else:
-    df = pl.DataFrame({
-        "name": [
-            "Acme Corporation",
-            "ACME Corp Inc",
-            "Acme Corp.",
-            "Apple Computer Co.",
-            "Apple Inc",
-            "Microsoft Corporation, USA",
-            "Microsoft Corp",
-            "International Business Machines",
-            "I.B.M. Inc",
-            "IBM Corp",
-            "Foothill Industries",
-            "Foothill Inds Limited",
-            "Sherwin-Williams Co",
-            "Sherwin Williams Company",
-            None,
-        ],
-    })
+    df = pl.DataFrame(
+        {
+            "name": [
+                "Acme Corporation",
+                "ACME Corp Inc",
+                "Acme Corp.",
+                "Apple Computer Co.",
+                "Apple Inc",
+                "Microsoft Corporation, USA",
+                "Microsoft Corp",
+                "International Business Machines",
+                "I.B.M. Inc",
+                "IBM Corp",
+                "Foothill Industries",
+                "Foothill Inds Limited",
+                "Sherwin-Williams Co",
+                "Sherwin Williams Company",
+                None,
+            ],
+        }
+    )
     name_col = "name"
     print(f"GLEIF cache not found, using {df.height} inline names")
     print("(run `uv run scripts/download_corpora.py gleif` to populate)")
@@ -74,7 +79,7 @@ print(df.head(5))
 # you expect to merge isn't merging — see what each side looks like post-
 # normalize.
 
-samples = df[name_col].drop_nulls().head(8).to_list()
+samples = df[name_col].drop_nulls().sample(20).to_list()
 for raw in samples:
     print(f"  {raw!r:50} -> {nc.normalize(raw)!r}")
 
@@ -140,7 +145,9 @@ print(cand.sort("score", descending=True).head(10))
 
 biggest_cid = sizes[0, "cluster_id"]
 info = nc.explain(result, biggest_cid, name_col=name_col)
-print(f"  cluster {biggest_cid}: canonical={info['canonical']!r}  size={info['size']}  hub_radius={info['hub_radius']}")
+print(
+    f"  cluster {biggest_cid}: canonical={info['canonical']!r}  size={info['size']}  hub_radius={info['hub_radius']}"
+)
 for member in info["members"][:5]:
     print(f"    member: {member}")
 for a, b, score in info["edges"][:5]:
@@ -154,24 +161,29 @@ for a, b, score in info["edges"][:5]:
 # Machines". User-supplied aliases canonicalize both sides to the same
 # normalized string before MinHash/LSH/TF-IDF run.
 
-ibm_demo = pl.DataFrame({
-    "name": [
-        "IBM Corp",
-        "I.B.M. Inc",
-        "International Business Machines",
-        "International Business Machines Corp",
-        "Apple Inc",
-    ],
-})
+ibm_demo = pl.DataFrame(
+    {
+        "name": [
+            "IBM Corp",
+            "I.B.M. Inc",
+            "International Business Machines",
+            "International Business Machines Corp",
+            "Apple Inc",
+        ],
+    }
+)
 
 print("without aliases:")
 print(nc.cluster(ibm_demo, name_col="name").select("name", "cluster_id"))
 
 print("with aliases:")
-print(nc.cluster(
-    ibm_demo, name_col="name",
-    aliases={"International Business Machines": ["IBM", "I.B.M."]},
-).select("name", "cluster_id"))
+print(
+    nc.cluster(
+        ibm_demo,
+        name_col="name",
+        aliases={"International Business Machines": ["IBM", "I.B.M."]},
+    ).select("name", "cluster_id")
+)
 
 
 # ---------------------------------------------------------------------------
@@ -187,8 +199,7 @@ print(ac)
 # Build aliases from high-confidence (single-expansion) rows
 high = ac.filter(pl.col("expansion_count") == 1)
 derived_aliases = {
-    row["expansions"][0]: row["acronym_examples"]
-    for row in high.iter_rows(named=True)
+    row["expansions"][0]: row["acronym_examples"] for row in high.iter_rows(named=True)
 }
 print(f"  -> derived aliases: {derived_aliases}")
 

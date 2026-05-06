@@ -1,4 +1,4 @@
-"""name_cluster: cluster business names into entity groups.
+"""namecluster: cluster business names into entity groups.
 
 See ARCHITECTURE.md for the full design and target public surface.
 """

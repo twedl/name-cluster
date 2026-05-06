@@ -3,18 +3,19 @@ requires = ["maturin>=1.7"]
 build-backend = "maturin"
 
 [project]
-name = "name_cluster"
+name = "name-cluster"
 version = "0.1.0"
 description = "Cluster business names into entity groups; Python + Rust"
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 authors = [{ name = "jesse tweedle" }]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Rust",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+    "Operating System :: POSIX :: Linux",
 ]
 dependencies = [
     "narwhals>=1.20",
@@ -31,5 +32,5 @@ dev = [
 [tool.maturin]
 features = ["pyo3/extension-module"]
 python-source = "python"
-module-name = "name_cluster._lowlevel"
+module-name = "namecluster._lowlevel"
 strip = true

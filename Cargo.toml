@@ -10,7 +10,7 @@ name = "name_cluster"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyo3 = { version = "0.22", features = ["abi3-py39", "extension-module"] }
+pyo3 = { version = "0.22", features = ["abi3-py312", "extension-module"] }
 unicode-normalization = "0.1"
 ahash = "0.8"
 rand = "0.8"

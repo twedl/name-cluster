@@ -1,4 +1,4 @@
-# name_cluster
+# name-cluster
 
 Cluster business names into groups representing the same legal entity.
 
@@ -36,7 +36,7 @@ real-data section that activates if you've populated the dev cache via
 The minimal version:
 
 ```python
-import name_cluster as nc
+import namecluster as nc
 import polars as pl
 
 df = pl.DataFrame({
@@ -76,7 +76,7 @@ detects the input type and returns the same type.
 ## Public API
 
 ```python
-import name_cluster as nc
+import namecluster as nc
 
 # Main entry — cluster a name column on any dataframe
 nc.cluster(data, name_col="name", threshold=0.85, seed=0, ...)

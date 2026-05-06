@@ -5,7 +5,7 @@ Run via: source .venv/bin/activate && pytest tests/test_public_api.py
 """
 from __future__ import annotations
 
-import name_cluster as nc
+import namecluster as nc
 import polars as pl
 import pyarrow as pa
 import pytest

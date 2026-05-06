@@ -5,7 +5,7 @@ Loads GLEIF if cached, otherwise the synthetic generator. Runs cluster()
 at each requested input size, prints a markdown table, and writes it to
 docs/benchmark.md.
 
-Run from the project venv (where name_cluster is maturin-developed):
+Run from the project venv (where namecluster is maturin-developed):
 
     uv pip install psutil polars
     python scripts/benchmark.py
@@ -25,7 +25,7 @@ import time
 from datetime import date
 from pathlib import Path
 
-import name_cluster as nc
+import namecluster as nc
 import polars as pl
 import psutil
 
@@ -142,7 +142,7 @@ def write_report(rows: list[dict], source_label: str) -> Path:
         "machine": platform.platform(),
         "processor": platform.processor() or platform.machine(),
         "python": platform.python_version(),
-        "name_cluster": nc.__version__,
+        "namecluster": nc.__version__,
         "date": date.today().isoformat(),
         "corpus": source_label,
     }
@@ -152,7 +152,7 @@ def write_report(rows: list[dict], source_label: str) -> Path:
         f.write(f"`nc.cluster()` scaling on {info['corpus']}.\n\n")
         f.write(
             f"- Machine: {info['machine']} ({info['processor']})\n"
-            f"- Python: {info['python']}, name_cluster: {info['name_cluster']}\n"
+            f"- Python: {info['python']}, namecluster: {info['namecluster']}\n"
             f"- Date: {info['date']}\n\n"
         )
         f.write("## Default settings (threshold=0.85, num_perm=128)\n\n")
