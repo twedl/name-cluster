@@ -144,8 +144,12 @@ LIST3_COMPOUND_LEGAL: dict[tuple[str, ...], str] = {
 LIST2_CANONICAL: dict[str, str] = {
     "manufacturing": "mfg",
     "manufact": "mfg",
+    "manuf": "mfg",
+    "manufac": "mfg",
     "mfr": "mfg",
+    "mftg": "mfg",
     "international": "intl",
+    "int": "intl",
     "import": "imp",
     "imports": "imp",
     "export": "exp",
@@ -158,6 +162,11 @@ LIST2_CANONICAL: dict[str, str] = {
     "industries": "ind",
     "industry": "ind",
     "services": "svc",
+    "service": "svc",
+    "serv": "svc",
+    "ser": "svc",
+    "srv": "svc",
+    "srvc": "svc",
     "svcs": "svc",
     "solutions": "sln",
     "trading": "trd",
@@ -167,6 +176,18 @@ LIST2_CANONICAL: dict[str, str] = {
     "techs": "tech",
     "development": "dev",
     "associates": "assoc",
+    "associate": "assoc",
+    "management": "mgmt",
+    "mgt": "mgmt",
+    "information": "info",
+    "department": "dept",
+    # Pure connective. Stripped via the empty-token filter at the end of
+    # normalize(). Both `&` (which gets expanded to " and " in step 3) and
+    # the literal word "and" canonicalize away to the same shape, so
+    # "Smith & Jones", "Smith and Jones", and "Smith Jones" all collide.
+    # Edge case: a name that reduces to JUST "and" after legal-form strip
+    # (rare brand "And Company") becomes empty post-norm -> cluster_id=null.
+    "and": "",
 }
 
 # Compound canonicalizations (multi-token in -> single-token out). Applied

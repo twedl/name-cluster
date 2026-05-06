@@ -17,6 +17,31 @@ def test_normalize_basic():
     assert nc.normalize("") == ""
 
 
+def test_normalize_and_strip_unifies_ampersand_and_word():
+    """`&` -> 'and' (step 3) then 'and' stripped via List 2; both spelling
+    variants and the no-connector form all canonicalize identically."""
+    assert nc.normalize("Smith & Jones") == nc.normalize("Smith and Jones")
+    assert nc.normalize("Smith and Jones") == nc.normalize("Smith Jones")
+    assert nc.normalize("Procter & Gamble") == "procter gamble"
+    assert nc.normalize("S&P 500") == "s p 500"
+
+
+def test_normalize_abbrev_variants():
+    """Manuf/Manufac/MFTG all reach the same canonical short form as Mfg."""
+    base = nc.normalize("Acme Mfg Inc")
+    for v in ["Manufacturing", "Manuf", "Manufac", "MFR", "MFTG"]:
+        assert nc.normalize(f"Acme {v} Inc") == base, f"variant {v!r} drifted"
+    # Service singular + abbrev variants -> svc
+    base_svc = nc.normalize("Acme Services Inc")
+    for v in ["Service", "Serv", "Ser", "Srv", "SRVC"]:
+        assert nc.normalize(f"Acme {v} Inc") == base_svc, f"service variant {v!r} drifted"
+    # New canonicals: management / information / department
+    assert nc.normalize("Acme Management") == "acme mgmt"
+    assert nc.normalize("Acme MGT") == "acme mgmt"
+    assert nc.normalize("Acme Information") == "acme info"
+    assert nc.normalize("Acme Department") == "acme dept"
+
+
 def test_cluster_names_dedups_acme():
     ids = nc.cluster_names(["Acme Corp", "ACME Inc", "Brightspoke"])
     assert ids[0] == ids[1]

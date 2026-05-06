@@ -153,12 +153,18 @@ static LIST3_COMPOUND_LEGAL: LazyLock<Vec<(Vec<&'static str>, &'static str)>> = 
 });
 
 /// Single-token descriptor abbreviation -> canonical short form.
+/// Empty-string targets are stripped by the final empty-token filter (used
+/// for pure connectives like "and" — see comment on the entry below).
 static LIST2_CANONICAL: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
     [
         ("manufacturing", "mfg"),
         ("manufact", "mfg"),
+        ("manuf", "mfg"),
+        ("manufac", "mfg"),
         ("mfr", "mfg"),
+        ("mftg", "mfg"),
         ("international", "intl"),
+        ("int", "intl"),
         ("import", "imp"),
         ("imports", "imp"),
         ("export", "exp"),
@@ -171,6 +177,11 @@ static LIST2_CANONICAL: LazyLock<HashMap<&'static str, &'static str>> = LazyLock
         ("industries", "ind"),
         ("industry", "ind"),
         ("services", "svc"),
+        ("service", "svc"),
+        ("serv", "svc"),
+        ("ser", "svc"),
+        ("srv", "svc"),
+        ("srvc", "svc"),
         ("svcs", "svc"),
         ("solutions", "sln"),
         ("trading", "trd"),
@@ -180,6 +191,17 @@ static LIST2_CANONICAL: LazyLock<HashMap<&'static str, &'static str>> = LazyLock
         ("techs", "tech"),
         ("development", "dev"),
         ("associates", "assoc"),
+        ("associate", "assoc"),
+        ("management", "mgmt"),
+        ("mgt", "mgmt"),
+        ("information", "info"),
+        ("department", "dept"),
+        // Pure connective. Both `&` (expanded to " and " upstream) and the
+        // literal word "and" canonicalize away to the same shape, so
+        // "Smith & Jones", "Smith and Jones", and "Smith Jones" collide.
+        // Edge case: a name reducing to JUST "and" after legal-form strip
+        // (rare brand "And Company") becomes empty -> cluster_id=null.
+        ("and", ""),
     ]
     .into_iter()
     .collect()
@@ -396,7 +418,7 @@ mod tests {
     fn basic_punct_and_suffix() {
         assert_eq!(norm("IBM Corp"), "ibm");
         assert_eq!(norm("Apple Inc."), "apple");
-        assert_eq!(norm("Procter & Gamble"), "procter and gamble");
+        assert_eq!(norm("Procter & Gamble"), "procter gamble");
     }
 
     #[test]
@@ -412,7 +434,9 @@ mod tests {
 
     #[test]
     fn space_set_chars() {
-        assert_eq!(norm("Smith, Jones & Co"), "smith jones and");
+        // "&" expands to " and " then "and" is stripped via List 2, so the
+        // trailing "and Co" collapses to nothing after "co" is stripped too.
+        assert_eq!(norm("Smith, Jones & Co"), "smith jones");
         assert_eq!(norm("Acme (USA) Inc"), "acme usa");
         // `/` -> space (separator); resulting "import export" tokens are
         // then collapsed by List 2 compound canonicalize -> "impexp".
@@ -463,6 +487,42 @@ mod tests {
         assert_eq!(norm("Acme Mfg Inc"), "acme mfg");
         assert_eq!(norm("Intl Acme"), "intl acme");
         assert_eq!(norm("International Acme"), "intl acme");
+    }
+
+    #[test]
+    fn list2_abbrev_variants_share_canonical() {
+        // All manufacturing variants -> mfg
+        for v in ["Manufacturing", "Mfg", "Manuf", "Manufac", "MFR", "MFTG"] {
+            assert_eq!(norm(&format!("Acme {} Inc", v)), "acme mfg");
+        }
+        // International + abbrev
+        assert_eq!(norm("Intl Acme"), "intl acme");
+        assert_eq!(norm("Int Acme"), "intl acme");
+        assert_eq!(norm("International Acme"), "intl acme");
+        // Service singular + plural + abbrevs
+        for v in ["Services", "Service", "Serv", "Ser", "Srv", "SRVC"] {
+            assert_eq!(norm(&format!("Acme {} Inc", v)), "acme svc");
+        }
+        // Associates singular
+        assert_eq!(norm("Acme Associates"), "acme assoc");
+        assert_eq!(norm("Acme Associate"), "acme assoc");
+        // Management + abbrev
+        assert_eq!(norm("Acme Management"), "acme mgmt");
+        assert_eq!(norm("Acme MGT"), "acme mgmt");
+        // Information + Department (no plural-collapse rule for "systems" yet)
+        assert_eq!(norm("Acme Information Systems"), "acme info systems");
+        assert_eq!(norm("Acme Department"), "acme dept");
+    }
+
+    #[test]
+    fn and_strip_unifies_ampersand_word_and_blank() {
+        assert_eq!(norm("Smith & Jones"), "smith jones");
+        assert_eq!(norm("Smith and Jones"), "smith jones");
+        assert_eq!(norm("Smith Jones"), "smith jones");
+        assert_eq!(norm("Procter & Gamble"), "procter gamble");
+        assert_eq!(norm("S&P 500"), "s p 500");
+        assert_eq!(norm("P & G Co"), "p g");
+        assert_eq!(norm("Black and Decker Ltd"), "black decker");
     }
 
     #[test]
