@@ -251,11 +251,11 @@ def main() -> int:
     p.add_argument("--col", default="name", help="name column when using --input")
 
     p.add_argument("--n", type=int, default=500_000, help="single-run input size")
-    p.add_argument(
-        "--sweep", help="comma-separated sizes; overrides --n if given"
-    )
+    p.add_argument("--sweep", help="comma-separated sizes; overrides --n if given")
 
-    p.add_argument("--threads", type=int, default=None, help="0 / unset = rayon default")
+    p.add_argument(
+        "--threads", type=int, default=None, help="0 / unset = rayon default"
+    )
     p.add_argument("--lsh-bands", type=int, default=32)
     p.add_argument("--lsh-rows", type=int, default=4)
     p.add_argument("--threshold", type=float, default=0.85)
@@ -269,9 +269,7 @@ def main() -> int:
     )
     args = p.parse_args()
 
-    sizes = (
-        [int(s) for s in args.sweep.split(",")] if args.sweep else [args.n]
-    )
+    sizes = [int(s) for s in args.sweep.split(",")] if args.sweep else [args.n]
 
     print(
         f"profile_rss: source={'input=' + str(args.input) if args.input else 'gleif' if args.gleif else 'synthetic'}  "
@@ -292,9 +290,7 @@ def main() -> int:
         actual = len(names)
         if actual < n:
             print(f"  warning: source had only {actual:,} names")
-        csv_path = (
-            args.csv_dir / f"rss-{stamp}-n{actual}.csv" if args.csv_dir else None
-        )
+        csv_path = args.csv_dir / f"rss-{stamp}-n{actual}.csv" if args.csv_dir else None
         rep = run_one(
             names,
             threads=args.threads,
@@ -317,7 +313,9 @@ def main() -> int:
 
     if len(summary) > 1:
         print("=== sweep summary ===")
-        print(f"  {'N':>10}  {'peak RSS':>10}  {'Δ peak':>10}  {'phase':<14}  {'time':>7}")
+        print(
+            f"  {'N':>10}  {'peak RSS':>10}  {'Δ peak':>10}  {'phase':<14}  {'time':>7}"
+        )
         for rep in summary:
             print(
                 f"  {rep['n_input']:>10,}  {fmt_bytes(rep['peak_rss']):>10}  "
