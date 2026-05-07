@@ -52,7 +52,7 @@ def getch() -> str:
         tty.setraw(fd)
         return sys.stdin.read(1)
     finally:
-        termios.tcsetattr(fd, old, termios.TCSADRAIN)
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 
 def atomic_save(rows: list[dict], path: Path, fields: list[str]) -> None:
