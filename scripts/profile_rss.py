@@ -9,6 +9,12 @@ Phase markers are limited to what Python can see (input staging vs the
 single rust call) — sub-stage attribution comes from reading the timeline
 plot, since the rust core runs as one opaque step from here.
 
+On Linux (incl. k8s) the report also surfaces:
+  - VmHWM from /proc/self/status — kernel-tracked peak RSS, exact
+  - cgroup memory.max + memory.current — the *actual* OOM ceiling for
+    a containerised process, not the host RAM. Useful for sizing your
+    sweep against the pod limit instead of psutil's host total.
+
 Examples
 --------
     # Sweep below the OOM ceiling, write CSVs, default settings:
@@ -49,6 +55,56 @@ def fmt_bytes(b: float) -> str:
         b /= 1024
         i += 1
     return f"{b:.1f} {units[i]}"
+
+
+def linux_proc_status() -> dict[str, int]:
+    """Parse /proc/self/status. Returns bytes for Vm* fields. {} on non-Linux."""
+    try:
+        text = Path("/proc/self/status").read_text()
+    except (OSError, FileNotFoundError):
+        return {}
+    out: dict[str, int] = {}
+    for line in text.splitlines():
+        if not line.startswith("Vm"):
+            continue
+        key, _, rest = line.partition(":")
+        parts = rest.strip().split()
+        if len(parts) == 2 and parts[1] == "kB":
+            out[key] = int(parts[0]) * 1024
+    return out
+
+
+def cgroup_memory() -> dict[str, int | None]:
+    """Read pod-level memory limit + current usage from cgroups.
+
+    Tries v2 first (`/sys/fs/cgroup/memory.{max,current}`), falls back to
+    v1 (`memory/memory.{limit,usage}_in_bytes`). Values can be ``None``
+    when the limit is `max` (unlimited) or the file isn't readable.
+    Returns `{"limit": int|None, "current": int|None, "version": "v2"|"v1"|None}`.
+    """
+    v2_max = Path("/sys/fs/cgroup/memory.max")
+    v2_cur = Path("/sys/fs/cgroup/memory.current")
+    if v2_max.exists() and v2_cur.exists():
+        try:
+            raw = v2_max.read_text().strip()
+            limit = None if raw == "max" else int(raw)
+            current = int(v2_cur.read_text().strip())
+            return {"limit": limit, "current": current, "version": "v2"}
+        except (OSError, ValueError):
+            pass
+    v1_max = Path("/sys/fs/cgroup/memory/memory.limit_in_bytes")
+    v1_cur = Path("/sys/fs/cgroup/memory/memory.usage_in_bytes")
+    if v1_max.exists() and v1_cur.exists():
+        try:
+            limit = int(v1_max.read_text().strip())
+            # v1 reports an absurd sentinel (~2^63) when unlimited.
+            if limit > (1 << 62):
+                limit = None
+            current = int(v1_cur.read_text().strip())
+            return {"limit": limit, "current": current, "version": "v1"}
+        except (OSError, ValueError):
+            pass
+    return {"limit": None, "current": None, "version": None}
 
 
 class RssSampler:
@@ -212,6 +268,14 @@ def run_one(
     rep["elapsed_s"] = elapsed
     rep["error"] = type(err).__name__ if err else None
     rep["error_msg"] = str(err) if err else None
+    # Kernel-tracked peak RSS — exact, never misses a between-samples spike.
+    # Linux only; macOS leaves this unset.
+    status = linux_proc_status()
+    rep["vm_hwm"] = status.get("VmHWM")
+    rep["vm_peak"] = status.get("VmPeak")
+    cg = cgroup_memory()
+    rep["cgroup_current"] = cg["current"]
+    rep["cgroup_limit"] = cg["limit"]
     return rep
 
 
@@ -232,6 +296,17 @@ def print_report(rep: dict) -> None:
         f"(Δ {fmt_bytes(rep['peak_rss_delta'])})  "
         f"@ t={rep['peak_at_s']:.1f}s phase={rep['peak_phase']}"
     )
+    if rep.get("vm_hwm"):
+        print(
+            f"  kernel VmHWM   = {fmt_bytes(rep['vm_hwm'])}   "
+            f"(exact peak; sampler may have missed a brief spike)"
+        )
+    if rep.get("cgroup_limit"):
+        used_pct = 100.0 * rep["peak_rss"] / rep["cgroup_limit"]
+        print(
+            f"  cgroup limit   = {fmt_bytes(rep['cgroup_limit'])} "
+            f"({used_pct:.0f}% of limit at peak)"
+        )
     print("  per-phase peak RSS:")
     for phase, b in rep["per_phase_peak_rss"].items():
         print(f"    {phase:14}  {fmt_bytes(b)}")
@@ -276,9 +351,16 @@ def main() -> int:
         f"threads={args.threads}  lsh={args.lsh_bands}x{args.lsh_rows}  "
         f"threshold={args.threshold}  interval={args.interval}s"
     )
+    cg = cgroup_memory()
+    cgroup_str = ""
+    if cg["version"]:
+        if cg["limit"]:
+            cgroup_str = f"  cgroup({cg['version']}) limit={fmt_bytes(cg['limit'])}"
+        else:
+            cgroup_str = f"  cgroup({cg['version']}) limit=unlimited"
     print(
         f"  host: {platform.platform()}  cpus={os.cpu_count()}  "
-        f"total_ram={fmt_bytes(psutil.virtual_memory().total)}"
+        f"total_ram={fmt_bytes(psutil.virtual_memory().total)}{cgroup_str}"
     )
     print()
 
