@@ -167,6 +167,42 @@ for t in [0.75, 0.80, 0.85, 0.90, 0.95]:
     print(t, metrics)
 ```
 
+### Build a labeled eval set from real data
+
+When you don't have ground-truth labels for your corpus, the two scripts
+in `scripts/` give you a workflow for hand-labeling a stratified sample
+of candidate pairs.
+
+**1. Sample candidate pairs across the score range.**
+`scripts/build_eval_set.py` runs `nc.candidates()` over your parquet
+input, buckets pairs by cosine score, and writes a labeling-ready CSV.
+
+```bash
+uv run scripts/build_eval_set.py us_data.parquet eval/us_pairs.csv \
+    --sample-n 1000000 --buckets 7 --per-bucket 50 \
+    --context-cols country,address \
+    --candidates-cache eval/us_candidates.parquet
+```
+
+Match `--lsh-bands` / `--lsh-rows` to your production `cluster()` call so
+the candidate pool reflects what production sees. The cache parquet
+skips the expensive LSH+TF-IDF step on re-runs that change only
+sampling/buckets — pass `--rebuild-cache` to force recompute.
+
+**2. Adjudicate each pair.** `scripts/label_pairs.py` is a single-
+keystroke terminal labeler. Reads the CSV, prompts `s` / `d` / `u`
+(same / different / unsure) per row, autosaves on every keystroke,
+supports undo (`b`) and resume (re-running picks up where you left off):
+
+```bash
+uv run scripts/label_pairs.py eval/us_pairs.csv \
+    --hide-cols normalized_a,normalized_b
+```
+
+The labeled CSV's `label` column then drives the threshold sweep above:
+build a `(score, label)` table from the file and read precision-vs-
+threshold straight off it.
+
 ### Generator + round-trip evaluation
 
 ```python
