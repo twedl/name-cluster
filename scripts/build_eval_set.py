@@ -73,11 +73,14 @@ def get_candidates(
     lsh_rows: int,
     seed: int,
     cache: Path | None,
+    rebuild: bool,
 ) -> pl.DataFrame:
-    if cache and cache.exists():
+    if cache and cache.exists() and not rebuild:
         cand = pl.read_parquet(cache)
         print(f"  loaded {cand.height:,} candidates from cache: {cache}")
         return cand
+    if rebuild and cache and cache.exists():
+        print(f"  --rebuild-cache: ignoring existing {cache}")
     print(f"  running nc.candidates() on {df.height:,} rows  ", end="", flush=True)
     cand = nc.candidates(
         df,
@@ -226,7 +229,13 @@ def main() -> int:
         default=None,
         help="parquet path to read/write nc.candidates() output. Re-used "
         "as-is on subsequent runs; delete after changing input/--name-col/"
-        "--lsh-*/--min-score/--sample-n/--seed.",
+        "--lsh-*/--min-score/--sample-n/--seed (or pass --rebuild-cache).",
+    )
+    p.add_argument(
+        "--rebuild-cache",
+        action="store_true",
+        help="ignore any existing --candidates-cache and recompute, "
+        "overwriting it. No-op if --candidates-cache is not set.",
     )
     args = p.parse_args()
 
@@ -263,6 +272,7 @@ def main() -> int:
         lsh_rows=args.lsh_rows,
         seed=args.seed,
         cache=args.candidates_cache,
+        rebuild=args.rebuild_cache,
     )
     if cand.height == 0:
         sys.exit(
