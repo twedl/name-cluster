@@ -34,6 +34,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import gc
 import sys
 import time
 from pathlib import Path
@@ -151,12 +152,14 @@ def main() -> int:
         elapsed = time.perf_counter() - t0
 
         n_names = clusters.height
-        n_clusters = clusters["cluster_id"].drop_nulls().n_unique() if n_names else 0
-        n_null = (
-            clusters["cluster_id"].null_count()
-            if "cluster_id" in clusters.columns
-            else 0
-        )
+        n_clusters = clusters["cluster_id"].drop_nulls().n_unique()
+        n_null = clusters["cluster_id"].null_count()
+        # Drop the per-country df + force collection before the next country's
+        # cluster() call peaks. Matters at 6M-name scale where a held df is
+        # hundreds of MB.
+        del clusters
+        gc.collect()
+
         print(
             f"[{i:>3}/{len(countries)}] {country}: "
             f"{n_names:>9,} names → {n_clusters:>8,} clusters  "
