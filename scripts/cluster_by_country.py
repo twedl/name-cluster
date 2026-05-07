@@ -14,6 +14,9 @@ convention) — read back with::
 
 Notes
 -----
+- Reads the input parquet once at startup (only ``--name-col`` and
+  ``--partition-col`` are projected, so other columns don't compete
+  for RAM). The full df stays resident across the whole run.
 - Cluster IDs are call-local: each country starts at 0. If you need
   globally-unique IDs across the whole output, offset post-hoc by
   scanning the partitioned dataset and computing per-partition offsets.
@@ -43,14 +46,13 @@ import namecluster as nc
 import polars as pl
 
 
-def discover_countries(src: Path, partition_col: str) -> list[str]:
+def discover_countries(df: pl.DataFrame, partition_col: str) -> list[str]:
     """Return sorted distinct non-null partition-column values."""
-    df = pl.scan_parquet(src).select(partition_col).unique().collect()
-    return sorted(c for c in df[partition_col].to_list() if c is not None)
+    return sorted(c for c in df[partition_col].unique().to_list() if c is not None)
 
 
 def cluster_one_country(
-    src: Path,
+    df: pl.DataFrame,
     country: str,
     *,
     partition_col: str,
@@ -62,13 +64,7 @@ def cluster_one_country(
     n_threads: int | None,
 ) -> pl.DataFrame:
     """Filter to one country, dedup names, cluster, return clustered df."""
-    names = (
-        pl.scan_parquet(src)
-        .filter(pl.col(partition_col) == country)
-        .select(name_col)
-        .unique()
-        .collect()
-    )
+    names = df.filter(pl.col(partition_col) == country).select(name_col).unique()
     return nc.cluster(
         names,
         name_col=name_col,
@@ -117,11 +113,18 @@ def main() -> int:
     if not args.input.exists():
         sys.exit(f"error: {args.input} not found")
 
+    print(f"loading {args.input}")
+    t_load = time.perf_counter()
+    df = pl.read_parquet(args.input, columns=[args.name_col, args.partition_col])
+    print(
+        f"  {df.height:,} rows  ({df.estimated_size('mb'):.0f} MB)  "
+        f"{time.perf_counter() - t_load:.1f}s"
+    )
+
     if args.countries:
         countries = [c.strip() for c in args.countries.split(",") if c.strip()]
     else:
-        print(f"discovering distinct {args.partition_col} values in {args.input}")
-        countries = discover_countries(args.input, args.partition_col)
+        countries = discover_countries(df, args.partition_col)
         print(f"  found {len(countries)} partitions")
 
     args.output.mkdir(parents=True, exist_ok=True)
@@ -138,7 +141,7 @@ def main() -> int:
 
         t0 = time.perf_counter()
         clusters = cluster_one_country(
-            args.input,
+            df,
             country,
             partition_col=args.partition_col,
             name_col=args.name_col,
