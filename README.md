@@ -154,6 +154,18 @@ result = (
 # concatenate groups, offset cluster_ids per group to make them unique.
 ```
 
+For large corpora (millions of names, memory-constrained pods),
+[`scripts/cluster_by_country.py`](./scripts/cluster_by_country.py) does
+the same partitioned clustering as a standalone, resumable job: reads a
+parquet input once, clusters each country group, and writes a
+Hive-partitioned parquet output (`--skip-existing` makes a long run
+resumable across restarts).
+
+```bash
+uv run scripts/cluster_by_country.py data/names.parquet output/clusters \
+    --threshold 0.85 --lsh-bands 16 --skip-existing
+```
+
 ### Tune the threshold
 
 Higher `threshold` = more clusters (precision-favoring); lower = fewer
@@ -271,6 +283,7 @@ All knobs are flat kwargs on `cluster()`:
 | `diameter_check_min_size` | 5 | skip diameter check on small clusters |
 | `max_name_length` | 256 | truncate raw input names beyond this many bytes |
 | `aliases` | `None` | acronym/expansion override map: `{canonical: [alias, ...]}` |
+| `n_threads` | `None` | worker threads for parallelised stages; `None` = rayon default (CPU count) |
 
 ## Scope
 
@@ -338,9 +351,9 @@ Full design rationale, audit findings, and the decision history live in
 Run all tests (rust + python integration):
 
 ```bash
-cargo test --lib                          # 78 rust unit tests
+cargo test --lib                          # 81 rust unit tests
 maturin develop --release                  # rebuild + reinstall extension
-pytest tests/test_public_api.py            # 21 python integration tests
+pytest tests/test_public_api.py            # 25 python integration tests
 ```
 
 ### Pre-push hook (local CI)
