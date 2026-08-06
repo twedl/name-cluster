@@ -220,3 +220,6 @@ __marimo__/
 # Claude Code session-local state
 .claude/
 
+# Local scratch / exploratory scripts (also keeps ruff off them)
+temp/
+

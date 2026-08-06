@@ -14,11 +14,17 @@ fi
 step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 note() { printf '   %s\n' "$1"; }
 
-step "ruff check"
-uvx ruff check .
+# Pinned deliberately. `uvx ruff` floats to latest, and 0.16.0 both expanded
+# the default rule set and started formatting python blocks inside markdown —
+# 42 lint failures + 2 format failures on code that hadn't changed. Bump this
+# when you're ready to fix the fallout, don't let it drift on its own.
+RUFF="ruff@0.15.0"
 
-step "ruff format --check"
-uvx ruff format --check .
+step "ruff check ($RUFF)"
+uvx "$RUFF" check .
+
+step "ruff format --check ($RUFF)"
+uvx "$RUFF" format --check .
 
 step "cargo fmt --check"
 cargo fmt --check
