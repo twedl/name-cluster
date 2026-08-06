@@ -9,7 +9,8 @@
 //!   5. Strip leading garbage `^0+\s+` and `^[#*]+\s+`
 //!   6. Strip leading `THE` (only if >=3 tokens remain after)
 //!   7. List 3 compound canonicalize (anywhere in name, longest-first)
-//!   8. Iterative bidirectional List 1 strip (multi-tail / single-tail / single-head)
+//!   8. Iterative bidirectional List 1 strip (multi-tail / single-tail /
+//!      single-head; head-strip is restricted to LIST1_HEAD_STRIPPABLE)
 //!   9. List 2 canonicalize (compounds first, then singles)
 //!  10. Whitespace collapse
 //!
@@ -140,6 +141,28 @@ static LIST1_SUFFIXES_SINGLE: LazyLock<HashSet<&'static str>> = LazyLock::new(||
 
 static LIST1_SUFFIXES_MULTI: LazyLock<Vec<Vec<&'static str>>> =
     LazyLock::new(|| vec![vec!["co", "ltd"]]);
+
+/// Legal forms that may be stripped from the HEAD of a name.
+///
+/// Derived from `LIST1_SUFFIXES_SINGLE` by excluding the ambiguous short
+/// codes. Rationale is ambiguity, not nationality: `llc`, `ooo`, `jsc`,
+/// `gmbh` are unmistakable legal forms in any position, and prefix-form names
+/// are routine (`LLC RUSSKOYE VREMYA`, `JSC ROSNEFT`). A token of ≤2 chars in
+/// head position is far more likely to be the company's own initials —
+/// stripping it destroys the sole distinguishing token, so `AB International`
+/// collapses to `intl` and collides with every other `<2-letter>
+/// International` in the corpus.
+///
+/// `ao` is the deliberate exception: Russian Aktsionernoe Obshchestvo
+/// genuinely leads (`AO GAZPROM`), and List 3 canonicalizes its long form to
+/// `ao` before this step runs.
+static LIST1_HEAD_STRIPPABLE: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
+    LIST1_SUFFIXES_SINGLE
+        .iter()
+        .copied()
+        .filter(|t| t.len() > 2 || *t == "ao")
+        .collect()
+});
 
 /// Build a longest-first compound canonicalize table.
 fn build_compound(
@@ -385,8 +408,8 @@ pub fn normalize(name: &str) -> String {
             continue;
         }
 
-        // single-word head
-        if tokens.len() > 1 && LIST1_SUFFIXES_SINGLE.contains(tokens.first().unwrap().as_str()) {
+        // single-word head (Slavic forms only — see LIST1_HEAD_STRIPPABLE)
+        if tokens.len() > 1 && LIST1_HEAD_STRIPPABLE.contains(tokens.first().unwrap().as_str()) {
             tokens.remove(0);
             continue;
         }
@@ -542,6 +565,48 @@ mod tests {
         assert_eq!(norm("JSC ROSNEFT"), "rosneft");
         assert_eq!(norm("OOO X CORP"), "x");
         assert_eq!(norm("AKTSIONERNOE OBSHCHESTVO X"), "x");
+    }
+
+    #[test]
+    fn unambiguous_legal_forms_still_head_strip() {
+        // >2 chars: not plausibly a company's initials, so prefix-form names
+        // (routine in Russian/Slavic usage) must still collapse onto the
+        // suffix-form spelling of the same entity.
+        assert_eq!(norm("LLC RUSSKOYE VREMYA"), norm("RUSSKOYE VREMYA LLC"));
+        assert_eq!(norm("LLC VEB CAPITAL"), norm("VEB CAPITAL"));
+        assert_eq!(
+            norm("LIMITED LIABILITY COMPANY SBERBANK CAPITAL"),
+            norm("SBERBANK CAPITAL LLC")
+        );
+        assert_eq!(norm("GMBH ACME"), "acme");
+    }
+
+    #[test]
+    fn western_legal_forms_are_tail_only() {
+        // Tail position: genuine legal form, strip it.
+        assert_eq!(norm("Volvo AB"), "volvo");
+        assert_eq!(norm("Philips NV"), "philips");
+        assert_eq!(norm("Roche AG"), "roche");
+        // Head position: almost certainly the company's initials. Keeping the
+        // token is what stops every "<2-letter> International" in a corpus
+        // from collapsing onto the bare descriptor "intl".
+        assert_eq!(norm("AB International"), "ab intl");
+        assert_eq!(norm("AG International"), "ag intl");
+        assert_eq!(norm("SA International"), "sa intl");
+        assert_eq!(norm("BV Trading"), "bv trd");
+        // Distinct heads must stay distinct (the magnet-cluster regression).
+        let heads = ["AB", "AG", "AO", "AS", "BT", "BV", "CB", "CO", "NV", "SA"];
+        let normed: HashSet<String> = heads
+            .iter()
+            .filter(|h| **h != "AO") // "ao" is Slavic head-strippable by design
+            .map(|h| norm(&format!("{} International", h)))
+            .collect();
+        assert_eq!(
+            normed.len(),
+            heads.len() - 1,
+            "each head should yield a distinct normalized form, got {:?}",
+            normed
+        );
     }
 
     #[test]

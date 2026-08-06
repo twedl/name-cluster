@@ -351,7 +351,7 @@ Full design rationale, audit findings, and the decision history live in
 Run all tests (rust + python integration):
 
 ```bash
-cargo test --lib                          # 81 rust unit tests
+cargo test --lib                          # 83 rust unit tests
 maturin develop --release                  # rebuild + reinstall extension
 pytest tests/test_public_api.py            # 25 python integration tests
 ```

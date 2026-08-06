@@ -137,6 +137,20 @@ LIST1_SUFFIXES_MULTI: tuple[tuple[str, ...], ...] = (
     ("co", "ltd"),  # 'CO LTD' is one logical suffix in Chinese-style names
 )
 
+# --- Head-strippable subset of List 1 ---
+# Derived from LIST1_SUFFIXES_SINGLE by excluding the ambiguous short codes.
+# Rationale is ambiguity, not nationality: llc/ooo/jsc/gmbh are unmistakable
+# legal forms in any position, and prefix-form names are routine ("LLC
+# RUSSKOYE VREMYA", "JSC ROSNEFT"). A token of <=2 chars in head position is
+# far more likely to be the company's own initials -- stripping it destroys
+# the sole distinguishing token, so "AB International" collapses to "intl"
+# and collides with every other "<2-letter> International" in the corpus.
+# "ao" is the deliberate exception: Russian Aktsionernoe Obshchestvo genuinely
+# leads ("AO GAZPROM"), and List 3 canonicalizes its long form to "ao" first.
+LIST1_HEAD_STRIPPABLE: frozenset[str] = frozenset(
+    t for t in LIST1_SUFFIXES_SINGLE if len(t) > 2 or t == "ao"
+)
+
 # --- List 3: compound legal-form canonicalize (anywhere in name) ---
 # Multi-token legal-form phrases mapped to their standard short form. Applied
 # BEFORE List 1 strip, so the resulting canonical token (e.g. "llc") is then
@@ -386,7 +400,7 @@ def normalize(name: str) -> str:
             tokens = tokens[:-1]
             changed = True
             continue
-        if len(tokens) > 1 and tokens[0] in LIST1_SUFFIXES_SINGLE:
+        if len(tokens) > 1 and tokens[0] in LIST1_HEAD_STRIPPABLE:
             tokens = tokens[1:]
             changed = True
 

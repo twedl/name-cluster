@@ -230,18 +230,27 @@ Dedup key = normalized name only. Passthrough columns remain row-level.
    Resulting canonical token is then handled by step 8 (List 1 strip).
 8. **Iterative bidirectional strip List 1 (legal-form suffixes)** —
    tail multi-word, then tail single, then head single. Loop to fixed point.
-   Always preserves ≥1 token. (Head-strip catches Russian-style prefix forms:
-   `JSC ROSNEFT`, `OOO X`, `OAO Y`.)
+   Always preserves ≥1 token. Head-strip uses `LIST1_HEAD_STRIPPABLE` =
+   List 1 minus its ≤2-char entries (plus `ao`). The axis is **ambiguity, not
+   nationality**: `llc`/`ooo`/`jsc`/`gmbh` are unmistakable legal forms in any
+   position, and prefix-form names are routine (`LLC RUSSKOYE VREMYA`,
+   `JSC ROSNEFT`). A ≤2-char token in head position is far more likely the
+   company's own initials — stripping it destroys the sole distinguishing
+   token, so `AB International` → `intl`, colliding with every other
+   `<2-letter> International` in the corpus. `ao` is the deliberate exception
+   (Russian Aktsionernoe Obshchestvo genuinely leads; List 3 canonicalizes its
+   long form to `ao` before this step). Tail-only set: ab, ag, as, bt, bv, cb,
+   co, cv, eg, ev, gk, kg, kk, lp, nv, ou, oy, rt, sa, sl, ss, ua, ug.
 9. **Token-by-token canonicalize via List 2 map**
 10. **Whitespace collapse** again
 
 Steps 1-4 are character-level; 5-10 are token-level on `tokens = s.split()`.
 
-### List 1: legal-form suffixes (always strip, head + tail)
+### List 1: legal-form suffixes (always strip from tail; unambiguous forms from head)
 
 Confirmed by GLEIF/UKCH/OFAC audit (task #13) plus per-jurisdiction
-trailing-token analysis. Stripped iteratively from BOTH ends; preserves
-≥1 token.
+trailing-token analysis. Stripped iteratively from the tail; preserves
+≥1 token. Head-stripping applies only to `LIST1_HEAD_STRIPPABLE` (see step 8).
 
 ```
 # English / Western
