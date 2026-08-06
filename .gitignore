@@ -223,3 +223,9 @@ __marimo__/
 # Local scratch / exploratory scripts (also keeps ruff off them)
 temp/
 
+# macOS finder metadata
+.DS_Store
+
+# Dev-only lock file; the published wheel pins nothing from here
+uv.lock
+
