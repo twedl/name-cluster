@@ -293,8 +293,11 @@ All knobs are flat kwargs on `cluster()`:
 - **Performance target:** millions of names per CPU-only k8s notebook,
   < 16 GB peak RAM at 10M-name scale with country blocking.
 - **Determinism:** same input + same seed → byte-identical output, on the
-  same wheel. Guaranteed within a lib version; cluster IDs may differ
-  across `0.x` → `0.y` releases.
+  same wheel. Guaranteed within a lib version only. Pre-1.0, cluster IDs
+  may shift on **any** release, patch included — a normalization change
+  moves every affected name to a new ID. Re-cluster after upgrading rather
+  than comparing IDs across versions. (0.1.1 shifts IDs: legal-form codes
+  in head position are no longer stripped.)
 - **Minimum corpus size:** at least 3 unique post-normalize names are
   required for the TF-IDF rerank to produce meaningful cosine scores.
   Inputs with ≤ 2 unique normalized names always return one cluster per
