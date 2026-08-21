@@ -94,7 +94,9 @@ def main() -> int:
         "--n-threads",
         type=int,
         default=None,
-        help="rayon worker count (default: num_cpus). Note: cgroup-unaware",
+        help="rayon worker count (default: $RAYON_NUM_THREADS, else "
+        "available_parallelism, which honors cgroup CPU limits — but a pod "
+        "with CPU requests and no limits sees every core on the node)",
     )
     p.add_argument(
         "--countries",

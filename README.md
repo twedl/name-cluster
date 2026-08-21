@@ -135,7 +135,8 @@ df = df.with_columns(
 ```
 
 `map_batches` hands the whole series to the callback in one shot, so
-rayon parallelizes the Rust loop across all available cores. Useful for
+rayon parallelizes the Rust loop across all available cores (set
+`RAYON_NUM_THREADS` to cap it — there's no `n_threads` kwarg here). Useful for
 inspecting what `cluster()` actually compares, or pre-deduping before
 clustering. On pandas, `df["name"].map(nc.normalize)` works but is
 serial — go through `normalize_names` for the batched path.
@@ -283,7 +284,13 @@ All knobs are flat kwargs on `cluster()`:
 | `diameter_check_min_size` | 5 | skip diameter check on small clusters |
 | `max_name_length` | 256 | truncate raw input names beyond this many bytes |
 | `aliases` | `None` | acronym/expansion override map: `{canonical: [alias, ...]}` |
-| `n_threads` | `None` | worker threads for parallelised stages; `None` = rayon default (CPU count) |
+| `n_threads` | `None` | worker threads for parallelised stages; `None` = rayon's global pool (see note) |
+
+> **Thread count.** With `n_threads=None`, rayon sizes its global pool from
+> `RAYON_NUM_THREADS` if set, else the cores available to the process (cgroup
+> CPU limits are honored on Linux — but a k8s pod with CPU *requests* and no
+> limits sees every core on the node). `RAYON_NUM_THREADS` is also the only
+> thread control for `normalize_names()`, which takes no `n_threads` kwarg.
 
 ## Scope
 

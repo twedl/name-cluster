@@ -18,7 +18,7 @@
 ## Methodology
 
 - Single `nc.cluster()` call (default `threshold=0.85`, `num_perm=128`) against a seeded random sample of the corpus.
-- `threads` column: `n_threads=` value passed to `cluster()`. `default` = rayon's `num_cpus`. `1` forces single-threaded.
+- `threads` column: `n_threads=` value passed to `cluster()`. `default` = rayon's global pool (`RAYON_NUM_THREADS` if set, else `available_parallelism()`). `1` forces single-threaded.
 - Wall time: `time.perf_counter()` around the call.
 - Peak Δ RSS: resident memory sampled in a 10ms background loop; max-during minus baseline-just-before-call. macOS pages aggressively, so RSS underestimates total allocation.
 - Peak Δ VMS: virtual-memory-mapped delta over the same window — a better proxy for total working memory at scale.

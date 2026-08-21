@@ -179,7 +179,8 @@ def write_report(rows: list[dict], source_label: str) -> Path:
             "- Single `nc.cluster()` call (default `threshold=0.85`, "
             "`num_perm=128`) against a seeded random sample of the corpus.\n"
             "- `threads` column: `n_threads=` value passed to `cluster()`. "
-            "`default` = rayon's `num_cpus`. `1` forces single-threaded.\n"
+            "`default` = rayon's global pool (`RAYON_NUM_THREADS` if set, else "
+            "`available_parallelism()`). `1` forces single-threaded.\n"
             "- Wall time: `time.perf_counter()` around the call.\n"
             "- Peak Δ RSS: resident memory sampled in a 10ms background loop; "
             "max-during minus baseline-just-before-call. macOS pages aggressively, "
@@ -231,7 +232,8 @@ def main() -> int:
     p.add_argument(
         "--threads",
         default="1,0",
-        help="comma-separated thread counts (0 = rayon default = num_cpus); "
+        help="comma-separated thread counts (0 = rayon default = all cores "
+        "available to the process); "
         "default '1,0' compares single-threaded vs all-cores",
     )
     args = p.parse_args()

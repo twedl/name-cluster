@@ -40,7 +40,9 @@ pub struct ClusterOpts {
     /// where char-n-gram cosine alone never would. Empty by default.
     pub aliases: AHashMap<String, String>,
     /// Worker threads for the parallelisable stages (TF-IDF rerank scoring +
-    /// per-name vectorisation). `None` uses rayon's default (= num_cpus).
+    /// per-name vectorisation). `None` uses rayon's global pool, sized by
+    /// `RAYON_NUM_THREADS` if set, else `std::thread::available_parallelism()`
+    /// (honors cgroup CPU quota on Linux).
     /// `Some(1)` forces single-threaded execution; useful for benchmarking
     /// and debugging non-determinism. Output is byte-identical regardless
     /// of thread count.

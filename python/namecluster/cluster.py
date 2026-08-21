@@ -93,7 +93,8 @@ def cluster(
         (deterministic regardless of dict insertion order).
     n_threads : int | None
         Worker threads for the parallelised stages (TF-IDF rerank scoring +
-        per-name vectorisation). ``None`` uses rayon's default (= CPU count);
+        per-name vectorisation). ``None`` uses rayon's global pool, sized by
+        ``RAYON_NUM_THREADS`` if set, else the cores available to the process;
         ``1`` forces single-threaded. Output is byte-identical regardless
         of thread count.
 
