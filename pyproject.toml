@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "name-cluster"
-version = "0.1.1"
+version = "0.1.2"
 description = "Cluster business names into entity groups; Python + Rust"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -13,6 +13,8 @@ authors = [{ name = "jesse tweedle" }]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Free Threading :: 2 - Beta",
     "Programming Language :: Rust",
     "License :: OSI Approved :: MIT License",
     "Operating System :: POSIX :: Linux",
@@ -30,6 +32,9 @@ dev = [
 ]
 
 [tool.maturin]
+# abi3 is NOT listed here: it is passed per-build (`--features abi3`) so the
+# free-threaded wheels, which cannot use the stable ABI before 3.15, build
+# without it. See .github/workflows/publish.yml.
 features = ["pyo3/extension-module"]
 python-source = "python"
 module-name = "namecluster._lowlevel"

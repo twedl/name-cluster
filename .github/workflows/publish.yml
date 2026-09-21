@@ -1,8 +1,16 @@
 name: publish
 
-# Build Linux manylinux wheels (x86_64 + aarch64) and publish to PyPI.
+# Build Linux manylinux wheels and publish to PyPI.
+#
+# Two wheel families, because the stable ABI does not cover free-threaded
+# builds before CPython 3.15:
+#   - abi3 (cp312-abi3): one wheel per arch, serves every GIL build 3.12+.
+#   - cp314t: one wheel per arch per free-threaded interpreter, built without
+#     the `abi3` cargo feature. 3.13t is not built — PyO3 0.29 dropped support
+#     for free-threaded CPython below 3.14.
+#
 # Triggers:
-#   - push of a tag matching v* (e.g. v0.1.1)
+#   - push of a tag matching v* (e.g. v0.1.2)
 #   - manual workflow_dispatch
 #
 # Authentication: PyPI Trusted Publishing (OIDC). Configure on PyPI under
@@ -15,8 +23,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: build linux ${{ matrix.target }}
+  build-abi3:
+    name: build abi3 linux ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -32,7 +40,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --strip --out dist
+          args: --release --strip --features abi3 --out dist
           manylinux: auto
           # qemu emulation handles aarch64 cross-build on x86_64 runners
           before-script-linux: |
@@ -41,12 +49,43 @@ jobs:
       - name: upload wheel artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-linux-${{ matrix.target }}
+          name: wheels-linux-abi3-${{ matrix.target }}
+          path: dist
+
+  build-freethreaded:
+    name: build cp314t linux ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86_64, aarch64]
+    steps:
+      - uses: actions/checkout@v4
+
+      # The aarch64 cross container has no free-threaded interpreter, so this
+      # arch builds inside the official aarch64 manylinux image under qemu.
+      - name: setup qemu
+        if: matrix.target == 'aarch64'
+        uses: docker/setup-qemu-action@v3
+
+      - name: build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          # manylinux_2_28 rather than the abi3 job's 2014: the free-threaded
+          # interpreters only ship in the current images.
+          manylinux: '2_28'
+          container: quay.io/pypa/manylinux_2_28_${{ matrix.target }}
+          args: --release --strip --interpreter python3.14t --out dist
+
+      - name: upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-linux-cp314t-${{ matrix.target }}
           path: dist
 
   publish:
     name: publish to pypi
-    needs: [build]
+    needs: [build-abi3, build-freethreaded]
     runs-on: ubuntu-latest
     # Only run on tag push or explicit dispatch — not on every artifact build
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'

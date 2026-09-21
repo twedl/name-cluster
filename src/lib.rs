@@ -5,10 +5,6 @@
 //!   - `cluster_lists(names, **opts)` — full pipeline; takes/returns Python
 //!     lists (the Python wrapper layer plugs this into narwhals/Arrow).
 
-// pyo3 0.22's `#[pyfunction]` macro emits a `.into()` for the Err branch of
-// `PyResult` that clippy reads as a same-type round-trip. Quiet at module level.
-#![allow(clippy::useless_conversion)]
-
 use ahash::AHashMap;
 use pyo3::prelude::*;
 use rayon::prelude::*;
@@ -32,7 +28,7 @@ fn py_normalize(name: &str) -> String {
 /// each input. No truncation, no alias rewriting — pure normalization.
 #[pyfunction(name = "normalize_lists")]
 fn py_normalize_lists(py: Python<'_>, names: Vec<Option<String>>) -> Vec<Option<String>> {
-    py.allow_threads(|| {
+    py.detach(|| {
         names
             .into_par_iter()
             .map(|opt| opt.map(|s| normalize::normalize(&s)))
@@ -136,7 +132,7 @@ fn py_cluster_lists(
         aliases: build_alias_map(aliases),
         n_threads,
     };
-    let r = py.allow_threads(|| {
+    let r = py.detach(|| {
         let mut b = builder::ClusterBuilder::new(opts);
         // add_batch consumes `names` and runs Phase A/C of insertion in parallel.
         b.add_batch(names);
@@ -206,7 +202,7 @@ fn py_candidate_pairs_lists(
         aliases: build_alias_map(aliases),
         n_threads,
     };
-    let r = py.allow_threads(|| {
+    let r = py.detach(|| {
         let mut b = builder::ClusterBuilder::new(opts);
         b.add_batch(names);
         b.candidate_pairs(min_score)
@@ -254,7 +250,7 @@ fn py_pairwise_cosines_lists(
     Ok((a, b, s))
 }
 
-#[pymodule]
+#[pymodule(gil_used = false)]
 fn _lowlevel(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(py_normalize, m)?)?;
     m.add_function(wrap_pyfunction!(py_normalize_lists, m)?)?;

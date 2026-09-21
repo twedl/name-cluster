@@ -18,6 +18,11 @@ works on polars, pandas, and pyarrow inputs.
 pip install name-cluster   # Linux x86_64 / aarch64 wheels
 ```
 
+Wheels cover CPython 3.13+ (one abi3 wheel per arch) and the free-threaded
+build 3.14t (one wheel per arch). 3.13t is not supported — PyO3 dropped
+free-threaded builds below 3.14. The extension declares `gil_used = false`,
+so importing it on 3.14t does not re-enable the GIL.
+
 Other platforms (macOS, Windows) — build from source, requires the Rust toolchain:
 
 ```bash
